@@ -1,0 +1,46 @@
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.ipynb_checkpoints/
+.Python
+.pytest_cache/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+
+# --- Auto-downloadable datasets ---
+# CIFAR-10 (~170MB) — torchvision auto-downloads on first use
+L08-computer-vision/notebooks/data/cifar10/
+# Fashion-MNIST (~31MB) — torchvision auto-downloads on first use
+L08-computer-vision/notebooks/data/fmnist/
+
+# --- Model artefacts generated during notebook runs ---
+**/tiny_cnn.pt
+**/*.pth
+**/*.pt
+**/*.onnx
+
+# --- Embedding caches (regenerated on demand) ---
+**/catalogue_embeddings.npy
+**/ground_truth.json
+
+# --- HuggingFace model cache (in case any notebook caches locally) ---
+.cache/
+huggingface_cache/
+
+# --- Misc generated files ---
+*.log
+*.tmp
+.scratch/

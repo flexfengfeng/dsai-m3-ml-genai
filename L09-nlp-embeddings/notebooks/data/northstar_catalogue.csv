@@ -1,0 +1,77 @@
+product_id,name,category,description,price_gbp
+P0001,Lila Floral Sundress,dress,"Lightweight floral frock perfect for warm summer days. Tea-length, pastel print, breathable cotton.",49
+P0002,Marina Wrap Dress,dress,Elegant wrap-style dress in deep navy. Suitable for office or evening occasions.,89
+P0003,Cassia Maxi Gown,dress,Flowing full-length gown with adjustable straps. Beach holiday essential.,65
+P0004,Holly Knit Jumper Dress,dress,Cosy ribbed knit dress in oatmeal. Perfect winter layer with thick tights.,72
+P0005,Ivy Slip Dress,dress,Minimalist satin slip in champagne. Layer over a tee or wear alone for evenings.,55
+P0006,Bea Tea-Length Frock,dress,Vintage-inspired knee-length number in dusty rose. Spring wedding-guest favourite.,78
+P0007,Sienna Bodycon Dress,dress,Fitted stretch jersey in midnight black. Goes from desk to drinks effortlessly.,45
+P0008,Aurora Pleated Midi,dress,Romantic pleated midi in soft lavender. Twirl-friendly and waist-defining.,95
+P0009,Petal Smock Dress,dress,Relaxed loose-fit smock with floral embroidery. Comfortable everyday wear.,58
+P0010,Marigold Shift Dress,dress,Sleeveless A-line shift in sunshine yellow. Bold colour for the brave.,52
+P0011,Atlas Oxford Shirt,shirt,"Classic button-down in crisp white. Tailored fit, French seams.",65
+P0012,Onyx Silk Blouse,shirt,"Lustrous silk blouse in black. Drape neckline, statement office piece.",110
+P0013,Pine Flannel Shirt,shirt,Brushed cotton lumberjack-style check in forest green. Weekend warmth.,48
+P0014,Frost Linen Shirt,shirt,Breathable linen in pale ice blue. Vacation packing essential.,55
+P0015,Storm Denim Shirt,shirt,Mid-wash chambray with pearl-effect snap fasteners. Casual but considered.,60
+P0016,Coral Striped Tee,shirt,Soft jersey tee with horizontal stripes in coral and white. Breton-style.,28
+P0017,Slate Cropped Tank,shirt,Ribbed cropped vest top in slate grey. Layering staple.,22
+P0018,Rose Puff Sleeve Top,shirt,Romantic puff-sleeve blouse with smocked waist. Picnic-ready.,42
+P0019,Indigo Polo Shirt,shirt,Soft pique cotton polo in deep indigo. Smart-casual all-rounder.,50
+P0020,Field Wide-Leg Trousers,trouser,Generous wide-leg trousers in olive linen. Drawstring waist.,75
+P0021,Spruce Slim Chinos,trouser,Tailored slim-fit cotton chinos in stone. Five-pocket styling.,68
+P0022,Ash Wool Trousers,trouser,Charcoal pleated wool trousers. Conference-room ready.,120
+P0023,Saxe Cargo Pants,trouser,Utility cargo trousers with thigh pockets in sage. Streetwear staple.,82
+P0024,Cliff Black Jeans,trouser,Slim-cut black denim with mid-rise waist. Wardrobe workhorse.,65
+P0025,Mist Linen Trousers,trouser,Floaty pull-on linen trousers in cream. Holiday essential.,58
+P0026,Stone Tapered Joggers,trouser,Premium tapered joggers in stone-grey cotton. Smart-loungewear.,55
+P0027,Highland Trench Coat,coat,"Classic cotton trench in camel. Belted waist, storm flap, raglan sleeves.",195
+P0028,Glacier Puffer Jacket,coat,Insulated puffer with recycled down filling. Below-zero ready.,165
+P0029,Birch Wool Overcoat,coat,Long-line wool blend coat in oatmeal. Cocoon silhouette.,220
+P0030,Ember Quilted Jacket,coat,Diamond-quilted lightweight jacket in olive. Country-walking favourite.,110
+P0031,Verge Bomber Jacket,coat,Satin baseball-style bomber in midnight. Ribbed cuffs and hem.,95
+P0032,Tarn Waxed Jacket,coat,Traditional waxed cotton jacket in moss. Weatherproof and characterful.,145
+P0033,Cinder Biker Jacket,coat,Cropped faux-leather moto jacket in black. Asymmetric zip.,88
+P0034,Roan Cable Jumper,knit,Chunky cable-knit pullover in cream wool blend. Old-money aesthetic.,95
+P0035,Heather Crew Sweater,knit,Soft merino crew-neck in heather grey. Office-friendly.,80
+P0036,Sage Roll Neck,knit,Fine-gauge merino turtleneck in sage. Smart base layer.,70
+P0037,Cobalt V-Neck Jumper,knit,Lambswool V-neck in punchy cobalt blue. Tonal pop.,75
+P0038,Camel Cardigan,knit,Oversized button-front cardi in camel. Wear over everything.,88
+P0039,Mauve Mohair Sweater,knit,Fluffy mohair-blend jumper in dusty mauve. Statement texture.,92
+P0040,Slate Fisherman Knit,knit,Traditional Aran-style fisherman jumper in slate. Heritage piece.,130
+P0041,Cloud Running Trainers,footwear,Lightweight cushioned running shoes in white mesh. Daily-mileage friendly.,95
+P0042,Boulder Hiking Boots,footwear,Waterproof leather hiking boots with Vibram sole. Weekend hike ready.,175
+P0043,Loam Ankle Boots,footwear,Block-heel ankle boots in tan leather. Office to evening crossover.,120
+P0044,Rivet Chelsea Boots,footwear,Elastic-sided Chelsea boots in chocolate suede. Polished but easygoing.,145
+P0045,Whisper Ballet Flats,footwear,Soft leather ballerinas in blush. Carry everywhere.,65
+P0046,Aspen Snow Boots,footwear,Thermal-lined waterproof snow boots in charcoal. Ski-resort essential.,155
+P0047,Sand Espadrille Sandals,footwear,Wedge espadrilles with ankle-tie laces in natural jute. Mediterranean summer.,75
+P0048,Pebble Slide Sandals,footwear,Padded leather slides in mushroom. Holiday loungewear.,55
+P0049,Iron Combat Boots,footwear,Lace-up military-style boots in black leather. Rugged punch.,130
+P0050,Quartz Stiletto Heels,footwear,Pointed-toe stilettos in ivory satin. Wedding-season ready.,95
+P0051,Maple Leather Tote,accessory,Spacious unstructured tote in cognac leather. Laptop and lunch fit.,165
+P0052,Ash Crossbody Bag,accessory,Mid-size crossbody in pebbled black leather. Adjustable strap.,130
+P0053,Pearl Beaded Clutch,accessory,Hand-beaded evening clutch in oyster. Magnetic closure.,85
+P0054,Onyx Aviator Sunglasses,accessory,Classic aviator-style sunglasses with smoke lenses. UV400.,65
+P0055,Driftwood Straw Hat,accessory,Wide-brim straw sun hat with ribbon trim. Beach essential.,38
+P0056,Heather Cashmere Scarf,accessory,Soft cashmere wrap in heather pink. Lightweight winter warmth.,95
+P0057,Soot Leather Belt,accessory,Slim leather belt with brushed-silver buckle in jet. Wardrobe staple.,45
+P0058,Frost Knit Beanie,accessory,Ribbed merino beanie in cream. Cosy and minimal.,28
+P0059,Storm Yoga Leggings,activewear,"High-rise compression leggings in obsidian. Squat-proof, sweat-wicking.",65
+P0060,Pulse Sports Bra,activewear,Medium-impact bra with removable padding in plum. Studio favourite.,38
+P0061,Drift Running Shorts,activewear,Lined 5-inch running shorts with phone pocket in navy. Reflective trim.,42
+P0062,Forge Training Tee,activewear,Moisture-wicking technical tee in graphite. Gym-floor ready.,35
+P0063,Cycle Bib Shorts,activewear,Padded road-cycling bib shorts in black. Long-ride comfort.,95
+P0064,Trail Windbreaker,activewear,Packable wind-and-shower-proof shell in citrus. Pocket-sized.,75
+P0065,Linen Bedding Set,home,"Stone-washed pure linen duvet set in oat. King-size, includes two pillowcases.",195
+P0066,Wool Throw Blanket,home,Chunky knit throw in undyed lambswool. Sofa-side warmth.,110
+P0067,Ceramic Vase Trio,home,"Set of three hand-thrown ceramic vases in terracotta. Bud, stem and bouquet sizes.",95
+P0068,Cotton Bath Towels,home,Set of two GSM 600 Egyptian cotton bath towels in white.,85
+P0069,Brass Candleholder,home,"Slim brass taper candleholder, 25cm. Patinated finish.",38
+P0070,Eucalyptus Wreath,home,"Preserved-eucalyptus door wreath, 40cm diameter. Sustainable florist-made.",65
+P0071,Velvet Cushion Cover,home,"Soft cotton-velvet cushion cover in forest green, 50cm square.",28
+P0072,Rattan Pendant Light,home,"Hand-woven natural rattan pendant shade, 45cm. Bohemian living room.",145
+P0073,Bumblebee Romper,kids,Striped cotton baby romper in yellow and black. Newborn to 12 months.,28
+P0074,Puffin Wellies,kids,Children's rubber wellington boots in navy with white spots. Sizes 6-13.,32
+P0075,Cloud PJs,kids,Soft organic-cotton kids' pyjamas in cream with star print. Age 4-6.,28
+P0076,Rocket Backpack,kids,School backpack with reflective trim in space-rocket print. Ages 5-10.,38

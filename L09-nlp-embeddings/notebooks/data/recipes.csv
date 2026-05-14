@@ -1,0 +1,31 @@
+recipe_id,name,category,description
+R001,Classic Margherita,pizza,"Wood-fired pizza with fresh mozzarella, basil leaves, and San Marzano tomato sauce. Crisp thin crust."
+R002,Pepperoni Supreme,pizza,Loaded pepperoni pizza with extra cheese and a kick of chilli flakes. Family favourite.
+R003,Garden Vegetable Pizza,pizza,"Bell peppers, mushrooms, olives, and red onion on a thin crust with tomato base."
+R004,Quattro Formaggi,pizza,"Four-cheese white pizza with mozzarella, gorgonzola, parmesan, and ricotta. No tomato sauce."
+R005,BBQ Chicken Pizza,pizza,"Grilled chicken, smoky BBQ sauce, red onion, and coriander on a soft crust."
+R006,Spaghetti Carbonara,pasta,"Rich Roman pasta with eggs, pancetta, pecorino cheese, and cracked black pepper. No cream."
+R007,Penne Arrabbiata,pasta,"Spicy tomato penne with garlic, chilli, and parsley. A southern Italian classic."
+R008,Linguine Vongole,pasta,"Linguine with fresh clams, white wine, garlic, parsley, and a squeeze of lemon."
+R009,Lasagna al Forno,pasta,"Layered pasta bake with rich beef ragu, bechamel, and parmesan. Comfort food."
+R010,Pesto Trofie,pasta,"Twisted Ligurian pasta tossed with bright basil pesto, pine nuts, and parmesan."
+R011,Caesar Salad,salad,"Crisp romaine with garlicky croutons, anchovy dressing, and shaved parmesan."
+R012,Greek Village Salad,salad,"Tomato, cucumber, red onion, kalamata olives, and feta with oregano and olive oil."
+R013,Quinoa Power Bowl,salad,"Protein-packed bowl with quinoa, chickpeas, roasted veg, avocado, and tahini drizzle."
+R014,Burrata & Heirloom Tomato,salad,"Creamy burrata over heirloom tomatoes with basil oil, sea salt, and grilled bread."
+R015,Niçoise Salad,salad,"Tuna, green beans, new potatoes, eggs, olives, and tomato in a French classic."
+R016,Tiramisu,dessert,Layers of espresso-soaked savoiardi with mascarpone cream and cocoa dusting. Classic Italian dolce.
+R017,Chocolate Lava Cake,dessert,Warm individual chocolate cakes with a molten centre. Served with vanilla ice cream.
+R018,Lemon Tart,dessert,Buttery shortcrust pastry filled with bright sharp lemon curd and dusted with icing sugar.
+R019,Crème Brûlée,dessert,Silky vanilla custard with a brittle caramelised sugar crust. Cracks with a satisfying tap.
+R020,Apple Crumble,dessert,Spiced apple filling under a buttery oat crumble. Best with a scoop of vanilla ice cream.
+R021,Cappuccino,drink,Espresso topped with steamed milk and a thick foam crown. Italian breakfast staple.
+R022,Iced Matcha Latte,drink,"Whisked premium matcha with cold milk over ice. Earthy, slightly sweet, caffeinated."
+R023,Aperol Spritz,drink,"Bright orange Italian aperitif with prosecco, soda, and a fat orange slice."
+R024,Mango Smoothie,drink,"Thick blended drink with ripe mango, yogurt, and a touch of honey."
+R025,Old Fashioned,drink,"Bourbon stirred with sugar, bitters, and orange peel. The original cocktail."
+R026,Chicken Tikka Masala,curry,Tandoori-grilled chicken in a creamy tomato curry with garam masala and fenugreek.
+R027,Thai Green Curry,curry,"Fragrant green curry paste with coconut milk, Thai basil, chicken, and bamboo shoots."
+R028,Japanese Beef Curry,curry,"Mild slow-cooked curry with tender beef, carrots, and potatoes. Served over rice."
+R029,Vegan Chickpea Curry,curry,"Hearty plant-based curry with chickpeas, spinach, and warming spices in tomato sauce."
+R030,Massaman Curry,curry,"Rich Thai-Muslim curry with peanuts, potato, and tender beef. Mild heat, deep aromatics."
