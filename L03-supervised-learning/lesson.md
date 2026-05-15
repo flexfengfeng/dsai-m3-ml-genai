@@ -165,7 +165,7 @@ Two key implications:
 1. **The output is a probability, not just a label.** That probability is more informative than the binary label — and it's what makes business-aware threshold choice (Part 3) possible.
 2. **Coefficients are interpretable.** A positive `β` for a feature means: higher feature → higher predicted probability of the positive class. Magnitude tells you how strong the effect is — but only when features are scaled to comparable units.
 
-> **Sarah's interpretation, in plain English:** "*The coefficient on `returns_per_purchase` is +0.92 — higher return rates strongly increase the predicted probability of churn. The coefficient on `subscription_tier_premium` is −0.45 — premium subscribers are less likely to churn, after controlling for everything else.*"
+> **Sarah's interpretation, in plain English:** "*The coefficient on `returns_per_purchase` is +0.57 — higher return rates push the predicted probability of churn up. The coefficient on `tenure_months` is −0.53 — longer-tenure customers are less likely to churn, after controlling for everything else. `polarity` (a review-sentiment feature) sits at −0.35: customers who leave positive reviews are also less likely to leave the service.*"
 
 ### k-fold cross-validation
 
@@ -247,7 +247,7 @@ Ranges 0 to 1. Use F1 when you want a single number that balances both kinds of 
 
 Logistic regression outputs a probability. To turn that into a label you pick a threshold (default 0.5). But 0.5 is rarely the right business choice.
 
-> **Sarah's example.** NorthStar's retention team has the capacity to call about 1,500 customers a month. Predicting churn at threshold 0.5 might surface 800 customers — they have spare capacity. Lowering the threshold to 0.3 raises the count to 1,400 — closer to capacity — and increases recall (catches more real churners) at the cost of precision (more wasted calls).
+> **Sarah's example.** NorthStar's retention team has the capacity to call about 200 customers a week. At threshold 0.5 the model surfaces only ~10 — recall is just 0.029, the team has tons of spare capacity. Lowering the threshold to ~0.25 raises the count to about 208 — right at capacity — and lifts recall to 0.264 (catches 63 of 239 actual churners). Precision drops accordingly, but operationally that's the right trade.
 
 A threshold decision is a triangle: **operational capacity ↔ recall ↔ precision**. Don't choose it from the math; choose it from the constraint.
 
@@ -278,10 +278,10 @@ Sarah walks into Marcus's office with a one-pager:
 | What | Result |
 |---|---|
 | **Pipeline** | One sklearn `Pipeline` — impute · scale · one-hot encode · logistic regression. Same code path at training and prediction. |
-| **Cross-validated accuracy** | 89% ± 1% (5-fold). But accuracy isn't the right metric here — see below. |
-| **At threshold 0.5** | Precision 0.62 · Recall 0.42 · F1 0.50. Model is *cautious* — it flags only when very sure. |
-| **At threshold 0.3** | Precision 0.45 · Recall 0.74 · F1 0.56. Catches more real churners at the cost of more false alarms. |
-| **Recommended threshold** | **0.3.** Retention team has capacity for ~1,500 calls/month. Threshold 0.3 surfaces ~1,400. Catches 74% of real churners. Accepts that ~55% of the calls are to customers who weren't going to leave. |
+| **Cross-validated accuracy** | 0.883 ± 0.002 (5-fold). But accuracy isn't the right metric here — see below. |
+| **At threshold 0.5** | Recall 0.029 — only 7 of 239 actual churners flagged. Model is so cautious it's useless. |
+| **At threshold 0.25** | Recall 0.264 · F1 0.282 · 208 customers surfaced. Sits right at the team's weekly capacity. |
+| **Recommended threshold** | **0.25** — driven by retention-team capacity (~200 calls/week), not by metric maximisation. Catches 63 of 239 actual churners; the remaining 176 stay in the dataset for next quarter's model improvements. |
 
 Marcus nods. *"This is the first model we own. Can you make it better next week?"*
 

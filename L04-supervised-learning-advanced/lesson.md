@@ -214,11 +214,13 @@ The same metric you'll use for the final decision. If business priority is recal
 
 By Thursday evening Sarah has three candidates trained on the same `X_train` / `y_train`:
 
-| Model | CV F1 (mean ± std) | Comment |
+| Model | Test F1 | Comment |
 |---|---|---|
-| **Logistic Regression (L03 baseline)** | ~0.28 ± 0.02 | The bar to beat |
-| **Random Forest (tuned)** | should be > 0.30 | Easy to train, robust |
-| **Gradient Boosting (tuned)** | should be the highest | Best accuracy at the cost of tuning effort |
+| **Logistic Regression (L03 baseline)** | ~0.325 | The bar to beat |
+| **Random Forest (tuned)** | ~0.321 | Easy to train, robust — but barely matches LR here |
+| **Gradient Boosting (tuned)** | ~0.335 | Highest F1; needs careful tuning |
+
+**Honest observation:** these three models are within 0.014 F1 of each other on this dataset. That's not a coincidence — when a class-imbalanced problem has limited signal, no algorithm pulls dramatically ahead. The gap widens on richer, less-imbalanced datasets.
 
 The Friday recommendation isn't *automatically* the highest-F1 model. Sarah considers:
 
@@ -227,9 +229,9 @@ The Friday recommendation isn't *automatically* the highest-F1 model. Sarah cons
 | **How explainable does the model need to be?** | Pushes toward Random Forest (feature importance is intuitive) over Gradient Boosting (less interpretable) |
 | **How much does the engineering team want to support?** | Sklearn-only is simpler than adding XGBoost as a dependency |
 | **How sensitive is the team to noisy retraining?** | Random Forest is more stable across retrains; GB can be brittle |
-| **Are we beating the L03 baseline by enough to justify the change?** | A 0.30 F1 vs 0.28 F1 may not be worth the operational complexity |
+| **Are we beating the L03 baseline by enough to justify the change?** | A 0.335 vs 0.325 may not be worth the operational complexity |
 
-> **Sarah's actual pitch:** *"Gradient boosting tuned is the highest F1. Random Forest is 80% of the way there with less risk. I recommend Random Forest. We can revisit boosting if we hit capacity."*
+> **Sarah's actual pitch:** *"Gradient Boosting wins by a hair — 0.335 vs LR's 0.325 — and HistGradientBoostingClassifier is already in sklearn so there's no new dependency. I recommend we ship the tuned Gradient Boosting model. Random Forest stays as our fallback if GB starts retraining noisily in production."*
 
 ---
 

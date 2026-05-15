@@ -85,9 +85,9 @@ Each notebook opens with a business scenario, guides you through the code with *
 
 A Kaggle-style competition on a held-out NorthStar-churn scoring set. Three tiers:
 
-- **Tier 1** — Beat the L03 baseline (logistic regression, recall 26% at chosen threshold)
-- **Tier 2** — Beat a tuned Random Forest baseline
-- **Tier 3** — Open optimisation. Submit your best F1.
+- **Tier 1** — Beat F1 ≈ 0.20 on the scoring set with any default-settings model
+- **Tier 2** — Beat F1 ≈ 0.30 (roughly a tuned Random Forest / default Gradient Boosting)
+- **Tier 3** — Open optimisation: beat F1 ≈ 0.35 with your best tuned model
 
 Followed by an independent banking-fraud detection scenario.
 

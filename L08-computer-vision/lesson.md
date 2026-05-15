@@ -97,7 +97,7 @@ class TinyCNN(nn.Module):
         return self.classifier(self.features(x))
 ```
 
-That's ~125K parameters, half the MLP's count, and we'll see it pulls ~91% test accuracy — meaningfully better than the MLP's ~85%.
+That's ~106K parameters, less than half the MLP's count, and on Fashion-MNIST it pulls **~88% test accuracy vs the MLP's ~87%** — modest on this easy dataset, but with under half the parameters. On CIFAR-10 (assignment) the CNN beats the MLP by 10+ points; the gap widens as image complexity grows.
 
 ### 3.2 The training loop is identical to L07
 
@@ -164,4 +164,4 @@ Same neural-network family, completely different input modality. Pixels → word
 
 1. **Convolutions exploit locality and translation invariance.** Same kernel slides everywhere → fewer parameters, better inductive bias for images.
 2. **The PyTorch training loop doesn't change.** Conv2d/MaxPool2d are drop-in replacements for Linear. The training pattern from L07 still works.
-3. **Don't train CNNs from scratch on small data.** Use a pretrained backbone. Transfer learning is the default for any new image task.
+3. **Don't train CNNs from scratch on small data — but check the domain gap.** Reach for a pretrained backbone first. If your domain is close to ImageNet (colour natural photos), head-only feature extraction often suffices. If your domain is far (grayscale silhouettes, X-rays, satellite imagery), expect to fine-tune the last conv block — head-only can actually lose to a from-scratch CNN, as we saw on Fashion-MNIST.

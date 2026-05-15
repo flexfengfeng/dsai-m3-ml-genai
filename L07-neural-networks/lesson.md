@@ -259,13 +259,16 @@ L07's REAL value is the foundation for L08–L10, where neural networks are the 
 
 Sarah's session-completion model is now a comparison table:
 
-| Model | Test AUC | Test accuracy | When to use |
-|---|---|---|---|
-| Logistic Regression (L03 baseline) | ~0.78 | ~73% | Most interpretable |
-| Gradient Boosting (L04 toolkit) | ~0.85 | ~78% | Usually wins on tabular |
-| MLP (PyTorch) | ~0.82-0.85 | ~76-78% | Foundation for deep learning |
+| Model | Test AUC | When to use |
+|---|---|---|
+| Logistic Regression (L03 baseline) | ~0.761 | Most interpretable |
+| Gradient Boosting (L04 toolkit) | ~0.747 | Usually wins on tabular — but didn't here |
+| sklearn MLP | ~0.761 | Tied with LR |
+| PyTorch MLP | ~0.756 | Foundation for deep learning |
 
-The right deployment choice for THIS task is probably gradient boosting. But Sarah now has the foundation to tackle images (L08), text (L09), and transformers (L10).
+**Honest read:** on Sarah's session-completion task all four models land within 0.015 AUC of each other. Logistic regression and the sklearn MLP are statistically indistinguishable; gradient boosting is the *lowest* of the four. This is what tabular ML actually looks like — the algorithm rarely matters as much as the features.
+
+The right deployment choice for THIS task is probably logistic regression (cheapest, most interpretable, top AUC). The MLP work pays off in L08-L10 where we leave tabular data behind.
 
 Marcus listens, nods, then asks:
 
