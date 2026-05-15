@@ -257,7 +257,7 @@ By Friday afternoon Sarah has three deliverables:
 
 1. **A 2D PCA plot** of the customer base — visible structure, even though there are 10+ features
 2. **Four customer segments** named and profiled — "Loyal Premium," "New & Wary," "Steady Mid-Tier," and "Bargain Hunters"
-3. **A list of ~250 anomalous customers** — for the customer success team to investigate
+3. **A list of ~500 anomalous customers** (the 5% flagged at `contamination=0.05` on 10,000 customers) — for the customer success team to triage by score
 
 Marcus listens, then asks:
 

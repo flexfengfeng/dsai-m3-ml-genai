@@ -7,9 +7,9 @@ Use this document as your concept reference — before, during, and after the se
 
 | Section | Notebook | Time |
 |---|---|---|
-| Part 1: What is ML? | `notebooks/02_what_is_ml.ipynb` | ~60 min |
-| Part 2: Three categories of ML | `notebooks/03_three_categories.ipynb` | ~45 min |
-| Part 3: The ML workflow (applied to Sarah's project) | `notebooks/04_ml_workflow.ipynb` | ~45 min |
+| Part 1: What is ML? | `notebooks/02_what_is_ml.ipynb` | ~30 min |
+| Part 2: Three categories of ML | `notebooks/03_three_categories.ipynb` | ~30 min |
+| Part 3: The ML workflow (applied to Sarah's project) | `notebooks/04_ml_workflow.ipynb` | ~30 min |
 | Check your understanding | at the end of this document | ~15 min |
 
 ---
