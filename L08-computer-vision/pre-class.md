@@ -27,7 +27,7 @@ The notebook walks through:
 3. Flattening every image to a 784-dim vector
 4. Training a 2-layer MLP and recording accuracy and parameter count
 
-Expected outcome: ~85% test accuracy with **~250K parameters**. Good enough to ship? Sarah is not sure. Marcus said "ten thousand new photos a season" — 15% mis-tag rate means 1,500 wrong tags a season.
+Expected outcome: ~87% test accuracy with **~235K parameters**. Good enough to ship? Sarah is not sure. Marcus said "ten thousand new photos a season" — 13% mis-tag rate means ~1,300 wrong tags a season.
 
 ## Step 4 — Three thought-questions (≈ 10 min)
 

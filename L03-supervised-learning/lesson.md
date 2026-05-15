@@ -247,7 +247,7 @@ Ranges 0 to 1. Use F1 when you want a single number that balances both kinds of 
 
 Logistic regression outputs a probability. To turn that into a label you pick a threshold (default 0.5). But 0.5 is rarely the right business choice.
 
-> **Sarah's example.** NorthStar's retention team has the capacity to call about 200 customers a week. At threshold 0.5 the model surfaces only ~10 — recall is just 0.029, the team has tons of spare capacity. Lowering the threshold to ~0.25 raises the count to about 208 — right at capacity — and lifts recall to 0.264 (catches 63 of 239 actual churners). Precision drops accordingly, but operationally that's the right trade.
+> **Sarah's example.** NorthStar's retention team has the capacity to call about 200 customers a week. At threshold 0.5 the model surfaces only 7 — recall is just 0.029, the team has tons of spare capacity. Lowering the threshold to ~0.30 raises the count to about 208 — right at capacity — and lifts recall to 0.264 (catches 63 of 239 actual churners). Precision drops accordingly, but operationally that's the right trade.
 
 A threshold decision is a triangle: **operational capacity ↔ recall ↔ precision**. Don't choose it from the math; choose it from the constraint.
 
@@ -280,8 +280,8 @@ Sarah walks into Marcus's office with a one-pager:
 | **Pipeline** | One sklearn `Pipeline` — impute · scale · one-hot encode · logistic regression. Same code path at training and prediction. |
 | **Cross-validated accuracy** | 0.883 ± 0.002 (5-fold). But accuracy isn't the right metric here — see below. |
 | **At threshold 0.5** | Recall 0.029 — only 7 of 239 actual churners flagged. Model is so cautious it's useless. |
-| **At threshold 0.25** | Recall 0.264 · F1 0.282 · 208 customers surfaced. Sits right at the team's weekly capacity. |
-| **Recommended threshold** | **0.25** — driven by retention-team capacity (~200 calls/week), not by metric maximisation. Catches 63 of 239 actual churners; the remaining 176 stay in the dataset for next quarter's model improvements. |
+| **At threshold 0.30** | Recall 0.264 · F1 0.282 · 208 customers surfaced. Sits right at the team's weekly capacity. |
+| **Recommended threshold** | **0.30** — driven by retention-team capacity (~200 calls/week), not by metric maximisation. Catches 63 of 239 actual churners; the remaining 176 stay in the dataset for next quarter's model improvements. |
 
 Marcus nods. *"This is the first model we own. Can you make it better next week?"*
 

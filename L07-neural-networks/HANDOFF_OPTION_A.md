@@ -59,7 +59,7 @@ All 6 notebooks executed end-to-end with `OMP_NUM_THREADS=1 MKL_NUM_THREADS=1`:
 
 **Symptom:** Default OpenMP threading caused `nbconvert --execute` on NB04 to exit with code 139 (segfault) intermittently.
 
-**Fix applied:** All smoke tests are run with `OMP_NUM_THREADS=1 MKL_NUM_THREADS=1`. The notebooks themselves also call `torch.set_num_threads(1)` at the top of each PyTorch cell.
+**Fix applied:** All smoke tests are run with `OMP_NUM_THREADS=1 MKL_NUM_THREADS=1`. Each PyTorch notebook (NB 03, 04, assignment, optional_extensions) also calls `torch.set_num_threads(1)` once, immediately after `import torch` in its setup cell.
 
 **Instructor action:** If a learner reports an unexplained kernel crash, ask them to run `OMP_NUM_THREADS=1 jupyter notebook` instead of `jupyter notebook` on macOS. (No issue observed on Linux or Windows.)
 
