@@ -27,8 +27,8 @@ L08-computer-vision/
 │   ├── assignment.ipynb                 CIFAR-10 from-scratch + transfer learning
 │   ├── optional_extensions.ipynb        Augmentation, BatchNorm, LR schedulers
 │   └── data/
-│       ├── fmnist/                      Fashion-MNIST (shipped with repo)
-│       └── cifar10/                     CIFAR-10 (~170 MB, shipped with repo)
+│       ├── fmnist/                      Fashion-MNIST (auto-downloads, ~30 MB; .gitignored)
+│       └── cifar10/                     CIFAR-10 (auto-downloads, ~170 MB; .gitignored)
 └── HANDOFF_OPTION_A.md                  (this file)
 ```
 
@@ -83,8 +83,8 @@ This better matches the actual capability of an 8-epoch unaugmented CNN on 10K C
 ### 4. Pre-downloaded datasets
 
 To avoid each learner hitting the internet on first run:
-- **Fashion-MNIST** (~31 MB) shipped in `notebooks/data/fmnist/`
-- **CIFAR-10** (~170 MB) shipped in `notebooks/data/cifar10/`
+- **Fashion-MNIST** (~31 MB) auto-downloads into `notebooks/data/fmnist/` on first run (gitignored)
+- **CIFAR-10** (~170 MB) auto-downloads into `notebooks/data/cifar10/` on first run (gitignored)
 - ResNet18 weights download once on first transfer-learning notebook execution (~45 MB into `~/.cache/torch/hub/`)
 
 ### 5. CIFAR-10 assignment runtime is significant

@@ -17,11 +17,18 @@ Versions known to work:
 - `torch >= 2.2`
 - `torchvision >= 0.17`
 
-## Dataset (Fashion-MNIST)
+## Datasets (auto-downloaded on first use)
 
-The notebooks load Fashion-MNIST via `torchvision.datasets.FashionMNIST`. The first time you run notebook 01 it will download ~30 MB into `notebooks/data/fmnist/`. The data files are already shipped with this repo, so you should not see a download progress bar.
+The notebooks load two datasets via `torchvision.datasets`. Both auto-download on first use; nothing to do manually.
 
-For the assignment, the CIFAR-10 dataset (~170 MB) downloads on first use into `notebooks/data/cifar10/`.
+| Dataset | Size | Where it lands | Used in |
+|---------|------|----------------|---------|
+| Fashion-MNIST | ~30 MB | `notebooks/data/fmnist/` | NB 01–04, optional extensions |
+| CIFAR-10 | ~170 MB | `notebooks/data/cifar10/` | assignment |
+
+**First-run behaviour:** the first notebook you run downloads its dataset and shows a progress bar. Subsequent runs are instant — the data is cached locally. Both data directories are `.gitignore`d so they never bloat the repo.
+
+**Offline classrooms:** if your environment can't reach the internet, pre-download both datasets once on a connected machine and copy the `data/` folder into `notebooks/`. The notebooks use `download=True` but skip the download if the files already exist.
 
 ## macOS note (PyTorch threading)
 

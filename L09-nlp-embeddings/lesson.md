@@ -58,9 +58,11 @@ Replace each one-hot vector with a much smaller, dense vector of real numbers (s
 The vectors don't have intrinsic meanings (dimension 17 is not "is feminine"). What matters is the **relationships**:
 
 ```
-cosine(frock, dress)  ≈ 0.91   (synonyms — high)
-cosine(frock, banana) ≈ 0.08   (unrelated — low)
+cosine(frock, dress)  ≈ 0.25   (synonyms — meaningfully higher than unrelated)
+cosine(frock, banana) ≈ 0.04   (unrelated — near zero)
 ```
+
+**A note on absolute values:** modern sentence-transformer cosines typically live in `[0.2, 0.7]`. A 0.25 between *frock* and *dress* is **not** "25% similar" — it's a *ranking signal*. Compared to the ~0.00 baseline for unrelated words it's a huge lift; compared to identical sentences (1.0) it leaves headroom. Read cosines as a way to rank, not as a percentage.
 
 This is the entire promise of word embeddings: turn discrete tokens into continuous vectors where distance means meaning.
 
@@ -106,11 +108,11 @@ Three sentences in, a 3×384 matrix out. To find the most similar sentence to th
 ```python
 from sklearn.metrics.pairwise import cosine_similarity
 sims = cosine_similarity(embeddings[:1], embeddings[1:])
-# sims ≈ [[0.62, 0.14]]
-# → sentence 1 (frock) is much closer to the query than sentence 2 (trousers)
+# sims ≈ [[0.41, 0.10]]
+# → sentence 1 (frock) is ~4× closer to the query than sentence 2 (trousers)
 ```
 
-Even though the query and the frock description **share zero content words besides "summer"**, the model assigns them high similarity. That's the semantic search promise delivered.
+Even though the query and the frock description **share zero content words besides "summer"**, the model assigns them meaningfully higher similarity. The absolute 0.41 isn't "41% similar" — what matters is that it sits well above the 0.10 for unrelated text and would land near the top of a top-K ranking. That's the semantic search promise delivered.
 
 ### 3.3 What the model actually learnt
 
