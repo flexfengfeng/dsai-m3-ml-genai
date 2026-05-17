@@ -40,6 +40,11 @@ L08-computer-vision/notebooks/data/fmnist/
 .cache/
 huggingface_cache/
 
+# --- Office / PowerPoint lock files ---
+# Created when a .pptx/.docx is open in Office; not real content
+~$*
+**/~$*
+
 # --- Misc generated files ---
 *.log
 *.tmp
