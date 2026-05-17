@@ -3,8 +3,14 @@
 Thumbs.db
 *.swp
 *.swo
-.vscode/
 .idea/
+
+# --- VS Code ---
+# Hide personal/local VS Code state, but ship the workspace-level settings
+# that point notebooks at the .env file (see SETUP.md).
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
 # --- Python ---
 __pycache__/

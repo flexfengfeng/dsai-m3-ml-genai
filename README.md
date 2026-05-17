@@ -40,32 +40,70 @@ Every lesson follows **Sarah Chen**, a Customer Experience Analyst at a mid-size
 
 | # | Lesson | Core skill |
 |---|---|---|
-| L01 | Introduction to Machine Learning | What ML is, when to use it, the workflow |
-| L02 | Probability & Statistics for ML | *(coming)* |
-| L03 | Supervised Learning | *(coming)* |
-| L04 | Supervised Learning — Advanced | *(coming)* |
-| L05 | Time Series Forecasting | *(coming)* |
-| L06 | Unsupervised Learning | *(coming)* |
-| L07 | Neural Networks & Deep Learning | *(coming)* |
-| L08 | Computer Vision | *(coming)* |
-| L09 | Natural Language Processing | *(coming)* |
-| L10 | Generative AI | *(coming)* |
+| L01 | [Introduction to Machine Learning](./L01-intro-ml/) | What ML is, when to use it, the workflow |
+| L02 | [Probability & Statistics for ML](./L02-prob-stats/) | Confidence intervals, distributions, A/B testing |
+| L03 | [Supervised Learning](./L03-supervised-learning/) | Logistic regression, pipelines, threshold choice |
+| L04 | [Supervised Learning — Advanced](./L04-supervised-learning-advanced/) | Trees, ensembles, gradient boosting, tuning |
+| L05 | [Unsupervised Learning](./L05-unsupervised-learning/) | PCA, K-Means, anomaly detection |
+| L06 | [Time Series Forecasting](./L06-time-series/) | STL decomposition, classical + ML forecasting |
+| L07 | [Neural Networks & Deep Learning](./L07-neural-networks/) | MLPs, PyTorch, the training loop |
+| L08 | [Computer Vision](./L08-computer-vision/) | CNNs, transfer learning |
+| L09 | [NLP & Embeddings](./L09-nlp-embeddings/) | Sentence embeddings, semantic search |
+| L10 | [Transformers & GenAI](./L10-transformers-genai/) | Attention, LLMs, RAG |
 
 Lessons are designed to be taken in order.
 
 ---
 
+## Setup
+
+**Required reading before you run any code:** [**SETUP.md**](./SETUP.md)
+
+The setup guide covers everything you need:
+
+- Installing Python via Miniconda (macOS or Windows WSL)
+- Creating the `dsai-m3` conda environment
+- Installing VS Code + the Jupyter extension
+- When to use Google Colab instead (for L08 and L10, where a GPU helps)
+- Troubleshooting the common hang/crash modes
+
+Budget ~15 minutes for first-time setup. Once it's done, you reuse the same environment for every lesson.
+
+### Supported platforms
+
+| Your machine | Setup |
+|---|---|
+| **macOS** (Intel or Apple Silicon) | VS Code + Jupyter extension + conda env |
+| **Windows 10/11** | WSL2 (Ubuntu) + VS Code + Jupyter extension + conda env |
+| **No GPU, want to run L08 or L10 faster** | Google Colab — open notebook via the "Open in Colab" badge |
+
+We deliberately do **not** support native Windows Python. PyTorch is far more reliable on Linux (which WSL is) than on Windows.
+
+---
+
 ## How to start
 
-1. Open **[L01-intro-ml](./L01-intro-ml/README.md)** and follow the setup guide.
-2. Budget 10–15 minutes for first-time environment setup.
-3. Then follow the three-part rhythm for each lesson.
+1. Read **[SETUP.md](./SETUP.md)** and complete the 15-minute setup
+2. Open **[L01-intro-ml](./L01-intro-ml/README.md)** in VS Code
+3. Follow the three-part rhythm (pre-class → in-class → assignment) for each lesson
 
 ---
 
 ## Final project
 
 The course ends with an applied final project where you pick a business problem at NorthStar (or your own organisation) and build a small end-to-end solution using the techniques from L01–L10. Details are released before L08.
+
+---
+
+## For instructors
+
+Each lesson has a `HANDOFF_OPTION_A.md` with:
+- A file inventory of what's in the lesson
+- Smoke-test results (which notebooks have been run, with what outputs)
+- Deviations from the original lesson plan and the reasoning
+- Known instructor pitfalls
+
+Start there before teaching a lesson. The `slides_outline.md` in each `slides/` folder is your speaker outline.
 
 ---
 

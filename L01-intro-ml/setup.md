@@ -1,107 +1,39 @@
-# Setup Guide — DSAI M3 (All Lessons)
+# L01 Setup
 
-**Do this once before you start Lesson 1.** The same environment works for all 10 lessons.
+L01 is the first lesson, so it's also the first time you'll run the environment. The full setup walkthrough (Mac, Windows WSL, VS Code, Colab) lives at the **repo root**:
 
-Estimated time: 10–15 minutes (plus ~5 minutes for the first model download).
+➡ **[../SETUP.md](../SETUP.md)** — start there.
 
----
-
-## What you will install
-
-A Python 3.11 environment with the libraries used across the course — pandas and scikit-learn for the classical ML lessons, plus PyTorch and Hugging Face Transformers for the deep-learning and GenAI lessons.
-
-You do **not** need to understand these libraries yet. The notebooks will introduce them as needed.
+Once that's done, come back to this page for L01-specific notes.
 
 ---
 
-## Option A — Conda (recommended if you have Anaconda or Miniconda)
+## L01-specific dependencies
 
-1. Open a terminal (macOS/Linux) or Anaconda Prompt (Windows).
-
-2. Navigate to this folder:
-   ```bash
-   cd path/to/L01-intro-ml
-   ```
-
-3. Create the environment from `environment.yml`:
-   ```bash
-   conda env create -f environment.yml
-   ```
-
-4. Activate it:
-   ```bash
-   conda activate dsai-m3
-   ```
-
-5. Launch Jupyter:
-   ```bash
-   jupyter notebook
-   ```
-
-6. Your browser should open. Navigate to `notebooks/02_what_is_ml.ipynb` to verify everything works. The first code cell should print `✅ Libraries loaded — you're ready to go!`.
-
-## Option B — pip (if you don't use Conda)
-
-1. Open a terminal. Make sure you have Python 3.11 installed (`python --version`).
-
-2. Create a virtual environment:
-   ```bash
-   python -m venv dsai-m3-env
-   source dsai-m3-env/bin/activate   # macOS / Linux
-   dsai-m3-env\Scripts\activate      # Windows
-   ```
-
-3. Install the libraries:
-   ```bash
-   pip install numpy pandas matplotlib seaborn scikit-learn jupyter ipywidgets textblob
-   pip install transformers torch datasets
-   ```
-
-4. Launch Jupyter:
-   ```bash
-   jupyter notebook
-   ```
-
-## Option C — Google Colab (zero install)
-
-If installing locally is painful, use [Google Colab](https://colab.research.google.com). Upload the notebook you want to run; the libraries used in this course are pre-installed. You will only need to `!pip install transformers` inside the notebook for the GenAI lessons.
-
-**Colab tradeoff:** you cannot save your environment between sessions the same way, and free GPU access is time-limited. Fine for learning, less fine if you want to keep iterating on one dataset across several days.
-
----
-
-## Verify your setup
-
-Open a terminal in your activated environment and run:
+L01 uses pretrained sentiment / NLP models via Hugging Face's `transformers` library. These are part of the cross-lesson extras you install once in `SETUP.md`:
 
 ```bash
-python -c "import numpy, pandas, sklearn, matplotlib; print('classical ML OK')"
-python -c "import torch, transformers; print('deep learning OK')"
+pip install transformers torch
 ```
 
-Both should print the success message. If you see an `ImportError`, re-run the install step for that library.
+No other L01-specific packages.
 
----
+## L01 dataset
 
-## Troubleshooting
+There is no dataset to download — L01 uses 5-25 hand-crafted product reviews defined directly in the notebooks.
 
-**"conda: command not found"**
-You don't have Conda installed. Either install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or use Option B (pip).
+## L01 model download
 
-**First `transformers` model download is slow**
-The first time a notebook calls `pipeline("sentiment-analysis")`, it downloads a ~250 MB model. Expect 1–5 minutes depending on your connection. Subsequent runs use the cached model.
+The first time you run `02_what_is_ml.ipynb`, it downloads `distilbert-base-uncased-finetuned-sst-2-english` (~268 MB) from Hugging Face into `~/.cache/huggingface/`. This takes 30 sec to 2 min depending on your connection. After that it's cached locally and the load is instant.
 
-**Jupyter launches but notebooks show a different kernel**
-In the notebook, go to `Kernel → Change kernel` and pick `Python (dsai-m3)`. If it is not listed, run:
-```bash
-python -m ipykernel install --user --name dsai-m3 --display-name "Python (dsai-m3)"
+## Sanity check
+
+After completing the root SETUP.md, open `notebooks/02_what_is_ml.ipynb`, select the `dsai-m3` kernel, and run the first code cell. You should see:
+
+```
+✅ Libraries loaded — you're ready to go!
 ```
 
-**I am behind a corporate proxy / VPN**
-Model downloads may fail. Work around either by downloading the model on a home network and copying the `~/.cache/huggingface` folder, or by using Colab (Option C).
+Then run cell 9 (the pipeline load) — first run downloads the model. Then run the rest. The whole notebook should complete in under 3 minutes (including the first-run download).
 
----
-
-## What to do next
-
-Return to [README.md](./README.md) and start with **Phase 1 — Pre-Class Self-Study** (`pre-class.md`).
+If anything hangs or errors, see the **Troubleshooting** section in [../SETUP.md](../SETUP.md). The most common L01 issue is the macOS OpenMP hang on the sentiment loop — the repo's `.env` file already caps thread counts, but it only works if VS Code is rooted at the repo top level.

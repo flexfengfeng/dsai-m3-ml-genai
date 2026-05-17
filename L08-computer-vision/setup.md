@@ -1,61 +1,25 @@
-# L08 Setup
+# L08 — Computer Vision — Setup
 
-## Prerequisites
+Environment setup is at the repo root: ➡ **[../SETUP.md](../SETUP.md)**
 
-You should already have the `dsai-m3` conda environment from L01. If not, see L01's setup.md first.
+If you completed setup for an earlier lesson, your `dsai-m3` environment already has everything L08 needs. Skip ahead.
 
-## New dependencies for L08
+---
 
-L07 added `torch`. L08 adds `torchvision`:
+## What's new this lesson
 
-```bash
-conda activate dsai-m3
-pip install torch torchvision
-```
+**Dependencies:** `torch >= 2.2`, `torchvision >= 0.17` (install once per `SETUP.md`).
 
-Versions known to work:
-- `torch >= 2.2`
-- `torchvision >= 0.17`
+**Data:** Fashion-MNIST (~30 MB) and CIFAR-10 (~170 MB) **auto-download** on first run via `torchvision.datasets.FashionMNIST(download=True)` / `CIFAR10(download=True)`. Both datasets are gitignored so they never bloat the repo. First-run download takes 1-3 min.
 
-## Datasets (auto-downloaded on first use)
+**Models downloaded on first run:** Transfer-learning notebooks download `resnet18` ImageNet weights (~45 MB) and optionally `mobilenet_v3_small` (~10 MB). Cached in `~/.cache/torch/hub/`.
 
-The notebooks load two datasets via `torchvision.datasets`. Both auto-download on first use; nothing to do manually.
 
-| Dataset | Size | Where it lands | Used in |
-|---------|------|----------------|---------|
-| Fashion-MNIST | ~30 MB | `notebooks/data/fmnist/` | NB 01–04, optional extensions |
-| CIFAR-10 | ~170 MB | `notebooks/data/cifar10/` | assignment |
+## Use Colab for GPU work
 
-**First-run behaviour:** the first notebook you run downloads its dataset and shows a progress bar. Subsequent runs are instant — the data is cached locally. Both data directories are `.gitignore`d so they never bloat the repo.
+**Use Colab if you don't have a GPU.** The CIFAR-10 + ResNet18 fine-tune in `03_first_cnn.ipynb`, `04_transfer_learning.ipynb`, and `assignment.ipynb` is ~30 min on CPU vs ~2 min on a T4 GPU. Each of those notebooks has an **Open in Colab** badge at the top.
 
-**Offline classrooms:** if your environment can't reach the internet, pre-download both datasets once on a connected machine and copy the `data/` folder into `notebooks/`. The notebooks use `download=True` but skip the download if the files already exist.
-
-## macOS note (PyTorch threading)
-
-Same as L07 — if a kernel crashes on `model.fit`-style cells, restart Jupyter with:
-
-```bash
-OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 jupyter notebook
-```
-
-We also call `torch.set_num_threads(1)` near the top of each PyTorch notebook for stability.
-
-## GPU (optional)
-
-If you have a CUDA GPU or Apple Silicon Mac, the notebooks will auto-detect and use it:
-
-```python
-device = "cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu")
-```
-
-All notebooks complete in under 5 minutes on CPU, so a GPU is **not** required.
 
 ## Sanity check
 
-After install, run:
-
-```bash
-python -c "import torch, torchvision; print(torch.__version__, torchvision.__version__)"
-```
-
-You should see something like `2.12.0 0.27.0`.
+Open any notebook in this lesson, pick the `dsai-m3` kernel, run the setup cell. If anything errors, see **Troubleshooting** in [../SETUP.md](../SETUP.md).

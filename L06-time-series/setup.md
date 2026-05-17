@@ -1,64 +1,18 @@
-# Setup — L06
+# L06 — Time Series Forecasting — Setup
 
-Skip if you already have the `dsai-m3` environment from L01–L05. `statsmodels` (STL, ETS) and `scikit-learn` (HistGradientBoostingRegressor) are already in your environment.
+Environment setup is at the repo root: ➡ **[../SETUP.md](../SETUP.md)**
 
----
-
-## Create the environment
-
-From the **root of the learner-edition folder**:
-
-```bash
-conda env create -f L06-time-series/environment.yml
-```
+If you completed setup for an earlier lesson, your `dsai-m3` environment already has everything L06 needs. Skip ahead.
 
 ---
 
-## Activate
+## What's new this lesson
 
-```bash
-conda activate dsai-m3
-```
+**Dependencies:** `statsmodels` (STL, ETS) + `HistGradientBoostingRegressor` (already in `dsai-m3`). Prophet is optional and gated behind a try-import in `optional_extensions.ipynb`.
 
-Verify:
+**Data:** `notebooks/data/northstar_daily_revenue.csv` (~22 KB, two years of daily revenue).
 
-```bash
-python -c "from statsmodels.tsa.seasonal import STL; from statsmodels.tsa.holtwinters import ExponentialSmoothing; from sklearn.ensemble import HistGradientBoostingRegressor; print('Ready for L06')"
-```
 
-You should see:
-```
-Ready for L06
-```
+## Sanity check
 
----
-
-## (Optional) Prophet
-
-If you want to try Prophet in the Extension section:
-
-```bash
-pip install prophet
-```
-
-Prophet has a heavier dependency footprint than the Core libraries — only install if you'll actually use it.
-
----
-
-## Launch the notebooks
-
-From inside `L06-time-series/`:
-
-```bash
-jupyter notebook
-```
-
-Open `notebooks/01_monday_morning.ipynb` to begin.
-
----
-
-## Troubleshooting
-
-- **`FileNotFoundError: northstar_daily_revenue.csv`** — run notebooks from inside `L06-time-series/notebooks/`.
-- **`ImportError: No module named prophet`** — only needed for the Extension content. Run `pip install prophet`.
-- **`statsmodels.tools.sm_exceptions.ConvergenceWarning`** — exponential-smoothing models sometimes fail to converge cleanly. Usually harmless; the forecast still works. Set `warnings.filterwarnings("ignore")` if it's noisy.
+Open any notebook in this lesson, pick the `dsai-m3` kernel, run the setup cell. If anything errors, see **Troubleshooting** in [../SETUP.md](../SETUP.md).

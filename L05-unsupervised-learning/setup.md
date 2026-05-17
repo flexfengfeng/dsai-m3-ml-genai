@@ -1,64 +1,18 @@
-# Setup — L05
+# L05 — Unsupervised Learning — Setup
 
-Skip if you already have the `dsai-m3` environment from L01–L04. All required packages (`scikit-learn` for PCA, KMeans, and IsolationForest) are already installed.
+Environment setup is at the repo root: ➡ **[../SETUP.md](../SETUP.md)**
 
----
-
-## Create the environment
-
-From the **root of the learner-edition folder**:
-
-```bash
-conda env create -f L05-unsupervised-learning/environment.yml
-```
-
-This takes 10–15 minutes the first time.
+If you completed setup for an earlier lesson, your `dsai-m3` environment already has everything L05 needs. Skip ahead.
 
 ---
 
-## Activate
+## What's new this lesson
 
-```bash
-conda activate dsai-m3
-```
+**Dependencies:** PCA, KMeans, IsolationForest (already in `dsai-m3` via scikit-learn)
 
-Verify by running:
+**Data:** Same `northstar_customers.csv` as L03/L04 (label dropped) + synthetic StyleHub + transactions generators inside the assignment.
 
-```bash
-python -c "from sklearn.decomposition import PCA; from sklearn.cluster import KMeans; from sklearn.ensemble import IsolationForest; print('sklearn ready for L05')"
-```
 
-You should see:
-```
-sklearn ready for L05
-```
+## Sanity check
 
----
-
-## (Optional) UMAP
-
-The Core L05 content uses PCA + K-Means + Isolation Forest from sklearn. If you want to try **UMAP** (a non-linear alternative to PCA, popular for visualisation) in the Extension section:
-
-```bash
-pip install umap-learn
-```
-
----
-
-## Launch the notebooks
-
-From inside `L05-unsupervised-learning/`:
-
-```bash
-jupyter notebook
-```
-
-Open `notebooks/01_monday_morning.ipynb` to begin.
-
----
-
-## Troubleshooting
-
-- **`FileNotFoundError: northstar_customers.csv`** — run notebooks from inside `L05-unsupervised-learning/notebooks/`.
-- **Plots look small** — add `plt.rcParams["figure.figsize"] = (12, 5)` near the top of your notebook. Most are already configured.
-- **`ImportError: No module named umap`** — only needed for the Extension content. Run `pip install umap-learn`.
+Open any notebook in this lesson, pick the `dsai-m3` kernel, run the setup cell. If anything errors, see **Troubleshooting** in [../SETUP.md](../SETUP.md).

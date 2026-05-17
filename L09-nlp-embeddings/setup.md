@@ -1,48 +1,20 @@
-# L09 Setup
+# L09 — NLP & Embeddings — Setup
 
-## Prerequisites
+Environment setup is at the repo root: ➡ **[../SETUP.md](../SETUP.md)**
 
-You should have the `dsai-m3` conda environment from L01-L08. If not, see L01's setup.md.
+If you completed setup for an earlier lesson, your `dsai-m3` environment already has everything L09 needs. Skip ahead.
 
-## New dependencies
+---
 
-L09 adds:
+## What's new this lesson
 
-```bash
-conda activate dsai-m3
-pip install sentence-transformers
-```
+**Dependencies:** `sentence-transformers >= 3.0` (install once per `SETUP.md`).
 
-This pulls in `transformers`, `tokenizers`, `huggingface-hub`, and `safetensors` as dependencies. Total disk: ~600 MB including the pretrained model weights downloaded on first use.
+**Data:** `notebooks/data/northstar_catalogue.csv` (76 products, ~15 KB) + `notebooks/data/recipes.csv` (30 recipes, ~6 KB).
 
-Versions known to work:
-- `sentence-transformers >= 3.0`
-- `transformers >= 4.40`
+**Models downloaded on first run:** First run downloads `all-MiniLM-L6-v2` (~80 MB) from Hugging Face into `~/.cache/huggingface/`. `optional_extensions.ipynb` additionally downloads `paraphrase-multilingual-MiniLM-L12-v2` (~280 MB).
 
-## Pretrained model
-
-The notebooks load **`all-MiniLM-L6-v2`** from Hugging Face — a small, fast sentence-transformer model (22M parameters, 384-dim embeddings, ~80 MB). The first time you run notebook 03 it downloads to `~/.cache/huggingface/hub/`.
-
-If your environment has no internet, pre-download in advance:
-
-```bash
-python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
-```
-
-## macOS note
-
-Same PyTorch threading caveat as L07-L08. If a kernel crashes during embedding computation, restart Jupyter with:
-
-```bash
-OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 jupyter notebook
-```
 
 ## Sanity check
 
-After install, run:
-
-```bash
-python -c "from sentence_transformers import SentenceTransformer; print(SentenceTransformer('all-MiniLM-L6-v2').encode('hello').shape)"
-```
-
-You should see `(384,)` — the embedding dimension of this model.
+Open any notebook in this lesson, pick the `dsai-m3` kernel, run the setup cell. If anything errors, see **Troubleshooting** in [../SETUP.md](../SETUP.md).

@@ -44,6 +44,13 @@ This is the lesson that connects classical ML to GenAI. By Friday you'll underst
   - [03_using_an_llm.ipynb](notebooks/03_using_an_llm.ipynb) — tokenisation + generation
   - [04_rag_pipeline.ipynb](notebooks/04_rag_pipeline.ipynb) — retrieval-augmented generation
 
+> **Don't have a GPU?** L10 runs on CPU but SmolLM2 generation is slow (~5-15 tokens/sec). On a T4 GPU in Colab it's near-instant. Each notebook below has an **Open in Colab** badge at the top — click it, then **Runtime → Change runtime type → T4 GPU**:
+>
+> - [![Open NB03 in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/flexfengfeng/dsai-m3-ml-genai/blob/main/L10-transformers-genai/notebooks/03_using_an_llm.ipynb) NB 03 — Using a small LLM
+> - [![Open NB04 in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/flexfengfeng/dsai-m3-ml-genai/blob/main/L10-transformers-genai/notebooks/04_rag_pipeline.ipynb) NB 04 — RAG pipeline
+> - [![Open assignment in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/flexfengfeng/dsai-m3-ml-genai/blob/main/L10-transformers-genai/notebooks/assignment.ipynb) Assignment — Ship a RAG shopping assistant
+> - [![Open extensions in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/flexfengfeng/dsai-m3-ml-genai/blob/main/L10-transformers-genai/notebooks/optional_extensions.ipynb) Optional extensions
+
 ## Phase 3 — Post-class (self-study, optional)
 
 - [assignment.ipynb](notebooks/assignment.ipynb) — Build a RAG-powered shopping assistant for NorthStar

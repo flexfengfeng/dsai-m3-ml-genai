@@ -1,48 +1,20 @@
-# Setup — L07
+# L07 — Neural Networks — Setup
 
-L07 introduces **PyTorch** — a new dependency.
+Environment setup is at the repo root: ➡ **[../SETUP.md](../SETUP.md)**
 
----
-
-## Install PyTorch
-
-Inside your `dsai-m3` conda env:
-
-```bash
-pip install torch
-```
-
-(For GPU support, follow the official [PyTorch install page](https://pytorch.org/get-started/locally/). For this lesson CPU-only is fine — the model is small.)
+If you completed setup for an earlier lesson, your `dsai-m3` environment already has everything L07 needs. Skip ahead.
 
 ---
 
-## Verify
+## What's new this lesson
 
-```bash
-python -c "import torch; print(f'PyTorch {torch.__version__} ready')"
-```
+**Dependencies:** `torch >= 2.2` (install once per `SETUP.md`).
 
-You should see something like:
-```
-PyTorch 2.x ready
-```
+**Data:** `notebooks/data/northstar_sessions.csv` (8,000 sessions × 11 columns, ~600 KB).
 
----
+**Models downloaded on first run:** No pretrained model download — every NN is trained from scratch (small, runs on CPU).
 
-## Launch the notebooks
 
-From inside `L07-neural-networks/`:
+## Sanity check
 
-```bash
-jupyter notebook
-```
-
-Open `notebooks/01_monday_morning.ipynb`.
-
----
-
-## Troubleshooting
-
-- **`ImportError: No module named torch`** — run `pip install torch` inside the active conda env.
-- **`RuntimeError: CUDA error: no kernel image is available for execution on the device`** — happens when PyTorch picks GPU by accident. Force CPU with `device = torch.device("cpu")`.
-- **Training is slow** — the L07 MLP has thousands of parameters, not millions. Each epoch should take seconds on CPU. If it's much slower, check you're using `DataLoader(batch_size=64)` not iterating row-by-row.
+Open any notebook in this lesson, pick the `dsai-m3` kernel, run the setup cell. If anything errors, see **Troubleshooting** in [../SETUP.md](../SETUP.md).

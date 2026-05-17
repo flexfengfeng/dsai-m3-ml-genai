@@ -1,62 +1,25 @@
-# L10 Setup
+# L10 — Transformers & GenAI — Setup
 
-## Prerequisites
+Environment setup is at the repo root: ➡ **[../SETUP.md](../SETUP.md)**
 
-You should have the `dsai-m3` conda environment from L01-L09. If not, see L01's setup.md.
+If you completed setup for an earlier lesson, your `dsai-m3` environment already has everything L10 needs. Skip ahead.
 
-## New dependencies
+---
 
-Everything L10 needs was installed in L09 (`transformers`, `sentence-transformers`, `torch`). No new packages.
+## What's new this lesson
 
-## Model downloads
+**Dependencies:** `transformers >= 4.40`, `sentence-transformers >= 3.0` (install once per `SETUP.md`).
 
-L10 uses three pretrained models from Hugging Face. They download automatically on first use (one-time):
+**Data:** Reuses `northstar_catalogue.csv` from L09 (copied into `L10-transformers-genai/notebooks/data/`).
 
-| Model | Size | Used in |
-|-------|------|---------|
-| `distilbert-base-uncased-finetuned-sst-2-english` | ~268 MB | NB 01 sentiment |
-| `dslim/bert-base-NER` | ~436 MB | NB 01 named-entity recognition |
-| `HuggingFaceTB/SmolLM2-360M-Instruct` | ~720 MB | NB 03, NB 04, assignment |
-| `all-MiniLM-L6-v2` (already cached from L09) | ~80 MB | NB 04 retrieval step |
+**Models downloaded on first run:** First run downloads three models from Hugging Face: `distilbert-sst-2` (~268 MB), `bert-base-NER` (~436 MB), `SmolLM2-360M-Instruct` (~720 MB). `optional_extensions.ipynb` adds `bart-large-mnli` (~1.6 GB) and `paraphrase-multilingual-MiniLM-L12-v2` (~280 MB). Total cache after running the whole lesson: ~3 GB in `~/.cache/huggingface/`.
 
-Total disk: ~1.5 GB in `~/.cache/huggingface/hub/`.
 
-### Pre-warming for offline classrooms
+## Use Colab for GPU work
 
-```bash
-python -c "
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
-from sentence_transformers import SentenceTransformer
-pipeline('sentiment-analysis')
-pipeline('ner', model='dslim/bert-base-NER')
-AutoTokenizer.from_pretrained('HuggingFaceTB/SmolLM2-360M-Instruct')
-AutoModelForCausalLM.from_pretrained('HuggingFaceTB/SmolLM2-360M-Instruct')
-SentenceTransformer('all-MiniLM-L6-v2')
-"
-```
+**Use Colab if you don't have a GPU.** SmolLM2 generation in `03_using_an_llm.ipynb`, `04_rag_pipeline.ipynb`, and `assignment.ipynb` is ~5-15 tokens/sec on CPU vs near-instant on a T4 GPU. Each of those notebooks has an **Open in Colab** badge at the top.
 
-## macOS note (PyTorch threading)
-
-Same as L07-L09. If a kernel crashes during generation:
-
-```bash
-OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 jupyter notebook
-```
-
-The notebooks call `torch.set_num_threads(1)` at the top.
-
-## CPU is fine
-
-All notebooks run on CPU. SmolLM2-360M generates ~5-15 tokens/second on a 2020-era MacBook — slow but usable. If you have a GPU, generation is 20-50× faster.
 
 ## Sanity check
 
-```bash
-python -c "
-from transformers import pipeline
-s = pipeline('sentiment-analysis')
-print(s('This module was excellent'))
-"
-```
-
-Expected output: `[{'label': 'POSITIVE', 'score': 0.99...}]`
+Open any notebook in this lesson, pick the `dsai-m3` kernel, run the setup cell. If anything errors, see **Troubleshooting** in [../SETUP.md](../SETUP.md).

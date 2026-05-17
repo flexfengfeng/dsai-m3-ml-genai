@@ -1,0 +1,19 @@
+{
+  "//": "Workspace settings for DSAI M3 (Machine Learning & GenAI). See SETUP.md for context.",
+
+  "python.envFile": "${workspaceFolder}/.env",
+  "python.terminal.activateEnvironment": true,
+
+  "jupyter.askForKernelRestart": false,
+  "jupyter.notebookFileRoot": "${fileDirname}",
+
+  "notebook.output.scrolling": true,
+  "notebook.output.textLineLimit": 80,
+
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.ipynb_checkpoints": true,
+    "**/.DS_Store": true,
+    "**/~$*": true
+  }
+}
