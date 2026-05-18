@@ -53,6 +53,11 @@ Every lesson follows **Sarah Chen**, a Customer Experience Analyst at a mid-size
 
 Lessons are designed to be taken in order.
 
+### Course-wide references
+
+- 📋 [**M3_Course_Roadmap.md**](./M3_Course_Roadmap.md) — the full 10-lesson roadmap, with the Core / Optional split for every lesson. Useful for skimming what's coming.
+- 🏆 [**HACKATHON_GUIDE.md**](./HACKATHON_GUIDE.md) — the end-of-course capstone: themes, judging rubric, day-by-day plan for both full-time (3 days) and part-time (1 day) cohorts.
+
 ---
 
 ## Setup

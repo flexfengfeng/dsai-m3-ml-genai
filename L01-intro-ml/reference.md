@@ -166,5 +166,5 @@ A third split (separate from training and test), used to tune hyperparameters wi
 
 The next natural steps are:
 - Take a deeper dive with Andrew Ng's [Machine Learning Specialization on Coursera](https://www.coursera.org/specializations/machine-learning-introduction) (free audit available)
-- Enter the **NorthStar 2026 Hackathon** capstone at the end of this course — see `HACKATHON_GUIDE.md` in the course root
+- Enter the **NorthStar 2026 Hackathon** capstone at the end of this course — see [HACKATHON_GUIDE.md](../HACKATHON_GUIDE.md) at the repo root
 - Read *Hands-On Machine Learning* (Géron) from end to end

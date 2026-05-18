@@ -106,7 +106,7 @@ This is a 3-hour class, so we focus on the 2–3 topics that are most used in re
 
 - Polynomial features, KNN deep-dive, a minimal neural network from scratch, and deeper train/test split theory live in [`notebooks/optional_extensions.ipynb`](./notebooks/optional_extensions.ipynb). These are for curious learners only — skipping them will not affect your understanding of later lessons.
 
-The full 10-lesson roadmap — with the Core / Optional split for every lesson — lives in the course root. Ask your instructor for the `M3_Course_Roadmap.md` file if you would like to see the whole picture.
+The full 10-lesson roadmap — with the Core / Optional split for every lesson — lives at the repo root: [**M3_Course_Roadmap.md**](../M3_Course_Roadmap.md). Skim it any time you want to see how this lesson fits into the larger picture.
 
 ---
 
