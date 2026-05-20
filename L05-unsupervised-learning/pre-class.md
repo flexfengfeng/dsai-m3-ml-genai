@@ -1,134 +1,51 @@
-# Pre-class — L05 Unsupervised Learning
+# Before Class — L05 — Unsupervised Learning
 
-**Time:** about 75 minutes. Do this before the live session.
+**Estimated time: ~25 minutes.** Complete this before class.
 
-**Goal:** Understand what unsupervised methods actually do and arrive ready to use them on NorthStar's customer data.
+This is the simplest version of "show up prepared": run one notebook, answer a few questions. You'll come to class having seen the idea in action.
 
----
-
-## What you're walking into
-
-End of L04, Marcus said:
-
-> *"Now — what about the customers who DON'T churn but also don't log in for a year? Can we find natural CLUSTERS of customer behaviour without labels?"*
-
-This week Sarah has the same NorthStar customer dataset she's been working with since L01 — BUT she's dropping the `churned` column. She has to find structure without knowing the answer in advance.
-
-By Friday she has to:
-1. Reduce the 10-feature data to something visualisable.
-2. Group customers into natural segments she can name.
-3. Flag a "watch list" of unusual customers worth investigating.
+| Step | Time | What you do |
+|---|---|---|
+| **1. Try it** | ~20 min | Open and run `notebooks/01_monday_morning.ipynb` |
+| **2. Reflect** | ~5 min  | Three short questions below |
 
 ---
 
-## Task 1 (~20 min) — Open `01_monday_morning.ipynb`
+## Step 1 — Try it (~20 min)
 
-This notebook drops the `churned` column and explores the remaining features. You see what "unlabelled data" actually looks like — you have features but no answer.
+Open **`notebooks/01_monday_morning.ipynb`** in VS Code with the `dsai-m3` kernel. Run every cell top to bottom. Read the markdown between cells. Don't skip any cell.
 
-**Open** `notebooks/01_monday_morning.ipynb` and **run every cell**.
+Marcus pivots: *"Find me natural customer segments — without labels."* Sarah meets the unsupervised toolkit: PCA to visualise high-dim customers in 2D, K-Means to group them, Isolation Forest to flag anomalies. The notebook's honest reveal: PCA captures 22% variance in 2D, and that's *correct*, not a failure.
 
-As you go, jot down:
-- The number of features Sarah has to work with
-- Which pairs of features look correlated
-- One row that looks "unusual" to you (gut feel — you'll see if Isolation Forest agrees)
+If this is your first time running a notebook in this repo, see [setup.md](./setup.md) once — you only need to do this for the first lesson.
 
 ---
 
-## Task 2 (~30 min) — Watch two videos
+## Step 2 — Quick reflection (~5 min)
 
-### Video 1 — Principal Component Analysis (PCA) (StatQuest, 22 min)
+Write a sentence or two for each. You can scribble in a notebook, in a journal, or just hold the answer in your head — what matters is that you *tried*.
 
-[https://www.youtube.com/watch?v=FgakZw6K1QQ](https://www.youtube.com/watch?v=FgakZw6K1QQ)
+**Q1. PCA shows 22% variance in 2D. Is that good or bad?**
 
-Why it matters: PCA is the single most-used dimensionality reduction technique in industry. The video walks through the math visually — watch until you understand WHAT a principal component is (not how to derive it).
+What does it tell you about the original feature set?
 
-**Mini-exercise:** in your own words, what does it mean when PC1 "captures 40% of variance"?
+**Q2. How do you choose K for K-Means without ground truth?**
 
-> **Sample answer:** If you project all the data points onto the PC1 axis (a single line), the spread of those projected points accounts for 40% of the total spread of the original data. PC1 is the line along which the points are most spread out. The remaining 60% of variance is in directions perpendicular to PC1.
+Sarah uses elbow + silhouette + business judgement. Why all three rather than just one?
 
-### Video 2 — K-Means Clustering (StatQuest, 9 min)
+**Q3. Anomaly detection has no labels.**
 
-[https://www.youtube.com/watch?v=4b5d3muPQmA](https://www.youtube.com/watch?v=4b5d3muPQmA)
-
-Why it matters: K-Means is the most-used clustering algorithm in industry. Customer segmentation, document grouping, image colour palettes — all K-Means.
-
-**Mini-exercise:** if you run K-Means twice on the same data with different `random_state`, will you get the same clusters?
-
-> **Sample answer:** Not necessarily. K-Means starts by randomly choosing initial centroid positions, and the final clusters depend on where it started. With `n_init=10` (sklearn default), it tries 10 different initialisations and keeps the best, which gives more stable results — but two runs with different `random_state` can still differ slightly. ALWAYS set `random_state` for reproducibility.
+If your Isolation Forest flags 500 customers as anomalous, how do you decide if it's *actually finding* anomalies?
 
 ---
 
-## Task 3 (~25 min) — Quick conceptual exercises
+## Bring to class
 
-### Exercise 1 — Choose the right technique
-
-For each scenario, pick: PCA, K-Means, Isolation Forest, or "supervised methods from L03/L04":
-
-1. NorthStar wants to know which customers are most likely to be fraudulent. They have 1,000 confirmed fraud cases and 100,000 confirmed non-fraud.
-2. A bank wants to find unusual transactions that might be fraud. They have NO labelled examples.
-3. A retailer wants to group its 10 million customers into 5 marketing segments.
-4. A team has 50 features per customer and wants to visualise the data on a 2D plot.
-
-> **Sample answers:**
-> 1. Supervised (L03/L04) — labels exist; use logistic regression or gradient boosting.
-> 2. Isolation Forest — no labels; flag the unusual ones.
-> 3. K-Means — natural segmentation task.
-> 4. PCA — reduce 50D → 2D for visualisation.
-
-### Exercise 2 — Reading a scree plot
-
-You run PCA and get the following `explained_variance_ratio_`:
-
-```
-PC1: 0.45
-PC2: 0.22
-PC3: 0.10
-PC4: 0.06
-PC5: 0.05
-PC6: 0.04
-PC7: 0.03
-PC8: 0.02
-PC9: 0.02
-PC10: 0.01
-```
-
-How many components should you keep, and why?
-
-> **Sample answer:** First 3 components capture 77% of variance. PCs 4–10 each add less than 6%. Reasonable answers: keep 2 (for visualisation, captures 67%), keep 3 (captures 77%, marginally better), or keep enough for ~90% variance (≈ first 5). The "right" answer depends on what you'll do with the reduced data.
-
-### Exercise 3 — Interpret a cluster profile
-
-K-Means gives you 4 clusters. The mean of each feature, by cluster:
-
-| Feature | Global mean | Cluster 0 | Cluster 1 | Cluster 2 | Cluster 3 |
-|---|---|---|---|---|---|
-| tenure_months | 36 | 60 | 8 | 32 | 40 |
-| avg_monthly_spend (£) | 70 | 160 | 30 | 65 | 75 |
-| returns_per_purchase | 0.08 | 0.04 | 0.20 | 0.07 | 0.09 |
-| support_tickets | 1.2 | 0.4 | 4.0 | 0.9 | 1.1 |
-
-Name each cluster in 2-4 words.
-
-> **Sample answers:**
-> - **Cluster 0** → "Loyal high-value" — long tenure, high spend, low returns, low support tickets
-> - **Cluster 1** → "New + frustrated" — short tenure, low spend, high returns AND high support
-> - **Cluster 2** → "Mid-tier average" — close to the global mean on everything
-> - **Cluster 3** → "Steady, normal" — close to the global mean but slightly above on tenure
+- Your answer to Q1.
+- One business problem from your own work that's naturally unsupervised (no labels available).
 
 ---
 
-## Active-engagement tips
+**Want to go deeper before class?** See **[reference.md](./reference.md) → *Further reading & watching*** at the bottom — videos and recommended readings that used to live in this guide.
 
-- **Treat unsupervised methods as exploration**, not prediction. There's no "right answer" — only "useful answers."
-- **Always look at cluster profiles** (the table above) — never just the labels. The labels alone tell you nothing.
-
----
-
-## Bring to the session
-
-1. ✅ Run `01_monday_morning.ipynb` end-to-end
-2. ✅ Watched both StatQuest videos
-3. ✅ Your three exercise answers ready
-4. ✅ One specific question — anything that didn't click
-
-See you Tuesday morning at Sarah's desk.
+**Ran out of time?** Doing just Step 1 (running the notebook) is enough. The class builds on having felt what the lesson teaches; the reflection questions get re-asked live.

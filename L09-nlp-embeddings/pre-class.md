@@ -1,45 +1,51 @@
-# L09 Pre-class · ≈ 75 minutes
+# Before Class — L09 — NLP & Embeddings
 
-> **Goal:** Walk into class already convinced that keyword search is broken, and ready to learn what's going to replace it.
+**Estimated time: ~25 minutes.** Complete this before class.
 
-## Step 1 — Watch the embeddings primer (≈ 20 min)
+This is the simplest version of "show up prepared": run one notebook, answer a few questions. You'll come to class having seen the idea in action.
 
-Jay Alammar, *"The Illustrated Word2Vec"* — read the first half (up to and including "Word2Vec Training").
-https://jalammar.github.io/illustrated-word2vec/
-
-Focus questions:
-- What does it mean for a word to be a *vector*?
-- Why do related words end up close together in vector space?
-- What's the difference between "skip-gram" and "CBOW" training? (Don't worry about the maths.)
-
-## Step 2 — Optional read: tokenisation (≈ 10 min)
-
-Hugging Face docs, *"Summary of the tokenisers"*  
-https://huggingface.co/docs/transformers/tokenizer_summary
-
-Skim the section on **BPE / WordPiece / SentencePiece**. You don't need to memorise; just know that modern models split words into *subword tokens*, not whole words.
-
-## Step 3 — Run [notebooks/01_monday_morning.ipynb](notebooks/01_monday_morning.ipynb) (≈ 35 min)
-
-This is the failure-mode hook. Sarah is at her laptop trying to understand a customer complaint about search.
-
-The notebook walks through:
-1. Loading NorthStar's product catalogue (76 products, real-feeling descriptions)
-2. Implementing **keyword search** the obvious way: lowercase, split, look for matches
-3. Running the user's actual query — *"blue summer dress"* — and watching it return very few useful results
-4. Diagnosing **why**: the descriptions use synonyms (frock, sundress, gown), and a query that uses different words to mean the same thing finds nothing
-5. A second attempt with stemming and stop-words — slightly better but still bad
-
-Expected outcome: you should finish the notebook with a clear, lived sense that *"meaning" is not "shared words"*. Tomorrow we'll meet the tool that fixes it.
-
-## Step 4 — Three thought-questions (≈ 10 min)
-
-Write your answers in a notebook cell or scratch pad. We'll discuss in class.
-
-1. The customer typed *"blue summer dress"*. List **five** different ways a product description could legitimately describe the same kind of dress without using ANY of those three words.
-2. Try thinking like a model: if every word were a separate dimension of a vector, the vector for *"blue summer dress"* and *"floral pastel frock"* would have **zero overlap** even though they mean similar things. What's the missing piece?
-3. Search a real e-commerce site for *"comfortable office shoes"*. Does the search engine seem to know what you mean, or is it just keyword-matching? How can you tell?
+| Step | Time | What you do |
+|---|---|---|
+| **1. Try it** | ~20 min | Open and run `notebooks/01_monday_morning.ipynb` |
+| **2. Reflect** | ~5 min  | Three short questions below |
 
 ---
 
-**You are ready for class when:** you've finished the notebook, you can articulate exactly *what's broken* about keyword search, and you have one or two guesses about what could fix it.
+## Step 1 — Try it (~20 min)
+
+Open **`notebooks/01_monday_morning.ipynb`** in VS Code with the `dsai-m3` kernel. Run every cell top to bottom. Read the markdown between cells. Don't skip any cell.
+
+A customer types *"blue summer dress"* into NorthStar's search bar. We have ten dresses that fit — none of them came up. The notebook walks Sarah through keyword search, watches it fail on synonyms (*frock* ≠ *dress*), and motivates the embedding-based fix you'll see in class.
+
+If this is your first time running a notebook in this repo, see [setup.md](./setup.md) once — you only need to do this for the first lesson.
+
+---
+
+## Step 2 — Quick reflection (~5 min)
+
+Write a sentence or two for each. You can scribble in a notebook, in a journal, or just hold the answer in your head — what matters is that you *tried*.
+
+**Q1. Five ways to describe a summer dress without using the word *dress*.**
+
+Write three of them. (This is exactly the synonym problem keyword search can't handle.)
+
+**Q2. Stemming and stop-words help — but only a bit.**
+
+Why can't lexical tricks (stem *dresses* → *dress*) solve the *frock* → *dress* gap?
+
+**Q3. Search a real site for *"comfortable office shoes"*.**
+
+Does the search seem to know what you mean, or is it just keyword-matching? How can you tell?
+
+---
+
+## Bring to class
+
+- Your answer to Q2.
+- One search problem from your own work or life where keyword search frustrates you.
+
+---
+
+**Want to go deeper before class?** See **[reference.md](./reference.md) → *Further reading & watching*** at the bottom — videos and recommended readings that used to live in this guide.
+
+**Ran out of time?** Doing just Step 1 (running the notebook) is enough. The class builds on having felt what the lesson teaches; the reflection questions get re-asked live.

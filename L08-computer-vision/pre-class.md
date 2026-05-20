@@ -1,42 +1,51 @@
-# L08 Pre-class · ≈ 75 minutes
+# Before Class — L08 — Computer Vision
 
-> **Goal:** Walk into class already convinced that images need a different model than tabular data, and ready to follow along with convolutional operations.
+**Estimated time: ~25 minutes.** Complete this before class.
 
-## Step 1 — Watch the convolution video (≈ 25 min)
+This is the simplest version of "show up prepared": run one notebook, answer a few questions. You'll come to class having seen the idea in action.
 
-3Blue1Brown, *"But what is a convolution?"*  
-https://www.youtube.com/watch?v=KuXjwB4LzSA
-
-Focus questions to keep in mind:
-- What does a single kernel actually compute?
-- Why does the output get smaller? (Stride, padding)
-- When the video shows the moving-average kernel — what would happen if you used a different one?
-
-## Step 2 — Optional watch: how CNNs see (≈ 15 min)
-
-3Blue1Brown, *"But what is a neural network?"* — first 8 minutes.  
-You've seen this in L07; re-skim with image classification in mind.
-
-## Step 3 — Run [notebooks/01_monday_morning.ipynb](notebooks/01_monday_morning.ipynb) (≈ 25 min)
-
-Sarah opens her laptop on Monday morning with one task: *load the Fashion-MNIST dataset and try the simplest thing she already knows — an MLP.*
-
-The notebook walks through:
-1. Loading Fashion-MNIST (10 classes of 28×28 grayscale apparel images)
-2. Visualising a few examples per class
-3. Flattening every image to a 784-dim vector
-4. Training a 2-layer MLP and recording accuracy and parameter count
-
-Expected outcome: ~87% test accuracy with **~235K parameters**. Good enough to ship? Sarah is not sure. Marcus said "ten thousand new photos a season" — 13% mis-tag rate means ~1,300 wrong tags a season.
-
-## Step 4 — Three thought-questions (≈ 10 min)
-
-Write your answers in a notebook cell or scratch pad. We'll discuss in class.
-
-1. The MLP has ~250K parameters for 28×28 images. If product photos were 224×224 (a common real size), how many parameters would the **first layer alone** need for a hidden size of 256? Does that scale?
-2. The MLP treats the pixel at `(0,0)` as completely independent from `(0,1)`. Why is that a bad assumption for images?
-3. Look at two of the Fashion-MNIST images side-by-side — one shirt, one coat. What would you *want* a model to look at to tell them apart? Sleeves? Collar? Edges?
+| Step | Time | What you do |
+|---|---|---|
+| **1. Try it** | ~20 min | Open and run `notebooks/01_monday_morning.ipynb` |
+| **2. Reflect** | ~5 min  | Three short questions below |
 
 ---
 
-**You are ready for class when:** you've finished the notebook, you can explain why an MLP on raw pixels is inefficient, and you have at least one guess for what's going to fix it.
+## Step 1 — Try it (~20 min)
+
+Open **`notebooks/01_monday_morning.ipynb`** in VS Code with the `dsai-m3` kernel. Run every cell top to bottom. Read the markdown between cells. Don't skip any cell.
+
+Marcus's next ask: *"Can we auto-tag the 10,000 product photos uploaded each season?"* The notebook starts with Fashion-MNIST and shows what an MLP can do on flattened pixels (~87% accuracy, but lots of parameters). It then sets up the CNN motivation that you'll explore in class.
+
+If this is your first time running a notebook in this repo, see [setup.md](./setup.md) once — you only need to do this for the first lesson.
+
+---
+
+## Step 2 — Quick reflection (~5 min)
+
+Write a sentence or two for each. You can scribble in a notebook, in a journal, or just hold the answer in your head — what matters is that you *tried*.
+
+**Q1. Why don't MLPs scale to real images?**
+
+An MLP on 224×224 colour photos would need ~38 million parameters in the first layer alone. What's the alternative?
+
+**Q2. Translation invariance.**
+
+A cat is a cat whether it's in the top-left or bottom-right of the photo. How could you design a model that builds in that property?
+
+**Q3. Transfer learning, intuitively.**
+
+If you had 500 product photos to classify, would you train a model from scratch or start from one trained on 1.2M ImageNet photos? Why?
+
+---
+
+## Bring to class
+
+- Your answer to Q3.
+- One image-classification task from your own domain (medical, retail, satellite, …) where transfer learning would or wouldn't fit.
+
+---
+
+**Want to go deeper before class?** See **[reference.md](./reference.md) → *Further reading & watching*** at the bottom — videos and recommended readings that used to live in this guide.
+
+**Ran out of time?** Doing just Step 1 (running the notebook) is enough. The class builds on having felt what the lesson teaches; the reflection questions get re-asked live.

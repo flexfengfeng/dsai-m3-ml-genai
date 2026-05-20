@@ -27,3 +27,17 @@
 | **System prompt**       | The first message in a chat conversation, used to set behaviour (persona, rules, allowed actions). |
 | **Fine-tuning**         | Further training of a pretrained model on a domain-specific dataset. Last resort for GenAI — try prompting and RAG first. |
 | **HuggingFace pipeline** | The simplest API to use a pretrained model: `pipeline("task-name")` returns a callable. |
+
+---
+
+## Further reading & watching
+
+Optional resources that go deeper than what we cover in class. Pick what interests you; nothing here is required.
+
+### Videos
+
+- [Attention in transformers, step by step](https://www.youtube.com/watch?v=eMlx5fFNoYc) — 3Blue1Brown, ~25 min — *The mechanism behind every modern LLM. Visual, slow, worth the time.*
+
+### Reading
+
+- **Andrej Karpathy — *State of GPT*** — YouTube or talk slides — *Pick any 10-minute section. The history of how GPT-1 became GPT-4 in 6 years.*

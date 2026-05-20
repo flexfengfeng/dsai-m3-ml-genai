@@ -24,3 +24,14 @@
 | **Re-ranking**        | A second pass that re-orders top-K results using additional signals (popularity, recency, price, user history). |
 | **Vector database**   | A specialised store optimised for fast nearest-neighbour search over millions of embeddings (FAISS, Pinecone, Weaviate, etc.). |
 | **Hugging Face Hub**  | The standard public registry for pretrained NLP models. `model = SentenceTransformer("all-MiniLM-L6-v2")` downloads from here. |
+
+---
+
+## Further reading & watching
+
+Optional resources that go deeper than what we cover in class. Pick what interests you; nothing here is required.
+
+### Reading
+
+- **[The Illustrated Word2Vec](https://jalammar.github.io/illustrated-word2vec/)** — Jay Alammar — *Read the first half (up to and including "Word2Vec Training"). The clearest explanation of *why* embeddings work.*
+- [Summary of the Tokenisers](https://huggingface.co/docs/transformers/tokenizer_summary) — Hugging Face docs — *Skim the BPE / WordPiece / SentencePiece sections to see how modern models split text*

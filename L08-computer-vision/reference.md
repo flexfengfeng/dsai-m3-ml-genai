@@ -25,3 +25,14 @@
 | **Dropout** | A regularisation layer that randomly zeros activations during training. Reduces over-fitting. |
 | **ImageNet** | The 1.2M-image, 1,000-category dataset used to pretrain most CV backbones. Pretrained models come from ImageNet by default. |
 | **ResNet** | A family of CNN architectures (He et al., 2015) that introduced **residual connections**, enabling much deeper networks. `ResNet18` and `ResNet50` are the workhorses. |
+
+---
+
+## Further reading & watching
+
+Optional resources that go deeper than what we cover in class. Pick what interests you; nothing here is required.
+
+### Videos
+
+- [But what is a Convolution?](https://www.youtube.com/watch?v=KuXjwB4LzSA) — 3Blue1Brown, ~25 min — *The single operation that makes CNNs work, visually*
+- [But what is a Neural Network?](https://www.youtube.com/watch?v=aircAruvnKk) — 3Blue1Brown — first 8 min — *Re-skim from L07 with image classification in mind*
