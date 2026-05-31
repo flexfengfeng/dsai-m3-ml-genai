@@ -103,13 +103,7 @@ The course ends with an applied final project where you pick a business problem 
 
 ## For instructors
 
-Each lesson has a `HANDOFF_OPTION_A.md` with:
-- A file inventory of what's in the lesson
-- Smoke-test results (which notebooks have been run, with what outputs)
-- Deviations from the original lesson plan and the reasoning
-- Known instructor pitfalls
-
-Start there before teaching a lesson. The `slides_outline.md` in each `slides/` folder is your speaker outline.
+The `slides_outline.md` in each `slides/` folder is your slide-by-slide speaker outline — start there before teaching a lesson.
 
 ---
 

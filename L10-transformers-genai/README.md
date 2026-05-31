@@ -68,7 +68,6 @@ This is the lesson that connects classical ML to GenAI. By Friday you'll underst
 | `environment.yml`        | Conda env spec |
 | `slides/`                | `.pptx` deck + `slides_outline.md` |
 | `notebooks/`             | 4 in-class NBs + assignment + extensions + data |
-| `HANDOFF_OPTION_A.md`    | Instructor handoff (smoke test results, deviations) |
 
 ## Module 3 close
 

@@ -57,7 +57,6 @@ By the end of L09 you will be able to:
 | `environment.yml`        | Conda env spec |
 | `slides/`                | `.pptx` deck + `slides_outline.md` |
 | `notebooks/`             | 4 in-class NBs + assignment + extensions + data |
-| `HANDOFF_OPTION_A.md`    | Instructor handoff (smoke test results, deviations) |
 
 ---
 

@@ -299,7 +299,7 @@ Position of Time Series (L06) is kept in its current slot; a short "specialist f
 | L09 — NLP Fundamentals | ✅ Live |
 | L10 — Transformers + Practical GenAI | ✅ Live |
 
-Each lesson follows the same shape: pre-class notebook + 3 in-class notebooks + assignment + optional_extensions, plus a slide deck and an instructor `HANDOFF_OPTION_A.md`.
+Each lesson follows the same shape: pre-class notebook + 3 in-class notebooks + assignment + optional_extensions, plus a slide deck.
 
 The full repo is set up to run on macOS, Windows WSL2, or Google Colab — see [SETUP.md](./SETUP.md) for environment instructions and [HACKATHON_GUIDE.md](./HACKATHON_GUIDE.md) for the end-of-course capstone.
 
