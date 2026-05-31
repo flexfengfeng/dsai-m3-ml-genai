@@ -1,8 +1,6 @@
 # DSAI M3: Machine Learning & GenAI — Course Roadmap
 
-**Prepared for:** FF, SkillsUnion
-**Revised:** April 2026
-**Supersedes:** earlier module-numbered roadmap and `M3_Lesson_Sequence_Proposal.md`
+Your map of the 10-lesson journey — what each lesson teaches, why it's there, and what's core versus optional.
 
 ---
 
@@ -10,7 +8,7 @@
 
 Ten lessons. Each lesson is **3 hours** of live class time, flipped-classroom format (learners pre-watch / pre-read before class, class time is reinforcement + hands-on practice, post-class is independent application).
 
-Total live time: **30 hours**, plus two group activities (Kaggle Competition after L04, Hackathon after L10).
+Total live time: **30 hours**. The end-of-module project is a **Kaggle competition** (default); a team-based **Hackathon** is offered as an optional alternative.
 
 This is a **general-purpose course**, not industry-specific. Topic selection favours algorithms and techniques that are widely used across industries — finance, retail, healthcare, marketing, operations — over niche or specialist methods.
 
@@ -56,7 +54,8 @@ PHASE 5 — LANGUAGE & GENERATIVE AI
   L09  NLP Fundamentals
   L10  Transformers + Practical GenAI (merged)
            ↓
-      [ HACKATHON CAPSTONE — team activity ]
+      [ END-OF-MODULE PROJECT — Kaggle competition (default)
+        or optional team Hackathon ]
 ```
 
 ---
@@ -195,37 +194,33 @@ PHASE 5 — LANGUAGE & GENERATIVE AI
 | 🟢 Core | RAG basics (embed → retrieve → generate) | The standard enterprise GenAI pattern |
 | 🟡 Optional | RNN / LSTM gate equations, attention-math derivation, fine-tuning a transformer, LLM-as-judge evaluation, training transformers from scratch | → `optional_extensions.ipynb` |
 
-**Hackathon Capstone** follows this lesson.
+The **end-of-module project** follows this lesson — a Kaggle competition by default, or an optional team Hackathon (see [HACKATHON_GUIDE.md](./HACKATHON_GUIDE.md)).
 
 ---
 
-## Per-Lesson File Template
+## What's in Each Lesson Folder
 
-Every lesson folder follows this structure:
+Every lesson follows the same structure, so once you know one, you know them all:
 
 ```
 L{NN}-{slug}/
-  README.md                              ← navigation hub, 3-phase flow, Core vs Optional callout
-  setup.md                               ← one-time environment setup
-  pre-class.md                           ← Phase 1: videos + mini-exercises
-  lesson.md                              ← Phase 2: concept reference
+  README.md                  ← start here: orientation + how to work through the lesson
+  setup.md                   ← environment setup for this lesson
+  pre-class.md               ← do this before class (~25 min): run one notebook + reflect
+  lesson.md                  ← the full concept reference & narrative
+  reference.md               ← glossary + optional further reading & watching
   notebooks/
-    Part_1_*.ipynb                       ← Core topic 1
-    Part_2_*.ipynb                       ← Core topic 2
-    Part_3_*.ipynb                       ← Core topic 3 (if applicable)
-    case_study.ipynb                     ← Phase 2: story-driven alternative
-    assignment.ipynb                     ← Phase 3: tiered practice + assignment
-    optional_extensions.ipynb            ← 🟡 self-study only; demoted topics live here
-  reference.md                           ← glossary + further reading
-  environment.yml
-  assets/                                ← infographics & images
+    01_monday_morning.ipynb  ← the opening scenario
+    02_*.ipynb               ← core topic notebooks (run in class)
+    03_*.ipynb
+    04_*.ipynb
+    assignment.ipynb         ← Foundational + Advanced tracks (pick one)
+    optional_extensions.ipynb← self-study only — extra depth, not taught or assessed
+  slides/                    ← the lecture deck
+  environment.yml            ← conda environment spec
 ```
 
-The **`optional_extensions.ipynb`** is new in this revision. It:
-- Is clearly marked "self-study only — not reviewed in class"
-- Opens with a summary of which topics it covers and why each was demoted
-- Uses the same business-scenario pattern as the Core notebooks (so it's actually readable, not a dumping ground)
-- Has no assignment attached — it is purely for motivated learners who want depth
+The **`optional_extensions.ipynb`** in each lesson is purely for motivated learners who want more depth. It's clearly marked self-study only, isn't reviewed in class, and has no assignment attached.
 
 ---
 
@@ -268,48 +263,8 @@ Valuable for curious learners; not assessed, not taught in class:
 
 ---
 
-## What Changed from the Previous Roadmap
+## Running the Notebooks
 
-The earlier roadmap sketched 11 modules and used a tiered `TIER 1 / TIER 2 / TIER 3` classification. This revision:
+The full repo is set up to run on **macOS, Windows (WSL2), or Google Colab** — see [SETUP.md](./SETUP.md) for environment instructions. For lessons that need a GPU (L08, L10), Colab is the easiest option.
 
-1. **Constrains to 10 lessons** to fit the 3-hour-per-lesson reality.
-2. **Merges "Advanced NLP" and the proposed "Practical GenAI" into L10** — learners understand a transformer in the first half of L10 and *use* one via API in the second half.
-3. **Replaces tier-classification with explicit per-lesson Core / Optional lists** so instructors and learners know exactly what's being taught.
-4. **Introduces a per-lesson `optional_extensions.ipynb`** so demoted content has a clear home rather than being scattered in footnotes across lesson files.
-5. **Removes domain-specific weighting** — since this is a general course, topic selection is by cross-industry frequency, not by any one industry's priorities.
-
-Position of Time Series (L06) is kept in its current slot; a short "specialist framing" note at the top of L06's README acknowledges that the mental model is universal even if some algorithms are domain-heavy.
-
----
-
-## Implementation Status
-
-**As of May 2026, all ten lessons are live on GitHub** at https://github.com/flexfengfeng/dsai-m3-ml-genai.
-
-| Lesson | Status |
-|---|---|
-| L01 — Intro to ML | ✅ Live |
-| L02 — Probability & Statistics for ML | ✅ Live |
-| L03 — Supervised Learning Foundations | ✅ Live |
-| L04 — Advanced Supervised Learning | ✅ Live |
-| L05 — Unsupervised Learning | ✅ Live |
-| L06 — Time Series Forecasting | ✅ Live |
-| L07 — Neural Networks & Deep Learning | ✅ Live |
-| L08 — Computer Vision | ✅ Live |
-| L09 — NLP Fundamentals | ✅ Live |
-| L10 — Transformers + Practical GenAI | ✅ Live |
-
-Each lesson follows the same shape: pre-class notebook + 3 in-class notebooks + assignment + optional_extensions, plus a slide deck.
-
-The full repo is set up to run on macOS, Windows WSL2, or Google Colab — see [SETUP.md](./SETUP.md) for environment instructions and [HACKATHON_GUIDE.md](./HACKATHON_GUIDE.md) for the end-of-course capstone.
-
----
-
-## Open Decisions Captured
-
-- **Optional topics location:** per-lesson `optional_extensions.ipynb` in each lesson's `notebooks/` folder. (Decided April 2026.)
-- **Industry focus:** general-purpose, not specialist. (Decided April 2026.)
-- **L10 structure:** single merged lesson covering Transformers + Practical GenAI, with RNN/LSTM math demoted to optional. (Decided April 2026.)
-- **L01 / L02 scope boundary:** L01 introduces descriptive stats concepts *intuitively* as Sarah explores her review data (shape, mean, spread, correlation — no formulas). L02 is the *formal* treatment: distributions with their math, Central Limit Theorem, confidence intervals, hypothesis testing, A/B testing. This prevents the "first lesson is abstract" problem without doubling up content. (Decided April 2026.)
-- **Protagonist continuity:** Sarah Chen anchors L01–L05 and L09–L10 where her Customer Experience role fits the content. L06 (time series), L07 (neural networks), and L08 (computer vision) use a different character in the same NorthStar Retail universe — realistic because different problems land on different desks, and avoids forcing Sarah into implausible scenarios. The cast and timeline live in each lesson's `STORY_BIBLE.md`. (Decided April 2026.)
-- **L01 anchor task:** sentiment classification of customer reviews. Chosen because a human cannot read 10,000 reviews by hand — this gives the "ML unlocks something impossible" hook that motivates the whole course. Customer churn is a better fit for L03 / L04 as a supervised tabular problem. (Decided April 2026.)
+When you finish the ten lessons, the **end-of-module project** is a Kaggle competition (default) or an optional team Hackathon — see [HACKATHON_GUIDE.md](./HACKATHON_GUIDE.md).
