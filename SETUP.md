@@ -3,7 +3,7 @@
 This guide gets you from zero to running L01-L10 on your machine in about 15 minutes.
 
 **Supported environments:**
-- **macOS** (Intel or Apple Silicon)
+- **macOS** (Apple Silicon — M1 or later)
 - **Windows 10/11 with WSL2** (Ubuntu 22.04 recommended)
 - **Google Colab** (for L08 and L10 if you don't have a GPU)
 
@@ -46,15 +46,10 @@ If a notebook hangs or errors, scroll down to **Troubleshooting**.
 
 We use conda to manage a self-contained Python environment for the course. This avoids polluting your system Python.
 
-### macOS (Intel or Apple Silicon)
+### macOS (Apple Silicon)
 
 ```bash
-# Apple Silicon (M1/M2/M3/M4)
 curl -L https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh -o miniconda.sh
-
-# Intel Mac
-curl -L https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -o miniconda.sh
-
 bash miniconda.sh -b -p $HOME/miniconda3
 $HOME/miniconda3/bin/conda init "$(basename $SHELL)"
 
@@ -263,19 +258,6 @@ Then reload VS Code again.
 ### "WSL is slow"
 
 You're probably running notebooks from `/mnt/c/...` (the Windows filesystem). Move them to `~/repos/...` inside WSL — notebook execution gets 5-10× faster.
-
-### "Conda env create fails on M1/M2/M3"
-
-Some pinned versions in `environment.yml` may not have Apple Silicon wheels. Try without the lockfile:
-
-```bash
-conda create -n dsai-m3 python=3.11
-conda activate dsai-m3
-pip install -r L01-intro-ml/requirements.txt  # if present
-# Or install minimal deps manually:
-pip install numpy pandas scikit-learn matplotlib seaborn jupyter ipykernel scipy statsmodels
-pip install torch torchvision sentence-transformers transformers
-```
 
 ### Something else broke
 
