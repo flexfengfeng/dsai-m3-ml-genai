@@ -166,9 +166,9 @@ A third split (separate from training and test), used to tune hyperparameters wi
 
 ## End-of-module project
 
-The **default capstone for this module is a Kaggle competition** — you'll pick a contest, apply the L01–L10 workflow end-to-end, and submit your notebook + leaderboard score. Details will be shared in the final lesson.
+The **default project for this module is a Kaggle competition** — you'll pick a contest, apply the L01–L10 workflow end-to-end, and submit your notebook + leaderboard score. Details will be shared in the final lesson.
 
-**Optional alternative:** the **NorthStar 2026 Hackathon** — a team-based capstone with the Sarah Chen narrative. See [HACKATHON_GUIDE.md](../HACKATHON_GUIDE.md) at the repo root. Pick this only if you'd prefer a team project over the Kaggle contest; it is **not** required.
+**Optional alternative:** the **NorthStar 2026 Hackathon** — a team-based project with the Sarah Chen narrative. See [HACKATHON_GUIDE.md](../HACKATHON_GUIDE.md) at the repo root. Pick this only if you'd prefer a team project over the Kaggle contest; it is **not** required.
 
 ## Want to go deeper after this course?
 
