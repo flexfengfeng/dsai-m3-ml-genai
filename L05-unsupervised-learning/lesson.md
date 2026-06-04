@@ -1,272 +1,121 @@
-# Lesson 5 — Unsupervised Learning
-*Concept reference. Open whenever you want to look up a definition or check the mechanics of an algorithm used in the notebooks.*
+# Lesson — L05 Unsupervised Learning
 
-> **Where Sarah is.** Marcus's brief from end-of-L04: *"Can we find natural clusters of customer behaviour WITHOUT labels?"* This week Sarah works with the same NorthStar customer data but DROPS the `churned` column entirely. She has to find structure that wasn't labelled in advance. By Friday she has segments to present, a story for each one, and a list of "unusual" customers worth a closer look.
+> **Chapter 5 of the NorthStar Retail story.** *Sarah Chen · Customer Experience Analyst · February 2023.*
+> Marcus signed off on the churn model on Friday, then asked: *"Can you find natural CLUSTERS of customer behaviour — without labels? And while you're at it, give us a watch list of the weird ones."*
+> Sarah opens the same CSV she has used for two weeks, but this time she drops the `churned` column. She has Friday to ship segments and a list.
 
----
-
-## The Big Picture — three things unsupervised learning is for
-
-Most beginners think clustering is THE unsupervised task. It isn't. The three biggest categories of unsupervised work in industry:
-
-1. **Dimensionality reduction.** Squeeze a 50-feature dataset into 2-10 components without losing the signal. Used for visualisation, for preprocessing, and for compression.
-2. **Clustering / segmentation.** Group similar items together. Used for customer segmentation, document grouping, image colour reduction.
-3. **Anomaly detection.** Flag items that look unlike everything else. Used for fraud, security threats, manufacturing defects.
-
-L05 covers one algorithm from each: PCA, K-Means, and Isolation Forest. The three together cover ~90% of real unsupervised work.
+This document is a **short reference** — the lesson itself is taught in the notebooks. Read it for orientation before class, then come back to it for the takeaways, the technique-choice checklist, the review questions, and the course map.
 
 ---
 
-## Part 1 — PCA (Principal Component Analysis)
+## How L05 is taught
 
-### What it does
+| Stage | Where to go |
+|---|---|
+| **Pre-class** | `pre-class.md` + `notebooks/01_monday_morning.ipynb` |
+| **In-class — Part 1: PCA** | `notebooks/02_pca.ipynb` |
+| **In-class — Part 2: K-Means** | `notebooks/03_kmeans.ipynb` |
+| **In-class — Part 3: Isolation Forest** | `notebooks/04_isolation_forest.ipynb` |
+| **Self-study** | `notebooks/assignment.ipynb` + `notebooks/optional_extensions.ipynb` |
+| **Reference & review** | This document |
 
-PCA finds new axes — called *principal components* — that capture the most variance in your data. The first principal component (PC1) is the direction along which the data is most spread out. PC2 is the direction of next-most variance, orthogonal to PC1. And so on.
-
-If most of the variance lives in a few directions, you can drop the rest and lose very little information. That's the dimensionality reduction.
-
-### When to use it
-
-- **For visualisation** — project 10-dimensional customer data into 2D to see structure on a screen
-- **For preprocessing** — feed a 5-component representation into a downstream model instead of 50 raw features
-- **For decorrelation** — principal components are orthogonal by construction; some downstream algorithms benefit
-
-### Mechanics in sklearn
-
-```python
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-
-# ALWAYS scale before PCA — variance is scale-dependent
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X_numeric)
-
-pca = PCA(n_components=2)  # keep top 2 components
-X_pca = pca.fit_transform(X_scaled)
-
-print(pca.explained_variance_ratio_)
-# e.g. [0.42, 0.18] → first 2 components capture 60% of total variance
-```
-
-### Reading the output
-
-**`explained_variance_ratio_`** — what fraction of total variance each component captures. A typical pattern: the first few PCs capture most variance; the rest are noise.
-
-**`components_`** — the coefficients that turn the original features into each PC. A large absolute value means that original feature contributes strongly to that PC. Useful for naming the components ("PC1 is mostly about *engagement*; PC2 is mostly about *spend*").
-
-### The scree plot
-
-Plot `explained_variance_ratio_` against component index. Look for the "elbow" where adding more components stops gaining you significant variance. Keep components up to the elbow.
-
-### What PCA is NOT
-
-- **It's not a labelling algorithm.** It doesn't tell you which group a point belongs to — just where it sits in the new coordinate system.
-- **It's not non-linear.** PCA finds linear combinations. For non-linear structure, use t-SNE or UMAP (Extension).
-- **It's not invariant to feature scaling.** Always scale first.
-
-### Quick Check — PCA
-
-**Q1.** Your dataset has 10 features. The first two principal components together explain 75% of variance. Is it safe to drop the other 8 components?
-
-*Sample answer:* "Safe" depends on the downstream use. For visualisation, yes — 2 components is what fits on a screen. For modelling, you're losing 25% of variance — that might or might not matter. Plot the cumulative variance and decide where to cut.
-
-**Q2.** Why must you scale numeric features before PCA?
-
-*Sample answer:* PCA maximises variance. Without scaling, the feature with the biggest natural range (e.g., `avg_monthly_spend` in £) will dominate PC1 — not because it's most informative, but because it has the most numeric variance. Scaling puts every feature on equal footing.
-
-**Q3.** What does it mean if PC1 has near-equal positive loadings on all your numeric features?
-
-*Sample answer:* PC1 has captured a generic "magnitude" or "size" dimension. Customers who score high on PC1 are large on every measurement — high spend, long tenure, many purchases. That's often the "engagement" or "activity level" axis.
+The notebooks are the spine. Run them in order. Come back here for the consolidated takeaways and the review questions.
 
 ---
 
-## Part 2 — K-Means Clustering
+## Overview
 
-### What it does
-
-K-Means partitions your data into K clusters by minimising the total *within-cluster sum of squared distances*. The algorithm alternates:
-
-1. Assign each point to its nearest cluster centre (centroid)
-2. Move each centroid to the mean of the points assigned to it
-3. Repeat until centroids stop moving
-
-The result: K groups where points within a group are close to each other and far from other groups.
-
-### Mechanics in sklearn
-
-```python
-from sklearn.cluster import KMeans
-
-kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
-labels = kmeans.fit_predict(X_scaled)
-centroids = kmeans.cluster_centers_
-```
-
-Two important parameters:
-- **`n_clusters` (K)** — must be set in advance. The big question (see below).
-- **`n_init`** — number of restarts with different random initialisations. Default 10 is fine.
-
-### How to choose K
-
-K-Means doesn't tell you K. You have to decide. Three standard approaches:
-
-**Elbow method.** Plot *inertia* (within-cluster sum of squared distances) against K. As K grows, inertia falls — but at some point the marginal gain shrinks. The "elbow" in the curve is a reasonable K.
-
-```python
-inertias = []
-for k in range(2, 11):
-    km = KMeans(n_clusters=k, random_state=42, n_init=10)
-    km.fit(X_scaled)
-    inertias.append(km.inertia_)
-# plot inertias vs k → look for the elbow
-```
-
-**Silhouette score.** For each point, compute how close it is to its own cluster vs the nearest other cluster. Score ranges -1 (wrong cluster) to +1 (perfectly placed). Pick K with the highest mean silhouette.
-
-```python
-from sklearn.metrics import silhouette_score
-for k in range(2, 11):
-    km = KMeans(n_clusters=k, random_state=42, n_init=10)
-    labels = km.fit_predict(X_scaled)
-    score = silhouette_score(X_scaled, labels)
-    # higher = better
-```
-
-**Business judgement.** K=4 might give a slightly lower silhouette than K=7 — but 4 segments are easier to act on than 7. Don't ignore the operational reality.
-
-### Interpreting clusters
-
-After fitting, for each cluster compute the mean of every feature. Compare to the global mean to spot what makes that cluster distinctive.
-
-```python
-df["cluster"] = labels
-profile = df.groupby("cluster").mean()
-# row = cluster id, column = feature, value = cluster's mean
-```
-
-Then write one sentence per cluster:
-- "Cluster 0 has high spend AND high tenure AND low returns. → loyal high-value customers."
-- "Cluster 1 has short tenure AND high returns. → new + dissatisfied; high churn risk."
-
-### When K-Means struggles
-
-- **Non-globular clusters.** K-Means assumes spherical clusters. For curved or stringy clusters, try DBSCAN (Extension).
-- **Highly imbalanced cluster sizes.** K-Means tends to find equal-sized clusters. If reality has one huge cluster and a few tiny ones, K-Means may force-split the big cluster.
-- **High-dimensional data.** Distances stop being meaningful in very high dimensions (the "curse of dimensionality"). Run PCA first to reduce to 2–10 components.
-
-### Quick Check — K-Means
-
-**Q1.** Your elbow plot looks like a smooth curve with no obvious bend. What do you do?
-
-*Sample answer:* Use silhouette score AND business judgement. If silhouette also doesn't peak clearly, the data probably doesn't have natural clusters at the K-Means assumption (spherical). Try DBSCAN, or accept that your "clusters" are arbitrary cuts you're choosing for operational reasons.
-
-**Q2.** K-Means gives you 4 clusters. Cluster 3 has only 12 customers; the others have ~2,500 each. What does this likely mean?
-
-*Sample answer:* Cluster 3 is a tiny outlier group — probably a handful of customers very different from everyone else. You found an anomaly cluster. Two options: (a) report cluster 3 as a "watch list" and use the other three for segmentation, or (b) drop those 12 customers as outliers and re-run K-Means.
-
-**Q3.** Should you scale features before K-Means?
-
-*Sample answer:* Yes — K-Means is distance-based. Features with bigger ranges dominate. Use `StandardScaler` before fitting.
+For four weeks Sarah has worked with a target column. This week there isn't one — and Marcus's brief is two things at once: *find groups* and *find oddballs*. The week's three Parts are a coherent arc. **PCA** compresses 10+ features into a handful of variance-rich axes — both for the Friday slide and as preprocessing for everything that follows. **K-Means** finds segments she can name, with the elbow plot and silhouette score arguing about K and business judgement picking the winner. **Isolation Forest** flags the ~5% of customers who do not fit any pattern — the watch list for the customer success team. Same dataset, same preprocessing pipeline as L03/L04; what changes is that there is no "right answer" to score against.
 
 ---
 
-## Part 3 — Isolation Forest (Anomaly Detection)
+## Key takeaways
 
-### What it does
-
-An anomaly is a point that's *unlike everything else*. Isolation Forest builds an ensemble of random trees that recursively split the data. Anomalies tend to get *isolated* (land in a leaf alone) with very few splits, while normal points need many splits to be isolated.
-
-The output: an *anomaly score* per point. Lower scores mean "more anomalous."
-
-### Mechanics in sklearn
-
-```python
-from sklearn.ensemble import IsolationForest
-
-iso = IsolationForest(
-    n_estimators=100,         # number of trees
-    contamination=0.05,       # expected fraction of anomalies
-    random_state=42,
-)
-# Returns -1 for anomalies, +1 for normal
-predictions = iso.fit_predict(X_scaled)
-scores = iso.score_samples(X_scaled)   # raw scores (lower = more anomalous)
-```
-
-### The `contamination` parameter
-
-This is your prior belief about the fraction of anomalies in the data. If you don't know:
-- Set `contamination='auto'` and let sklearn pick a threshold
-- Set a small explicit value (0.01–0.05) for "very strict"
-- Set a larger value (0.10) for "more permissive"
-
-**`contamination` controls only the threshold for the binary label.** The continuous `score_samples()` output doesn't depend on it. You can re-threshold after fitting if you change your mind.
-
-### When to use Isolation Forest
-
-- **Fraud detection.** Card transactions that look unlike a user's normal pattern.
-- **Manufacturing defects.** Products that don't match the typical sensor readings.
-- **Network security.** Connections that don't match normal traffic patterns.
-- **Data quality.** Spotting corrupted rows before they affect downstream models.
-
-### Compared to other anomaly methods
-
-| Method | Strengths | Weaknesses |
-|---|---|---|
-| **Isolation Forest** | Fast, works in high dimensions, no distance metric needed | Sensitive to parameter choices |
-| **Z-score / IQR** | Simple, interpretable | Univariate; misses multivariate anomalies |
-| **One-Class SVM** | Strong theoretical foundation | Slow on large datasets |
-| **Autoencoders** | Captures complex patterns | Need lots of data + training time |
-
-Isolation Forest is the default first try in industry.
-
-### Interpreting an anomaly
-
-For the most anomalous points, look at every feature and ask: *why does this point look weird?*
-
-```python
-# Get the most anomalous customer
-most_anomalous_idx = scores.argmin()
-print(X.iloc[most_anomalous_idx])
-# compare to median
-print("\nDataset median:")
-print(X.median())
-```
-
-The features that diverge most from the median are the "reasons" the model flagged that point.
-
-### Quick Check — Isolation Forest
-
-**Q1.** You set `contamination=0.05` on 10,000 customers. About how many will be flagged as anomalies?
-
-*Sample answer:* About 500 (5% of 10,000). The model picks a threshold on `score_samples` so that ~5% of training rows score below it.
-
-**Q2.** An anomaly is flagged. Its `last_login_days_ago` is missing, its `tenure_months` is 70 (long), and its `support_tickets_quarter` is 8 (high). Is it really an anomaly?
-
-*Sample answer:* Probably yes — long-tenured customers who suddenly stop logging in but file lots of support tickets are unusual. Whether they're fraud or just unhappy is a question for the support team. The model surfaces; humans investigate.
-
-**Q3.** Can you use Isolation Forest on new data after fitting?
-
-*Sample answer:* Yes. Use `iso.predict(new_X)` or `iso.score_samples(new_X)`. The model is fit once on training data; you can score arbitrary new rows.
+1. **Unsupervised learning is three jobs, not one.** Dimensionality reduction, clustering, and anomaly detection cover roughly 90% of real unsupervised work. Pick the job before you pick the algorithm.
+2. **Scale before any distance-based method.** PCA maximises variance and K-Means minimises squared distance — both are scale-sensitive. A feature measured in pounds will dominate a feature measured in proportions unless you standardise first.
+3. **PCA reads variance, not meaning.** `explained_variance_ratio_` tells you how much signal each component carries; `components_` tells you which original features drive it. Naming a PC ("engagement", "satisfaction-vs-dissatisfaction") is a human step done by inspecting the loadings.
+4. **K-Means will not tell you K — and the elbow plot often won't either.** Compute inertia and silhouette across K = 2…10, but expect smooth curves on real data. The defensible answer combines the metrics with what the business can actually act on.
+5. **K-Means assumes spherical, similarly-sized clusters.** If reality is stringy, density-varying, or has one huge group and a few tiny ones, K-Means will force-fit it. A 12-customer cluster next to three 2,500-customer clusters is usually an anomaly cluster, not a segment.
+6. **Cluster labels are arbitrary until you profile them.** The output of `fit_predict` is integers. The deliverable is *named segments* — built by grouping by cluster, comparing each cluster's feature means to the global mean, and writing one sentence per cluster.
+7. **Isolation Forest's `contamination` only sets the threshold.** The continuous `score_samples()` output is independent of it — you can re-threshold after fitting without re-training. Treat `contamination` as an operational dial, not a model parameter.
+8. **An anomaly is a starting point, not a verdict.** The model surfaces unusual feature *combinations*; a human reads the row and decides whether it is fraud, a data error, or just an interesting customer. Always inspect the raw features of the top-scored points before sending the list anywhere.
 
 ---
 
-## Friday — what Sarah presents
+## Choosing an unsupervised technique — a checklist
 
-By Friday afternoon Sarah has three deliverables:
+Before you reach for PCA, K-Means, or Isolation Forest, run the question through this three-step check:
 
-1. **A 2D PCA plot** of the customer base — visible structure, even though there are 10+ features
-2. **Four customer segments** named and profiled — "Loyal Premium," "New & Wary," "Steady Mid-Tier," and "Bargain Hunters"
-3. **A list of ~500 anomalous customers** (the 5% flagged at `contamination=0.05` on 10,000 customers) — for the customer success team to triage by score
+1. **What is the deliverable — a picture, a label per row, or a watch list?** A 2D picture for a stakeholder is PCA. A segment assignment per customer is K-Means (or DBSCAN if the shapes look non-globular). A ranked list of "weird" rows is Isolation Forest. The deliverable picks the algorithm; do not start the other way around.
+2. **Is the preprocessing the same one you would use for a supervised model?** Median-impute, standard-scale, one-hot encode — exactly as in L03. Unsupervised methods do not relax the leakage discipline; they tighten it, because there is no held-out test set to catch a mistake later.
+3. **Can you defend the choice with both a metric and a sentence?** "K=4 because silhouette peaks there" is half an answer. "K=4 because silhouette and elbow both support K = 3-4, and the marketing team can run campaigns against four segments but not seven" is the answer Marcus actually accepts.
 
-Marcus listens, then asks:
-
-> *"OK. Now — our sales are seasonal, and we want to forecast next quarter's revenue. Can you do that?"*
-
-That question — **predicting time-ordered data** — is the engine of **L06 (Time Series Forecasting).**
+Skip any of these and you will ship a result that is mathematically defensible but operationally useless — or one the stakeholder cannot read.
 
 ---
 
-## Glossary
+## Check your understanding
 
-See [`reference.md`](./reference.md) for a 20-term glossary covering dimensionality reduction, clustering, and anomaly-detection language used in this lesson.
+Work through these after finishing the three Part notebooks. Attempt each question on your own first.
+
+### Part 1 — PCA
+
+**Q1 — Why scale first?** A colleague runs PCA directly on the raw NorthStar features and finds that PC1 is almost entirely driven by `avg_monthly_spend`. What happened, and what should they do?
+
+> **Sample answer:** PCA maximises variance, and `avg_monthly_spend` (measured in pounds) has a far bigger numeric range than features like `returns_ratio` (0-1) or `support_tickets_quarter` (0-10). Without scaling, its raw variance swamps everything else, so PC1 just tracks spend. Fix: `StandardScaler` before `PCA`. Every feature then contributes on equal footing, and PC1 reflects the strongest *joint* pattern rather than the loudest column.
+
+**Q2 — Reading the scree plot.** The first two PCs together explain 22% of total variance on the NorthStar data; you need 6-8 components to reach 80%. What does this tell you about the data, and what does it imply for the 2D plot you are about to put in front of Marcus?
+
+> **Sample answer:** The features are mostly independent — variance is spread across many directions rather than concentrated in one or two. PCA cannot compress aggressively here. The 2D plot is still useful for visualisation, but you should be honest that it captures only ~22% of the signal; the clustering you do downstream uses all 17 dimensions, not just the two on the screen.
+
+**Q3 — Naming a component.** PC1 has strong positive loadings on `tenure_months`, `total_purchases`, and `avg_monthly_spend`. What is PC1 about, and how would you describe it to a non-technical stakeholder?
+
+> **Sample answer:** PC1 has captured a "customer engagement" or "activity level" axis — customers high on PC1 have stayed longer, bought more, and spent more. To a stakeholder: "PC1 ranks customers from least to most engaged with NorthStar." This is the human naming step: the algorithm gives coefficients; you read them and supply the label.
+
+### Part 2 — K-Means
+
+**Q4 — When the elbow is smooth.** You plot inertia vs K from 2 to 10 and the curve has no obvious bend. Silhouette score peaks weakly at K=2. What do you ship?
+
+> **Sample answer:** A smooth elbow plus a weak silhouette peak means the data does not have strong natural clusters under K-Means' spherical assumption. Two honest options: (a) pick K from business needs — e.g., K=4 because marketing can run four campaigns — and be explicit that you chose for actionability, not statistical separation; (b) try a different algorithm (DBSCAN for density-based, hierarchical for nested structure). Do not pretend the elbow showed something it did not.
+
+**Q5 — A tiny cluster.** K-Means with K=4 returns three clusters of ~2,500 customers and one with 12. What is the most likely interpretation?
+
+> **Sample answer:** The 12-customer cluster is an anomaly group — a handful of customers very different from everyone else, isolated by K-Means because they cannot be assigned to any of the natural three. Two options: report those 12 as a "watch list" alongside the three real segments, or drop them as outliers and re-fit K-Means with K=3. Either way, do not present "four equally important segments" — that misrepresents the result.
+
+**Q6 — Naming the clusters.** After fitting K=4, how do you turn the integer labels into something Marcus can act on?
+
+> **Sample answer:** Group the data by cluster and compute each feature's mean per cluster; compare to the global mean (or standardise to Z-scores for a heatmap). Each cluster has a profile — high on some features, low on others. Write one sentence per cluster naming the segment from that profile: e.g., "Cluster 0: long tenure, high spend, low returns — Loyal Premium." The deliverable is the names plus the profile table, not the integers.
+
+### Part 3 — Isolation Forest
+
+**Q7 — What `contamination` controls.** You fit Isolation Forest with `contamination=0.05`, then decide 5% is too aggressive — you only want to surface ~2%. Do you have to refit?
+
+> **Sample answer:** No. `contamination` only sets the threshold between the +1 and -1 labels; the continuous output from `score_samples()` does not depend on it. Keep the fitted model, take `score_samples`, and pick a stricter cutoff (e.g., the 2nd-percentile score). This is why `contamination` is an operational dial, not a model parameter.
+
+**Q8 — Why a flagged row was flagged.** The top-scored anomaly has tenure = 70 months, 0 purchases this quarter, and 7 support tickets. Is this a real anomaly, and what do you do with it?
+
+> **Sample answer:** Yes — long-tenured customers who suddenly stopped engaging and started complaining are genuinely unusual, and the model has surfaced a feature *combination* no single Z-score would catch. The action is not "label as fraud" — it is "send to customer success for a personal call." The model surfaces; humans investigate. Always report the diverging features alongside the flag so the recipient knows where to start.
+
+**Q9 — Anomalies vs segments.** After fitting both K-Means (K=4) and Isolation Forest, you find anomalies are spread across all four clusters, not concentrated in one. What does this confirm?
+
+> **Sample answer:** Anomaly detection and clustering are answering different questions. Clusters are dense regions; anomalies are sparse edge points — and edge points exist on the boundary of every cluster, not just one. If anomalies were concentrated in a single cluster, that cluster would itself be an "outlier group" and you would re-examine your K. Spread anomalies confirm the two methods are complementary: segments for the marketing team, watch list for customer success.
+
+---
+
+## Where L05 fits in the course
+
+L05 is the first lesson without labels — and the techniques recur whenever the target column is missing, noisy, or arrives late.
+
+| Lesson | How L05 shows up |
+|---|---|
+| **L06 — Time Series** | Anomaly detection on residuals (forecast minus actual) reuses Isolation Forest. Seasonal decomposition is the time-series analogue of PCA — finding a small number of axes that explain most variance. |
+| **L07 — Neural Networks** | Autoencoders generalise PCA to non-linear compression, and a reconstruction error is an anomaly score. The "unlabelled" mindset of L05 is what makes self-supervised pre-training make sense. |
+| **L08 — Computer Vision** | Image embeddings live in hundreds of dimensions — PCA (or t-SNE/UMAP) is the standard way to see them. Defect detection on a production line is Isolation Forest with image features. |
+| **L09 — NLP & Embeddings** | Document embeddings are clustered with K-Means to discover topics without labelled categories. Near-duplicate detection is anomaly detection in embedding space. |
+| **L10 — Transformers & GenAI** | Semantic search over an LLM index is fundamentally a distance computation in a learned space — the same metric intuitions you used for K-Means apply. Quality-checking generations against a reference set uses anomaly scoring. |
+
+---
+
+> *"OK. The segments are clear, the watch list is in the customer success team's inbox. But our sales are seasonal — every December we spike, every February we crash. Can you forecast next quarter's revenue?"* — Marcus, after Sarah's Friday presentation.
+>
+> That question — *can I predict what comes next when the data has a time order?* — is the engine of **L06 (Time Series Forecasting)**.

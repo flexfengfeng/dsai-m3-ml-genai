@@ -60,7 +60,7 @@
 
 ### Phase 2 — In class: hands-on (~3 hrs)
 
-**Concept reference →** [**lesson.md**](./lesson.md)
+**Short reference & review →** [**lesson.md**](./lesson.md) (overview, key takeaways, technique-choice checklist, 9-question review, L06→L10 course map)
 
 | # | Notebook | Sarah's day | What you explore |
 |---|---|---|---|
@@ -103,7 +103,7 @@ Optional material lives in [`notebooks/optional_extensions.ipynb`](./notebooks/o
 README.md                              ← You are here
 setup.md                               ← One-time environment setup
 pre-class.md                           ← Phase 1: 75-min self-study guide
-lesson.md                              ← Phase 2: Concept reference
+lesson.md                              ← Short reference: overview, takeaways, technique-choice checklist, review Q&A, course map
 reference.md                           ← Phase 3: Further reading + glossary
 environment.yml                        ← Conda environment spec
 slides/
