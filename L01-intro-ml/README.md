@@ -68,7 +68,7 @@ You will:
 
 **Goal:** deepen the concepts with the instructor and build real skill.
 
-**Concept reference →** [**lesson.md**](./lesson.md)
+**Short reference & review →** [**lesson.md**](./lesson.md) (overview, key takeaways, ML-fit checklist, 10-question review, L02–L10 course map)
 
 **Notebooks — run in order:**
 
@@ -116,7 +116,7 @@ The full 10-lesson roadmap — with the Core / Optional split for every lesson �
 README.md                    ← You are here
 setup.md                     ← One-time environment setup (do this first)
 pre-class.md                 ← Before-class self-study guide (75 min)
-lesson.md                    ← Concept reference for all key topics
+lesson.md                    ← Short reference: overview, takeaways, ML-fit checklist, review Q&A, course map
 reference.md                 ← Further reading and glossary
 environment.yml              ← Python environment for all 10 lessons
 slides/
