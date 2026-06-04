@@ -3,85 +3,50 @@
 > **Chapter 1 of the NorthStar Retail story.** *Sarah Chen · Customer Experience Analyst · January 2023.*
 > Early in her second week, Aisha from Customer Service hands her a USB drive with 10,000 reviews. Priya, her manager, wants a sentiment breakdown by Friday.
 
-Use this document as your concept reference — before, during, and after the session. Each section explains a key idea in plain English, anchors it to Sarah's scenario at NorthStar, and shows why it matters for the rest of the course.
-
-**How to read this document with the notebooks.** Each of the three Parts below pairs with one notebook. When you reach a Part's heading, open the matching notebook and work through it alongside the reading, then come back here for the next Part. The "Check your understanding" section at the end is reading-only. Each Part heading also repeats its notebook filename in a callout, so you never lose your place.
-
-| Section | Notebook | Time |
-|---|---|---|
-| Part 1: What is ML? | `notebooks/02_what_is_ml.ipynb` | ~30 min |
-| Part 2: Three categories of ML | `notebooks/03_three_categories.ipynb` | ~30 min |
-| Part 3: The ML workflow (applied to Sarah's project) | `notebooks/04_ml_workflow.ipynb` | ~30 min |
-| Check your understanding | at the end of this document | ~15 min |
-
-> The pre-class notebook `notebooks/01_monday_morning.ipynb` is covered in `pre-class.md`, not here — it sets the scene before this lesson begins.
+This document is a **short reference** — the lesson itself is taught in the notebooks. Read it for orientation before class, then come back to it for the takeaways, the ML-fit checklist, the review questions, and the course map.
 
 ---
 
-## Where does Machine Learning fit? — a bridge from M1 and M2
+## How L01 is taught
 
-If you are coming to M3 from the earlier modules, it is worth being explicit about what is new here. The three modules of the programme do different things with the same underlying data:
-
-| Module | What you do with data | One-line description |
-|---|---|---|
-| **M1 — Data Analytics** | *Summarise the past.* | Averages, trends, dashboards, reports. "What happened last quarter?" |
-| **M2 — Data Engineering** | *Move and store data.* | Pipelines, warehouses, clean tables. "Get the data to the right place in the right shape." |
-| **M3 — Machine Learning** | *Predict the unseen.* | Given the past, what will likely happen? Or: what is this new thing I've never seen before? |
-
-Sarah's situation is a good illustration. The reviews Aisha handed her already exist (M2 got them into a CSV). Sarah could compute the average review length and report it (M1). But *classifying each review as positive or negative* — especially when some are sarcastic, mixed, or use unusual wording — is a task where no one can write down the rules. That's an M3 problem.
-
-**A useful mental test:** if the answer to the question requires a judgement about a *new* thing you haven't summarised before, you are probably in ML territory.
-
----
-
-## Why Machine Learning matters
-
-Every business generates data — customer interactions, sales, support tickets, sensor readings, photos, documents. Traditional software turns that data into decisions by following rules a programmer writes. Machine Learning turns that data into decisions by **letting the computer discover the rules itself** from examples.
-
-This matters for three reasons:
-
-1. **Some problems have no clean rules.** Nobody can write a rule that defines a "cat" pixel-by-pixel or a "positive review" word-by-word, but millions of labelled examples exist.
-2. **Data is cheaper than expertise.** A company often has more data than it has experts to hand-write rules for.
-3. **Patterns change over time.** A rule-based fraud detector is outdated the moment fraudsters change tactics; an ML model retrained on new data keeps up.
-
-You will see all three reasons play out in Sarah's scenario at NorthStar Retail.
-
----
-
-## Part 1: What is Machine Learning?
-
-> **Companion notebook → `notebooks/02_what_is_ml.ipynb`.** Open it now and work through it alongside this Part. Return here when you finish the notebook to begin Part 2.
-
-### The core idea — two kinds of programming
-
-**The idea in plain English:** In traditional programming, a person writes rules and the computer follows them. In Machine Learning, a person provides examples (inputs and correct outputs) and the computer figures out the rules by itself.
-
-**Real-world analogy:** Imagine teaching a child the difference between a dog and a cat. You could try to write a rulebook: "dogs have floppy ears, cats have pointy ears, dogs bark..." You'd fail — there are too many exceptions. Instead, you show the child many dogs and many cats, each labelled, and their brain builds its own sense of what's what. That's Machine Learning.
-
-**Why it matters:** Every single method we study in this course (regression, trees, neural networks, GenAI) is a different way of "showing examples to the computer and letting it learn the rules." Understanding this frame keeps the course from feeling like a pile of unrelated tricks.
-
----
-
-### Key vocabulary
-
-| Term | Plain-English meaning |
+| Stage | Where to go |
 |---|---|
-| **Features** | The *inputs* to the model — whatever you know about a situation. For a customer review, features are the words; for a loan application, features are age, income, employment length. |
-| **Label** | The *answer* — what we want the model to predict. For reviews, labels are "positive" / "negative"; for loans, "defaulted" / "repaid." |
-| **Model** | The learned "rules" that map features to a prediction. You can think of it as a function: `prediction = model(features)`. |
-| **Training** | The process of showing labelled examples to an algorithm so it builds the model. |
-| **Inference** | Using a trained model on new, unlabelled data. (Sarah runs inference when she applies the model to her 10,000 unclassified reviews.) |
-| **Pre-trained model** | A model someone else trained on a huge dataset. You can use it directly without doing the training yourself. This is what Sarah uses in class. |
+| **Pre-class** | `pre-class.md` + `notebooks/01_monday_morning.ipynb` |
+| **In-class — Part 1: What is ML?** | `notebooks/02_what_is_ml.ipynb` |
+| **In-class — Part 2: Three categories** | `notebooks/03_three_categories.ipynb` |
+| **In-class — Part 3: The ML workflow** | `notebooks/04_ml_workflow.ipynb` |
+| **Self-study** | `notebooks/assignment.ipynb` (Sarah on secondment to Lakeside Bank) + `notebooks/optional_extensions.ipynb` |
+| **Reference & review** | This document |
+
+The notebooks are the spine. Run them in order. Come back here for the consolidated takeaways and the review questions.
 
 ---
 
-### When is ML the right tool?
+## Overview
 
-ML is the right tool when **all three** of these are true:
+Sarah's job this week is to classify 10,000 customer reviews — too many to read by hand, and the rules are too fuzzy to write by hand. That makes it an ML problem. By Friday she will use a pre-trained sentiment model to label every review, recognise that her task is **supervised** learning, and place her work inside the **7-step workflow** that every real ML project follows. L01 exists so the rest of M3 has a shared mental model: every method we will study later — regression, trees, neural nets, GenAI — is a variation on "show the computer examples and let it learn the rules."
 
-1. **The rules are hard to write by hand** (not a formula, not a policy you can encode).
+---
+
+## Key takeaways
+
+1. **ML is "show, don't tell" programming.** Instead of writing rules, you give the computer labelled examples and let it learn the rules itself.
+2. **Three categories — recognise them, but for now we only build supervised.** L01–L04 and L08–L10 are supervised; L05 is unsupervised; reinforcement is mentioned, not built.
+3. **A real ML project is 60–70% framing, collection, and cleaning.** Training and evaluation are 10–20%. Deploy and monitor are another 20%. Beginners expect the opposite split.
+4. **Framing is the highest-leverage step.** A perfect model solving the wrong problem is worth zero. Always pin down: what's the question, who acts on the answer, what counts as success, and what's the cost of being wrong each way?
+5. **Evaluation must use unseen data.** A model that scores 99% on training data can score 60% on data it has never seen. Always hold out a test set.
+6. **Models decay; monitor and retrain.** "Train once and forget" does not work — the world moves, the data shifts.
+7. **The unanswered question is L02.** Sarah's model says most reviews are positive — *but how sure are we?* That is L02 (Probability & Statistics for ML).
+
+---
+
+## Is ML the right tool? — a checklist
+
+Use ML when **all three** are true:
+
+1. **The rules are hard to write by hand.** (Not a formula, not a policy you can encode.)
 2. **You have data with examples** of inputs and correct outputs — or you can get it.
-3. **Being right most of the time is good enough** — ML is probabilistic, not deterministic.
+3. **Being right most of the time is good enough.** ML is probabilistic, not deterministic.
 
 ML is the **wrong** tool when:
 
@@ -89,166 +54,13 @@ ML is the **wrong** tool when:
 - The cost of any wrong answer is catastrophic (flight-control software).
 - You have no data. ML without data is astrology with more maths.
 
----
-
-### A first look at data before modelling — descriptive stats in plain English
-
-Before training any model, practitioners spend time *looking at the data*. Even if you never touch a formula, three ideas show up in every ML project and are worth meeting now — informally. We will come back to them with proper maths in **L02 (Probability & Statistics for ML)**.
-
-**Distribution — the shape of the data.** A *distribution* is just the pattern of how often different values appear. If Sarah plots the length of all 10,000 reviews, she might see most reviews are 20–80 words, with a long thin tail of very long complaints. The shape tells her what "typical" looks like, and where the outliers are.
-
-**Mean and spread — where the middle is and how far things stray.** The *mean* is the average (add them up and divide). The *spread* (called *standard deviation* when we get formal in L02) is a one-number answer to "how far from the average do values usually sit?" Together, mean and spread summarise a column of data in two numbers — the mental shorthand behind phrases like "average review is 40 words, give or take 15."
-
-**Correlation — do two things move together?** If longer reviews tend to be more negative, we say review length and sentiment are *correlated*. Correlation is not causation — but noticing it is often where a useful project idea starts.
-
-For L01, that's all the stats you need: know what these three mean in English. L02 adds the formulas, the Central Limit Theorem, confidence intervals, and how to tell whether a correlation is real or noise.
-
----
-
-## Part 2: The three categories of ML
-
-> **Companion notebook → `notebooks/03_three_categories.ipynb`.** Open it now and work through it alongside this Part. Return here when you finish the notebook to begin Part 3.
-
-Every ML problem fits into one of three broad categories — distinguished by **what data you have** and **what you want the model to do**. In L01 we introduce all three verbally so you can recognise them, but **we only run supervised learning hands-on this week** (Sarah's sentiment task). Later lessons go deeper on each.
-
-### Supervised Learning
-
-**The idea in plain English:** You have input-output pairs (features + label), and you want the model to learn the mapping so it can predict labels for new, unlabelled inputs.
-
-**Real-world analogy:** A student studying past exam papers with answers. They see many questions and the correct answers, and over time, they learn to answer new questions on their own.
-
-**Sarah's example:** her sentiment task is supervised. The model learned from many past reviews labelled positive or negative; now it can predict the label for any new review. **This is what you ran in Part 1.**
-
-**Why it matters:** Supervised learning is **the workhorse of business ML**. Churn prediction, fraud detection, demand forecasting, sentiment analysis, loan approval — all supervised. Lessons **L03 and L04** cover this in depth.
-
-**When to use:** You have labels. You want predictions.
-
----
-
-### Unsupervised Learning
-
-**The idea in plain English:** You have input data but no labels. You want the model to find **structure** in the data — groups, patterns, anomalies — on its own.
-
-**Real-world analogy:** A librarian faced with a crate of new books, none labelled by genre. She groups them by "these feel similar" — romance over here, mystery over there — even though no one told her what the genres are.
-
-**Sarah's example:** if NorthStar wanted to discover *what kinds of customers* it has — people who buy formal wear only, people who buy activewear on weekends, people who return everything — without anyone labelling them in advance, that's unsupervised. We will do exactly this in **L05 (Unsupervised Learning)**.
-
-**When to use:** You don't have labels — or getting labels is too expensive — and you want to understand what's in the data.
-
----
-
-### Reinforcement Learning
-
-**The idea in plain English:** An agent learns by interacting with an environment: it tries actions, gets rewards or penalties, and adjusts its behaviour over time to maximise reward.
-
-**Real-world analogy:** Training a dog with treats. Sit → treat. Bark at the mailman → no treat. The dog learns which actions pay off.
-
-**Sarah's example:** NorthStar doesn't really have an RL problem in L01's story, but a plausible one would be a recommendation system that learns over time which product suggestions turn into purchases — the reward is the purchase, the action is the suggestion.
-
-**Why it matters:** Reinforcement learning is the engine behind game-playing AIs, robotic control, ad bidding, and parts of how modern LLMs are trained. **We do not build RL systems in this course** — it is a large field beyond the 10-lesson scope — but you should recognise the category when it appears in the wild.
-
-**When to use:** You can't list correct answers in advance — you can only give the system *feedback on what it does*, and you need it to explore.
-
----
-
-### Comparison at a glance
-
-| Dimension | Supervised | Unsupervised | Reinforcement |
-|---|---|---|---|
-| **Data you need** | Features + labels | Features only | Environment + reward signal |
-| **Goal** | Predict labels | Find structure | Maximise reward over time |
-| **Example from Sarah's world** | Classify a review as positive or negative | Discover hidden customer groups | Recommendation system that learns from purchases |
-| **Covered in this course** | L01, L03, L04, L08, L09, L10 | L05 | Mentioned, not built |
-
----
-
-## Part 3: The ML workflow (applied to Sarah's project)
-
-> **Companion notebook → `notebooks/04_ml_workflow.ipynb`.** Open it now and work through it alongside this Part. Return here when you finish the notebook for the wrap-up and the "Check your understanding" questions.
-
-An ML project is not "train a model." It's a process with seven steps, and most of the work is **before and after** training. Rather than run a new experiment, we apply this workflow retrospectively to the sentiment project Sarah has already completed — it fixes each step to one concrete thing.
-
-### The 7 steps
-
-1. **Frame the problem.** What is the business question? What will someone *do* with the answer? What counts as success?
-2. **Collect the data.** Where does it live? Is it enough? Is it representative?
-3. **Clean and explore.** Missing values, duplicates, wrong types, biased samples.
-4. **Train the model.** Choose a method, fit it to the data.
-5. **Evaluate on unseen data.** Is it good enough on examples it hasn't seen?
-6. **Deploy.** Make the model available to the people or systems that will use it.
-7. **Monitor.** The world changes; the model decays. Track its performance over time.
-
-### Common time split
-
-On a real project, the time distribution often looks like:
-
-- Framing + collection + cleaning: **60–70%**
-- Training + evaluation: **10–20%**
-- Deployment + monitoring: **20%**
-
-**Beginners often imagine the split is the opposite.** Understanding this split is part of becoming a practitioner.
-
----
-
-### Framing: the most important step
-
-**The idea in plain English:** Before you write any code, get specific about:
-- What is the **question**? ("Will this customer cancel?")
-- Who will **act** on the answer? (Retention team, marketing automation, nobody?)
-- What is **success**? (90% accuracy? Saving $100k in churn? Customer delight?)
-- What is the **cost of being wrong**? (Both kinds — false positives and false negatives.)
-
-**Real-world analogy:** Before a detective starts searching a house, they ask: *"What am I actually looking for? Who will use the evidence? What happens if I find nothing?"* ML projects without framing are detectives searching without a theory.
-
-**Why it matters:** A beautifully trained model that solves the wrong problem is worth zero. Sarah's task seems obvious ("classify reviews") until you ask: *positive/negative only? or also topic? whose definition of "positive"? and what happens after she labels them?*
-
----
-
-### Evaluation: keeping yourself honest
-
-**The idea in plain English:** A model that scores 99% on the data it was trained on might score 60% on data it has never seen. You must hold out some data as a test set and only score the model on that.
-
-**Real-world analogy:** A student who memorised the answers to last year's exam might score 100% on that exam — but tell you nothing about whether they understand the material. The real test is a new exam.
-
-**Why it matters:** Every model evaluation in this course — and every serious ML project in the world — uses a train/test split (or better, cross-validation, which we will cover in **L03**).
-
----
-
-### Deployment and monitoring — the hidden 40%
-
-**The idea in plain English:** Once the model works in a notebook, you have to (a) make it runnable in production (API, batch pipeline, embedded), (b) track how it is doing in the wild, and (c) decide when to retrain.
-
-**Real-world analogy:** Shipping a product is different from designing a prototype. A prototype that works on the lab bench may fall apart when actual customers use it. Same for models.
-
-**Why it matters:** Many beginner projects stop at Step 5 (evaluation on a notebook). Senior practitioners are distinguished by how seriously they take Steps 6 and 7.
-
----
-
-## Putting it all together
-
-A real ML practitioner's day is not "training models." It is **choosing** whether ML is the right tool in the first place, **framing** the problem to ensure the model will be used, **preparing** the data (the bulk of the work), and **monitoring** what happens once the model is live.
-
-You will see this pattern repeat through every lesson in this course. We will go deeper on probability and statistics in L02, supervised methods in L03–L04, unsupervised in L05, time series in L06, neural networks in L07, vision in L08, language in L09, and transformers + practical GenAI in L10 — but every lesson sits inside this same outer workflow.
-
----
-
-## Sarah's unanswered question (the bridge to L02)
-
-By the end of class, Sarah has classified 10,000 reviews in minutes. But Priya is quiet for a moment and then asks:
-
-> *"Sarah — your model says most reviews are positive. But are the positive ones actually positive? How do we know we can trust that number?"*
-
-Sarah doesn't have an answer today. That question — *how sure are we?* — is the engine of **L02 (Probability and Statistics for ML)**. Come to L02 ready to help her answer it.
+Half the value of an ML practitioner is knowing when *not* to reach for ML.
 
 ---
 
 ## Check your understanding
 
-> **No notebook for this section** — answer the questions inside this document. You can switch your notebook(s) closed at this point.
-
-Work through these after you have finished the three Part notebooks. Try each question on your own first — the sample answer follows. If a question feels unclear, revisit the relevant section of this document.
-
----
+Work through these after you have finished the three Part notebooks. Try each question on your own first — the sample answer follows.
 
 ### Part 1 — What is ML?
 
@@ -268,8 +80,6 @@ Work through these after you have finished the three Part notebooks. Try each qu
 
 > **Sample answer:** (a) M1 — summarising the past. (b) M2 — moving/joining data. (c) M3 — judgement about a new thing, no simple rule. Only (c) needs Machine Learning.
 
----
-
 ### Part 2 — Three categories
 
 **Q5 — Sarah's review problem.** Which category does Sarah's review-classification problem fit into, given she has a training set of 50,000 past reviews already labelled positive or negative?
@@ -283,8 +93,6 @@ Work through these after you have finished the three Part notebooks. Try each qu
 **Q7 — Same data, different goal.** Could Sarah's review problem also be tackled with *unsupervised* learning? What would be different?
 
 > **Sample answer:** Yes — she could cluster the 10,000 reviews into, say, 5 groups based on how similar they are. She would not know which group is "positive" or "about sizing" without inspecting a sample. It would be faster to set up (no labels needed) but less useful to Priya, who asked specific labelled questions.
-
----
 
 ### Part 3 — Workflow
 
@@ -306,4 +114,24 @@ Work through these after you have finished the three Part notebooks. Try each qu
 
 ---
 
-**Before you move on,** work through the three Part notebooks, then attempt the assignment (Sarah goes on secondment to Lakeside Bank).
+## Where L01 fits in the course
+
+L01 establishes the vocabulary and the workflow that the rest of M3 lives inside. Every lesson below sits inside the same 7-step workflow you met in `notebooks/04_ml_workflow.ipynb`.
+
+| Lesson | What it adds |
+|---|---|
+| **L02 — Probability & Statistics for ML** | Answers Sarah's unanswered question: *how sure are we?* Distributions, the Central Limit Theorem, confidence intervals, A/B testing. |
+| **L03 — Supervised Learning** | Preprocessing, train/validate splits, metrics, threshold choice. The supervised category, properly. |
+| **L04 — Supervised Learning (Advanced)** | Decision trees → random forests → gradient boosting. Hyperparameter tuning. |
+| **L05 — Unsupervised Learning** | PCA, k-means, anomaly detection. The category Sarah didn't use this week. |
+| **L06 — Time Series** | When the data has a clock — forecasting, decomposition. |
+| **L07 — Neural Networks** | Perceptrons → MLPs, gradient descent, PyTorch training loops. |
+| **L08 — Computer Vision** | Convolutions, CNNs, transfer learning. |
+| **L09 — NLP & Embeddings** | Words → vectors, pretrained embeddings, semantic search. |
+| **L10 — Transformers & GenAI** | Attention, LLM APIs, RAG pipelines. |
+
+---
+
+> *"Sarah — your model says most reviews are positive. But are the positive ones actually positive? How do we know we can trust that number?"* — Priya, end of week 2.
+>
+> Come to L02 ready to help Sarah answer it.
