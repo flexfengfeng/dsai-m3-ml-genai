@@ -5,12 +5,16 @@
 
 Use this document as your concept reference — before, during, and after the session. Each section explains a key idea in plain English, anchors it to Sarah's scenario at NorthStar, and shows why it matters for the rest of the course.
 
+**How to read this document with the notebooks.** Each of the three Parts below pairs with one notebook. When you reach a Part's heading, open the matching notebook and work through it alongside the reading, then come back here for the next Part. The "Check your understanding" section at the end is reading-only. Each Part heading also repeats its notebook filename in a callout, so you never lose your place.
+
 | Section | Notebook | Time |
 |---|---|---|
 | Part 1: What is ML? | `notebooks/02_what_is_ml.ipynb` | ~30 min |
 | Part 2: Three categories of ML | `notebooks/03_three_categories.ipynb` | ~30 min |
 | Part 3: The ML workflow (applied to Sarah's project) | `notebooks/04_ml_workflow.ipynb` | ~30 min |
 | Check your understanding | at the end of this document | ~15 min |
+
+> The pre-class notebook `notebooks/01_monday_morning.ipynb` is covered in `pre-class.md`, not here — it sets the scene before this lesson begins.
 
 ---
 
@@ -45,6 +49,8 @@ You will see all three reasons play out in Sarah's scenario at NorthStar Retail.
 ---
 
 ## Part 1: What is Machine Learning?
+
+> **Companion notebook → `notebooks/02_what_is_ml.ipynb`.** Open it now and work through it alongside this Part. Return here when you finish the notebook to begin Part 2.
 
 ### The core idea — two kinds of programming
 
@@ -101,6 +107,8 @@ For L01, that's all the stats you need: know what these three mean in English. L
 
 ## Part 2: The three categories of ML
 
+> **Companion notebook → `notebooks/03_three_categories.ipynb`.** Open it now and work through it alongside this Part. Return here when you finish the notebook to begin Part 3.
+
 Every ML problem fits into one of three broad categories — distinguished by **what data you have** and **what you want the model to do**. In L01 we introduce all three verbally so you can recognise them, but **we only run supervised learning hands-on this week** (Sarah's sentiment task). Later lessons go deeper on each.
 
 ### Supervised Learning
@@ -155,6 +163,8 @@ Every ML problem fits into one of three broad categories — distinguished by **
 ---
 
 ## Part 3: The ML workflow (applied to Sarah's project)
+
+> **Companion notebook → `notebooks/04_ml_workflow.ipynb`.** Open it now and work through it alongside this Part. Return here when you finish the notebook for the wrap-up and the "Check your understanding" questions.
 
 An ML project is not "train a model." It's a process with seven steps, and most of the work is **before and after** training. Rather than run a new experiment, we apply this workflow retrospectively to the sentiment project Sarah has already completed — it fixes each step to one concrete thing.
 
@@ -233,6 +243,8 @@ Sarah doesn't have an answer today. That question — *how sure are we?* — is 
 ---
 
 ## Check your understanding
+
+> **No notebook for this section** — answer the questions inside this document. You can switch your notebook(s) closed at this point.
 
 Work through these after you have finished the three Part notebooks. Try each question on your own first — the sample answer follows. If a question feels unclear, revisit the relevant section of this document.
 
