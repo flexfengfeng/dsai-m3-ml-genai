@@ -1,221 +1,109 @@
-# L10 — Lesson · Transformers, Attention & GenAI
+# Lesson — L10 Transformers, Attention & GenAI
 
-> *Sarah's catalogue search shipped in L09. Marcus's Friday question: can we build a shopping assistant that understands natural language AND recommends actual products? The answer is RAG — built on transformers, attention, and an LLM. This is the closer.*
+> **Chapter 10 of the NorthStar Retail story.** *Sarah Chen · Customer Experience Analyst · End of mid-year.*
+> The L09 catalogue search has shipped — customers can type "blue summer dress" and find one. Friday afternoon, Marcus walks over with one last brief: *"Can a customer ask 'I need a summer outfit for a beach holiday under £200' and get an actual product recommendation, in natural language, from our catalogue?"*
+> This is the closer. The answer is a transformer, an LLM, and the pattern that ties them to L09's embeddings — RAG.
 
-## Part 1 — What problem does attention solve?
+This document is a **short reference** — the lesson itself is taught in the notebooks. Read it for orientation before class, then come back to it for the takeaways, the RAG-design checklist, the review questions, and the arc-closing reflection.
 
-### 1.1 The context problem
+---
 
-Read this sentence: *"The trophy didn't fit in the brown suitcase because it was too big."*
+## How L10 is taught
 
-What does "it" refer to? The trophy.
+| Stage | Where to go |
+|---|---|
+| **Pre-class** | `pre-class.md` + `notebooks/01_monday_morning.ipynb` |
+| **In-class — Part 1: Attention intuition** | `notebooks/02_attention_intuition.ipynb` |
+| **In-class — Part 2: Using a small LLM** | `notebooks/03_using_an_llm.ipynb` |
+| **In-class — Part 3: RAG pipeline** | `notebooks/04_rag_pipeline.ipynb` |
+| **Self-study** | `notebooks/assignment.ipynb` + `notebooks/optional_extensions.ipynb` |
+| **Reference & review** | This document |
 
-Now: *"The trophy didn't fit in the brown suitcase because it was too small."*
+The notebooks are the spine. Run them in order. Come back here for the consolidated takeaways and the review questions.
 
-Now "it" refers to the suitcase. The pronoun's meaning depends on the **rest of the sentence**.
+---
 
-A model processing this sentence word-by-word, with no way to look back or forward, cannot disambiguate "it". It needs a mechanism to look at every other word — to decide which words matter most for understanding the current one.
+## Overview
 
-That mechanism is **attention**.
+Marcus's shopping-assistant brief sits on top of three ideas that build on each other. **Attention** is the inductive bias that finally lets a model treat a sentence as a sentence rather than a stream of disconnected tokens — every token gets to look at every other token and decide who matters. **An LLM** is what you get when you stack that mechanism into a deep autoregressive next-token predictor and pretrain it on internet-scale text — it produces fluent language and general reasoning, but it has never seen NorthStar's catalogue, so asked about it cold it will hallucinate plausible-sounding products that don't exist. **RAG** is the pattern that fixes this: take L09's embedding retrieval, use it to pull the relevant catalogue rows for a query, paste them into the LLM's prompt, and ask the LLM to answer using only what was retrieved. That is the modern GenAI stack, and it is what ships behind Marcus's assistant.
 
-### 1.2 Before attention: RNNs and their limits
+---
 
-Before 2017, the dominant approach to sequential data was the **Recurrent Neural Network**. RNNs process tokens one at a time, maintaining a hidden state that summarises everything seen so far.
+## Key takeaways
 
-Problems:
-- **Sequential bottleneck.** Can't parallelise — each step depends on the previous step's output.
-- **Long-range forgetting.** By token 50, the hidden state has limited room for what happened at token 1.
-- **No selective focus.** Every past token gets crammed equally into the hidden state.
+1. **Attention solves the context problem that RNNs and CNNs cannot.** RNNs cram everything into a single hidden state and forget across long sequences; CNNs only see a local window. Attention lets every token look at every other token directly, in parallel, and weight by relevance — that is why "it" can resolve to "trophy" or "suitcase" depending on the rest of the sentence.
+2. **Query, key, value is the whole mechanism.** Each token projects to three vectors: a query (what am I looking for?), a key (what do I offer?), a value (what content do I contribute?). Dot-product the queries against keys, softmax to get weights, take a weighted sum of values. One matmul plus a softmax — and a transformer is just this block, stacked.
+3. **Scale changes capability, not architecture.** The same block runs in `all-MiniLM-L6-v2` (6 layers, 22M params), BERT-base (12 layers, 110M), GPT-3 (96 layers, 175B), and the frontier models. Pretraining data and compute pick what the heads learn; the recipe doesn't change.
+4. **An LLM is a next-token predictor wrapped in a sampling loop.** Given tokens, it outputs a probability distribution over the vocabulary; greedy or temperature/top-p sampling picks one; you append it and run again. Tokenisation and the chat template are part of the contract — apply the right one or the model produces garbage.
+5. **Hallucination is the default behaviour, not a bug.** Ask an LLM about your product catalogue with no context and it will invent confident-sounding product names and prices. The model is doing what it was trained to do — produce plausible text — with no access to ground truth.
+6. **RAG grounds the LLM in your data: retrieve, augment, generate.** Embed the catalogue once (L09), embed the query, pull the top-K most similar documents, paste them into the prompt, and instruct the model to recommend only what is in the list. The LLM brings fluency and reasoning; retrieval brings facts and an audit trail.
+7. **Prompt design carries weight on small models.** On a 360M model, where you place the catalogue (user turn vs system prompt), how strictly you phrase the "do not invent products" rule, and `repetition_penalty` all materially change output quality. Larger hosted models are more forgiving but not exempt.
+8. **Evaluating generative output needs more than accuracy.** A RAG system needs a held-out evaluation set of (query → expected products / acceptable answer) pairs, plus checks for hallucinated product names not in the retrieved set. "Looks good in the demo" is not evidence it works.
 
-Attention fixes all three. It looks at every other token directly, computes how relevant each is to the current token, and selects information by weighted sum.
+---
 
-## Part 2 — Attention, mechanically
+## Designing a RAG pipeline before you ship it — a checklist
 
-### 2.1 Queries, keys, values
+Before you put a RAG system in front of a customer, run it through this three-step check:
 
-For each token, the model computes three vectors:
+1. **Is retrieval pulling the right documents?** The LLM can only recommend what retrieval surfaces. Evaluate retrieval *on its own* first — for a held-out set of realistic queries, do the top-K results actually contain the products a human would pick? If retrieval is weak, no amount of prompt engineering at the generation step will save you.
+2. **Is the prompt forcing the model to stay grounded?** The system prompt must say, explicitly, "recommend only from the products listed below; if nothing fits, say so." Add a safety check that flags any product name in the response that is not in the retrieved set. Without grounding rules plus a check, the model will eventually invent.
+3. **Do you have an evaluation set, not just a demo?** Write down 20–50 (query → acceptable answer) pairs before you tune anything. Measure on that set when you change the retriever, the K, the prompt, or the model. A change that looks better on one example often breaks five others.
 
-- **Query (Q):** what THIS token is looking for
-- **Key (K):** what each OTHER token offers
-- **Value (V):** the actual content each other token contributes
+Skip any of these and the assistant will demo beautifully and fail in production — the most expensive way to launch a GenAI feature.
 
-Attention weights are computed as:
+---
 
-```
-attention(Q, K, V) = softmax(Q · Kᵀ / √d) · V
-```
+## Check your understanding
 
-In plain English:
-1. Take dot products of the query against every key → similarity scores
-2. Scale and softmax → these become **attention weights** that sum to 1
-3. Use the weights to compute a weighted sum of the values → that's the output for this token
+Work through these after finishing the three Part notebooks. Attempt each question on your own first.
 
-The output is a new vector for each token, computed by looking at **every other token** in the sequence and selecting what's relevant.
+### Part 1 — Attention
 
-### 2.2 Why "multi-head"?
+**Q1 — Why attention beats RNNs.** A teammate proposes building the shopping assistant on a vanilla RNN: "It reads the customer's question one token at a time and produces a recommendation." Give two distinct reasons this is a poor architectural choice for modern NLP.
 
-A single attention layer can only learn one "kind" of relationship. Real language has many — subject-verb, pronoun-antecedent, modifier-noun, semantic-association.
+> **Sample answer:** (1) **Long-range forgetting.** An RNN's hidden state has limited capacity; by the time it has consumed a 30-token question, the early words ("summer", "beach") may be diluted in the state. Attention lets every output position look directly at every input token — no information bottleneck. (2) **No parallelism.** RNNs process tokens sequentially because each step depends on the previous hidden state. Attention computes all token interactions in parallel via matrix multiplications, which is why transformers train on giant data on modern hardware and RNNs effectively don't.
 
-**Multi-head attention** runs several attention computations in parallel, each with its own Q/K/V projections, then concatenates their outputs. Each head can specialise in a different relationship pattern. Standard transformers use 8-16 heads per layer.
+**Q2 — Q/K/V intuition.** In one sentence each, what role do the query, key, and value vectors play in self-attention?
 
-### 2.3 The transformer block
+> **Sample answer:** The **query** for a token is what that token is looking for in the rest of the sequence. The **key** for each token is what that token advertises about itself, used to compute how well it matches a query. The **value** is the actual content a token contributes once it is selected — the weighted sum of values across the sequence is the attention output.
 
-One transformer **block** is:
+### Part 2 — Using an LLM
 
-```
-[Multi-head Attention]  →  [Add input] (residual)  →  [LayerNorm]
-        ↓
-[Feed-Forward (2 linear layers)]  →  [Add input] (residual)  →  [LayerNorm]
-```
+**Q3 — What an LLM actually does.** A colleague says: "Generative AI is fundamentally different from the classifiers we built in L03–L08." How would you describe what a generative LLM is doing, in one or two sentences, in terms a classifier-builder would recognise?
 
-That's it. A "transformer model" is a stack of these blocks — 6 in `all-MiniLM-L6-v2`, 12 in BERT-base, 96 in GPT-3, undisclosed but very many in GPT-4.
+> **Sample answer:** An autoregressive LLM is a classifier whose classes are "the next token in the vocabulary." Given a sequence of input tokens, it outputs a probability distribution over ~50,000 vocabulary tokens (the classes); you pick one (greedily or by sampling), append it, and run again. The framework is identical to L03's classifier — model produces probabilities, you pick a label — just looped, and with a much larger label space.
 
-The same architecture scales from 22M parameters to 1T+. The recipe doesn't change. The pots get bigger.
+**Q4 — Hallucination.** You ask SmolLM2-360M, with no context, "What summer dresses does NorthStar sell under £80?" It returns confident product names and prices that don't exist in the catalogue. Is this a bug? What is the right fix?
 
-## Part 3 — From transformer to LLM
+> **Sample answer:** Not a bug — the model is doing what it was trained to do, which is produce plausible-sounding text. It has never seen NorthStar's catalogue, so there is no ground truth for it to reach for; it fills the gap with a plausible average of what "a product list" looks like. The fix is not to ask the model to "try harder" or to fine-tune; the fix is to give it the catalogue at inference time. That is the role of retrieval-augmented generation.
 
-### 3.1 What an LLM actually does
+### Part 3 — RAG
 
-An autoregressive LLM (GPT family, Llama, Claude) does ONE thing: given a sequence of tokens, predict the next token.
+**Q5 — Why RAG beats raw prompting.** Marcus asks: "If GPT-4 is so smart, why don't we just paste our whole catalogue into the prompt every time?" Give two reasons RAG is the right architecture even with a large hosted model.
 
-```
-Input  : "The cat sat on the"
-Output : a probability distribution over the vocabulary
-         "mat"  : 0.34
-         "floor": 0.18
-         "rug"  : 0.09
-         ...
-```
+> **Sample answer:** (1) **Cost and latency.** Pasting 76 products (let alone a real catalogue of 10,000) into every prompt is wasteful — you pay per token and add latency for content the model doesn't need for this query. RAG sends only the top-5 relevant rows. (2) **Quality.** LLMs degrade on very long contexts — they "lose the needle in the haystack." A focused 5-product prompt with explicit grounding instructions produces more reliable recommendations than 10,000 products dumped in. RAG separates "which products are relevant?" (cheap embedding search) from "phrase a recommendation" (LLM) and lets each component do what it's good at.
 
-To generate text, the model picks one of these tokens, appends it to the input, and runs again. Repeat until you've generated enough tokens or hit a stop signal.
+**Q6 — Where the catalogue goes in the prompt.** Notebook 04 puts the retrieved products in the *user* turn rather than the system prompt, with the instruction "recommend only from these." Why does this matter for a small model?
 
-That's it. There's no other magic. Every ChatGPT response is generated by this loop, one token at a time.
+> **Sample answer:** A 360M-parameter model can drift on long system prompts that contain structured data — it tends to treat them as text to continue rather than rules to follow. Framing the catalogue as "here is what we have, answer my question using only these" in the user turn keeps the grounding constraint and the data adjacent, and matches the chat-template patterns the model was instruction-tuned on. Larger hosted models are more forgiving, but the principle holds: prompt structure is part of the design, not an afterthought.
 
-### 3.2 Tokenisation, again
+**Q7 — Evaluating generative output.** Sarah's first RAG demo answers her own test query perfectly. She wants to ship it. What do you tell her she still needs to do before launch?
 
-The model doesn't see characters or words — it sees **subword tokens** (same as L09). "Hello, world!" might be:
+> **Sample answer:** A single demo query is not evidence the system works. Sarah needs (a) a held-out evaluation set of 20–50 realistic (query → acceptable products / answer) pairs that she did not see while building, (b) a measurement at both stages — retrieval precision (does the top-K contain the right products?) and generation quality (does the answer recommend products that are in the retrieved set, and only those?), and (c) a safety check that flags responses mentioning product names not in the retrieved set. Only then is she comparing the RAG assistant against the L09 search baseline on equal footing.
 
-```
-['Hello', ',', ' world', '!']
-```
+**Q8 — When NOT to reach for an LLM.** Marcus also asks whether the customer-review sentiment task from L01 should be "upgraded" to use an LLM now that Sarah knows how. What's your recommendation?
 
-The exact split depends on the tokeniser. Different model families use different tokenisers. When you call `model.generate(...)`, three things happen:
+> **Sample answer:** Probably no. L01's pretrained sentiment pipeline is fast, cheap, deterministic, and good enough for the task. An LLM would add latency, cost, non-determinism, and a hallucination surface for zero accuracy gain. Reach for an LLM when the task genuinely needs language generation or open-ended reasoning the smaller model can't do (the shopping assistant qualifies); stick with the smaller specialised model when classification is all you need.
 
-1. **Encode** the input text to token IDs
-2. **Generate** new token IDs one at a time
-3. **Decode** the IDs back to text
+---
 
-### 3.3 Sampling parameters
+## Where L10 fits — and where you go next
 
-Once you have a probability distribution over the next token, how do you pick?
+L10 closes the module. Across ten lessons Sarah has built the toolkit a working ML practitioner actually uses: honest evaluation and confidence intervals (L02), supervised pipelines and threshold choice (L03–L04), unsupervised methods and time series (L05–L06), neural networks and computer vision (L07–L08), semantic search (L09), and now the transformer architecture that underlies all of modern NLP plus the RAG pattern that ties retrieval to generation. None of these is a final answer — every one is a starting point. Where the toolkit takes you next is your call: a hackathon project where you ship Sarah's assistant end-to-end on your own data; a real problem at work where you finally have the vocabulary to scope it; a deeper dive into MLOps, fine-tuning, evaluation harnesses, or agentic systems. The foundations are now under you. The interesting work starts on the other side of this lesson.
 
-- **Greedy** (`do_sample=False`): always pick the highest-probability token. Deterministic. Boring text.
-- **Temperature**: scale the logits. T=0 → greedy; T=1 → use the distribution as-is; T>1 → flatter, more random.
-- **Top-k**: only consider the K highest-probability tokens before sampling. Cuts off the long tail.
-- **Top-p (nucleus)**: only consider tokens summing to probability mass P. Adaptive cutoff.
+---
 
-Most production setups use temperature 0.5-0.8 + top-p 0.9. Tweak based on the task — code generation likes lower temperature; creative writing likes higher.
-
-### 3.4 Instruction tuning and chat templates
-
-A "base" LLM trained on raw text is good at completing arbitrary text, but bad at following instructions. **Instruction tuning** is a second training phase where the model is shown examples of (instruction → desired response) pairs and learns to follow them.
-
-The format matters. Instruction-tuned models expect a specific **chat template** — special tokens marking user/assistant turns. SmolLM2 uses:
-
-```
-<|im_start|>user
-What's a good summer dress?
-<|im_end|>
-<|im_start|>assistant
-```
-
-The `apply_chat_template()` helper handles this for you. Don't try to construct prompts manually — get the format wrong and the model produces garbage.
-
-## Part 4 — RAG (Retrieval-Augmented Generation)
-
-### 4.1 The problem with LLMs alone
-
-LLMs don't know about your data. SmolLM2 has never seen NorthStar's product catalogue. If you ask it "what's a good summer dress?", it will invent a plausible-sounding answer — possibly mentioning products that don't exist.
-
-This is **hallucination**. It's not a bug; it's the model doing exactly what it was trained to do (produce plausible-sounding text), with no access to ground truth.
-
-The fix is **retrieval-augmented generation**: give the model the relevant data along with the question.
-
-### 4.2 The RAG recipe
-
-```
-1. Embed your knowledge base once (L09 territory — sentence-transformers)
-2. For each user query:
-   a. Embed the query
-   b. Retrieve top-K relevant documents by cosine similarity
-   c. Concatenate documents into a context prompt:
-      "Use this catalogue to answer the question.
-       Catalogue: <retrieved docs>
-       Question: <user query>"
-   d. Send the prompt to the LLM
-   e. LLM generates an answer grounded in the retrieved documents
-```
-
-This is the architecture behind ChatGPT's "browsing", Perplexity, almost every modern "chat with your docs" product, and the bulk of enterprise GenAI applications.
-
-### 4.3 Why RAG works
-
-The LLM brings:
-- Language fluency (formulating sentences)
-- General reasoning ("under £200" → filter the prices)
-- Question understanding ("summer outfit" → relevant attribute)
-
-The retrieval brings:
-- Up-to-date data
-- Specific facts the LLM doesn't have
-- Audit trail (you can show which documents informed the answer)
-
-Together they fix each other's weaknesses. The LLM doesn't have to memorise your catalogue; the retrieval doesn't have to compose prose.
-
-## Part 5 — Sarah's recommendation to Marcus
-
-> *"For the shopping assistant: RAG over the catalogue with `all-MiniLM-L6-v2` for retrieval and a small instruction-tuned LLM for generation. For the demo, SmolLM2-360M runs on a laptop in 1-3 seconds per response. For production we'd swap to a hosted API (Claude Haiku or GPT-4 mini) for quality, behind a cheap fallback for cost control."*
+> *"Nine months ago, we asked you to read 10,000 reviews. Now we've got a churn model, a forecast, a photo tagger, a search bar that understands 'blue summer dress', and an assistant that recommends from the catalogue without making things up. I don't fully understand how it all works — but you do. That's the difference."* — Marcus, after the shopping-assistant launch.
 >
-> *"Key design choices:*
-> 1. *Retrieve top-5 products and format them into the system prompt.*
-> 2. *Tell the LLM in the system prompt: 'You can only recommend products from the list below. If nothing matches, say so.' This prevents hallucinated products.*
-> 3. *Log every (query → retrieved docs → generated answer) tuple for evaluation and improvement.*
-> 4. *Add a safety check: if the LLM mentions a product name not in the retrieved set, flag the response for review."*
->
-> *"Production maturity: stage launch behind a feature flag, A/B test against the L09 search baseline, measure conversion lift and complaint rate."*
-
-This is the modern GenAI stack in 30 lines of Python plus operational discipline.
-
-## Part 6 — When to use what
-
-| Scenario | Recommendation |
-|----------|----------------|
-| Sentiment / NER / classification | Use a pretrained pipeline (`transformers.pipeline`). Don't build from scratch. |
-| Chat / Q&A about your data | RAG: embedding-based retrieval + LLM generation |
-| Highly specific domain (medical, legal) | Start with RAG; if quality is insufficient, fine-tune a base LLM on your domain |
-| One-off / experimental | Call an API (Claude, GPT-4). Pay-per-use; switch later if cost matters |
-| Production / cost-sensitive | Self-host a small model or fine-tune your own |
-| Anything safety-critical | Human-in-the-loop. LLMs hallucinate. Always have an out. |
-
-## Recap — three things to remember
-
-1. **Attention is the mechanism.** Every modern NLP model — embeddings, classifiers, LLMs — is a stack of transformer blocks. The recipe doesn't change with scale.
-2. **An LLM is a next-token predictor.** That's literally all it does. Sampling is what turns a probability distribution into text.
-3. **RAG is the standard pattern for using LLMs on your own data.** Retrieve, augment, generate. Don't expect the LLM to know your catalogue; give it the catalogue.
-
-## The end of Module 3
-
-You've built — across nine lessons — a complete ML toolkit. You can:
-
-- Train classical models and evaluate them honestly
-- Tune trees, ensembles, gradient boosting
-- Cluster, reduce dimensionality, detect anomalies
-- Forecast time series
-- Build neural networks in PyTorch
-- Transfer-learn from pretrained vision models
-- Build semantic search with sentence embeddings
-- Build RAG-powered Q&A with an LLM
-
-Sarah's journey at NorthStar is one example of how all these techniques fit into real products. Your own journey starts here.
-
-Welcome to the field. Now go build something.
+> Sarah's chapter at NorthStar closes here. Yours starts now — go build something.

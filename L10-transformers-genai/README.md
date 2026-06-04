@@ -39,6 +39,7 @@ This is the lesson that connects classical ML to GenAI. By Friday you'll underst
 ## Phase 2 — In-class (≈ 90 min lecture + 90 min code-along)
 
 - Slides: [slides/L10_slides.pptx](slides/L10_slides.pptx)
+- Short reference & review → [**lesson.md**](./lesson.md) (overview, key takeaways, RAG-design checklist, 8-question review, course-closing reflection)
 - Code-along notebooks (in order):
   - [02_attention_intuition.ipynb](notebooks/02_attention_intuition.ipynb) — attention by hand
   - [03_using_an_llm.ipynb](notebooks/03_using_an_llm.ipynb) — tokenisation + generation
@@ -63,7 +64,7 @@ This is the lesson that connects classical ML to GenAI. By Friday you'll underst
 | `README.md`              | This file — orientation |
 | `setup.md`               | Environment install + first-time model downloads |
 | `pre-class.md`           | 75-min self-study before class |
-| `lesson.md`              | Full concept reference & narrative |
+| `lesson.md`              | Short reference: overview, takeaways, RAG-design checklist, review Q&A, course-closing reflection |
 | `reference.md`           | Glossary of 24 transformer/GenAI terms |
 | `environment.yml`        | Conda env spec |
 | `slides/`                | `.pptx` deck + `slides_outline.md` |
