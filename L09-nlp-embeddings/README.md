@@ -35,6 +35,7 @@ By the end of L09 you will be able to:
 ## Phase 2 — In-class (≈ 90 min lecture + 90 min code-along)
 
 - Slides: [slides/L09_slides.pptx](slides/L09_slides.pptx)
+- **Short reference & review →** [**lesson.md**](./lesson.md) (overview, key takeaways, validation checklist, 7-question review, course map to L10)
 - Code-along notebooks (in order):
   - [02_words_to_vectors.ipynb](notebooks/02_words_to_vectors.ipynb) — one-hot encoding, bag-of-words, the embedding intuition
   - [03_pretrained_embeddings.ipynb](notebooks/03_pretrained_embeddings.ipynb) — `SentenceTransformer` + cosine similarity
@@ -52,7 +53,7 @@ By the end of L09 you will be able to:
 | `README.md`              | This file — orientation |
 | `setup.md`               | Environment install (`pip install sentence-transformers`) |
 | `pre-class.md`           | 75-min self-study before class |
-| `lesson.md`              | Full concept reference & narrative |
+| `lesson.md`              | Short reference: overview, takeaways, validation checklist, review Q&A, course map |
 | `reference.md`           | Glossary of 22 NLP/embedding terms |
 | `environment.yml`        | Conda env spec |
 | `slides/`                | `.pptx` deck + `slides_outline.md` |
