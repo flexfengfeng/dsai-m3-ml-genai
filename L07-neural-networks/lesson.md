@@ -1,283 +1,124 @@
-# Lesson 7 — Neural Networks & Deep Learning
-*Concept reference. Open whenever you want to look up a definition or check the mechanics used in the notebooks.*
+# Lesson — L07 Neural Networks & Deep Learning
 
-> **Where Sarah is.** Marcus's brief from end-of-L06: *"Predict checkout completion from sequential customer behaviour."* Sarah opens a new dataset — 8,000 customer sessions, 9 behavioural features, target = did the customer complete checkout. The task is tabular binary classification (same family as L03/L04), but this week she does it with a **neural network** to build intuition for L08–L10.
+> **Chapter 7 of the NorthStar Retail story.** *Sarah Chen · Customer Experience Analyst · Mid-year.*
+> Marcus's brief from end-of-L06: *"Predict checkout completion from sequential customer behaviour — can a neural network do better than the L03/L04 baselines?"* Sarah opens `northstar_sessions.csv`: 8,000 customer sessions, 9 behavioural features, target = did they complete checkout.
+> This week she builds her first neural network — and writes a PyTorch training loop she will reuse for the rest of the course.
 
-> **The goal of L07 is INTUITION, not production engineering.** You learn what a perceptron is, what multi-layer networks compute, how gradient descent + backprop drive learning, and how to write a PyTorch training loop. That's the foundation for everything in L08 (vision), L09 (NLP), L10 (transformers).
-
----
-
-## The Big Picture — what neural networks actually are
-
-Strip away the mystique:
-
-> **A neural network is a function — a flexible, non-linear function — whose parameters are learned by gradient descent on a loss function.**
-
-That's it. Everything else is engineering.
-
-Three things to understand:
-
-1. **The function** — how the network maps input to output (forward pass)
-2. **The loss** — how we measure "wrong" so we know which direction to adjust
-3. **The learning** — gradient descent + backprop, how the parameters get updated
+This document is a **short reference** — the lesson itself is taught in the notebooks. Read it for orientation before class, then come back to it for the takeaways, the training-run checklist, the review questions, and the course map.
 
 ---
 
-## Part 1 — Perceptron → Multi-Layer Perceptron
+## How L07 is taught
 
-### The perceptron
-
-The simplest neural unit. It takes inputs, multiplies each by a weight, sums them, adds a bias, and passes the result through an activation function.
-
-```
-output = activation( w₁·x₁ + w₂·x₂ + … + wₙ·xₙ + b )
-```
-
-With a **sigmoid** activation, that's logistic regression. With a **threshold** activation, that's the classical 1958 perceptron. The point: a single perceptron can only learn LINEARLY SEPARABLE patterns.
-
-### Why one layer isn't enough — the XOR problem
-
-```
-Input  Output
-(0, 0)   0
-(0, 1)   1
-(1, 0)   1
-(1, 1)   0
-```
-
-There's no straight line that separates the 1s from the 0s. A single perceptron CANNOT learn XOR. This was the famous Minsky & Papert critique that froze neural-network research for a decade.
-
-### The fix — multiple layers + non-linear activations
-
-Stack perceptrons in layers. The first layer ("hidden layer") learns intermediate representations; the second layer combines them. With a **non-linear activation** between layers, the network can learn any function (the *universal approximation theorem*).
-
-```
-Input → Hidden Layer (e.g., 32 neurons, ReLU activation) → Output Layer (1 neuron, sigmoid for binary classification)
-```
-
-The *Multi-Layer Perceptron* (MLP) — also called a *fully-connected* or *dense* network — is just stacked layers of perceptrons with activations in between.
-
-### Activation functions
-
-| Activation | Formula | When |
-|---|---|---|
-| **ReLU** | `max(0, x)` | Default for hidden layers. Fast, simple, works. |
-| **Sigmoid** | `1 / (1 + e⁻ˣ)` | Output layer for binary classification (gives probability) |
-| **Softmax** | `eˣⁱ / Σ eˣⱼ` | Output layer for multi-class classification |
-| **Tanh** | `(eˣ − e⁻ˣ) / (eˣ + e⁻ˣ)` | Sometimes used in hidden layers (older networks) |
-
-Without a non-linear activation, stacking layers is pointless — multiple linear functions composed are still linear.
-
-### Sklearn's MLPClassifier — the quickest way to train an MLP
-
-```python
-from sklearn.neural_network import MLPClassifier
-
-mlp = MLPClassifier(
-    hidden_layer_sizes=(32, 16),   # two hidden layers: 32 then 16 neurons
-    activation="relu",
-    max_iter=500,
-    random_state=42,
-)
-mlp.fit(X_train, y_train)
-preds = mlp.predict(X_test)
-```
-
-Useful for a quick baseline. For real work — and for L08–L10 — you use PyTorch.
-
----
-
-## Part 2 — Gradient Descent + Backpropagation (intuition)
-
-### The mountain analogy
-
-Imagine you're blindfolded on a mountain and want to find the lowest point. You can't see, but you can FEEL the slope under your feet.
-
-**Strategy:** at each step, take a small step in the steepest downhill direction. Repeat. Eventually you reach a valley.
-
-That's **gradient descent**:
-- The mountain = the loss function
-- Your position = the model's parameters
-- The slope = the gradient of the loss with respect to parameters
-- The step size = the *learning rate*
-
-```
-weights_new = weights_old - learning_rate × gradient_of_loss
-```
-
-A high learning rate = big steps. Risk: overshoot the valley. A low learning rate = small steps. Risk: takes forever or gets stuck.
-
-### The loss function
-
-For binary classification, the standard loss is **binary cross-entropy** (BCE):
-
-```
-BCE = - [ y · log(p) + (1 - y) · log(1 - p) ]
-```
-
-Where `y` is the true label (0 or 1) and `p` is the model's predicted probability. BCE is minimised when the predicted probability matches the true label.
-
-In PyTorch: `nn.BCELoss()` or `nn.BCEWithLogitsLoss()` (the latter is numerically more stable — combines sigmoid + BCE in one step).
-
-### What backpropagation does
-
-Gradient descent needs the gradient of the loss with respect to every parameter. For a multi-layer network, there are thousands of parameters. **Backpropagation** is the algorithm that computes all these gradients efficiently using the chain rule.
-
-You don't need to derive backprop by hand. PyTorch (and every other deep learning framework) handles it automatically via **autograd**: track the computation graph during the forward pass, then walk backwards through it to compute gradients.
-
-```python
-loss = criterion(predictions, targets)
-loss.backward()    # ← this is backprop. One line. PyTorch does the math.
-```
-
-### The training loop
-
-The skeleton of every deep learning project:
-
-```
-for each epoch:
-    for each batch:
-        1. predictions = model(inputs)           # forward pass
-        2. loss = loss_function(predictions, targets)
-        3. optimizer.zero_grad()                 # clear old gradients
-        4. loss.backward()                       # backprop
-        5. optimizer.step()                      # update weights
-```
-
-That's it. The same six lines drive training for an MLP, a CNN, a transformer. The differences live in the model architecture and the loss function.
-
----
-
-## Part 3 — PyTorch Mechanics
-
-### The four PyTorch objects
-
-| Object | What it does |
+| Stage | Where to go |
 |---|---|
-| **`Tensor`** | An array with autograd. The atomic data type. Replaces NumPy arrays during model training. |
-| **`nn.Module`** | The base class for any model. You subclass it and define `__init__` (layers) + `forward` (compute output from input). |
-| **`Dataset` + `DataLoader`** | Wrap your data for efficient batched iteration. |
-| **Optimizer** | `torch.optim.Adam`, `SGD`, etc. Knows how to update parameters given gradients. |
+| **Pre-class** | `pre-class.md` + `notebooks/01_monday_morning.ipynb` |
+| **In-class — Part 1: Perceptron → MLP** | `notebooks/02_perceptron_to_mlp.ipynb` |
+| **In-class — Part 2: Gradient descent + PyTorch basics** | `notebooks/03_gradient_descent.ipynb` |
+| **In-class — Part 3: Full PyTorch training loop** | `notebooks/04_pytorch_training_loop.ipynb` |
+| **Self-study** | `notebooks/assignment.ipynb` + `notebooks/optional_extensions.ipynb` |
+| **Reference & review** | This document |
 
-### A minimal MLP in PyTorch
+The notebooks are the spine. Run them in order. Come back here for the consolidated takeaways and the review questions.
 
-```python
-import torch
-import torch.nn as nn
+---
 
-class MLP(nn.Module):
-    def __init__(self, n_features, hidden=32):
-        super().__init__()
-        self.layers = nn.Sequential(
-            nn.Linear(n_features, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, 1),     # 1 output neuron for binary classification
-        )
+## Overview
 
-    def forward(self, x):
-        return self.layers(x)         # returns raw logits
+L07 is a single arc in three parts. Part 1 starts with the **perceptron** — a single neuron that is just logistic regression in disguise — and shows why it cannot learn XOR; the fix is stacking layers with non-linear activations between them, giving the multi-layer perceptron (MLP). Part 2 opens the hood on the `.fit()` call: **gradient descent** on a 1D loss surface, then PyTorch's autograd computing the same gradient automatically, then the five-line training step that powers every deep-learning model in the rest of the course. Part 3 promotes that loop to production shape — `DataLoader`, mini-batches, Adam, early stopping — and benchmarks the result against L03 logistic regression and L04 gradient boosting on Sarah's session data. The goal is **intuition and a reusable training-loop template**, not state-of-the-art tabular performance.
 
-model = MLP(n_features=9, hidden=32)
-print(model)
-print(f"Total parameters: {sum(p.numel() for p in model.parameters()):,}")
-```
+---
 
-### A minimal training loop
+## Key takeaways
 
-```python
-from torch.utils.data import DataLoader, TensorDataset
+1. **A neural network is just a flexible non-linear function whose parameters are learned by gradient descent on a loss.** No mystery, no magic. Forward pass computes the output; the loss measures wrong; the gradient tells you which way to nudge the parameters.
+2. **A single perceptron can only learn linearly separable patterns — XOR is the canonical counterexample.** Stack perceptrons in layers *with a non-linearity between them* and you can approximate any function. Two stacked linear layers with nothing in between is still one linear layer.
+3. **Activation choice is mostly mechanical.** ReLU (`max(0, x)`) for hidden layers, sigmoid for binary-classification output, softmax for multi-class output. The non-linearity is what unlocks expressive power.
+4. **Backpropagation is the chain rule applied efficiently to a computation graph.** You will never derive it by hand. PyTorch's autograd records every operation on a `requires_grad=True` tensor during the forward pass; `loss.backward()` walks the graph backwards to fill in `.grad` on every parameter.
+5. **The learning rate is the single most important hyperparameter.** Too high and the loss oscillates or diverges; too low and training crawls. `lr=1e-3` with Adam is the safe default for tabular problems; tune from there. Adam adapts the per-parameter step size, removing most of the manual scheduling burden SGD demands.
+6. **Memorise the five-line PyTorch training step.** `optimizer.zero_grad()` → forward pass → `loss = criterion(...)` → `loss.backward()` → `optimizer.step()`. This is identical for an MLP, a CNN, or a transformer — only the model class and loss change.
+7. **Batch size trades stability for speed.** Full-batch GD gives the smoothest gradient but is slow and memory-hungry. Mini-batch SGD/Adam (typically 32–128) injects useful noise that helps escape shallow minima and lets you stream data that doesn't fit in memory.
+8. **On well-preprocessed tabular data, an MLP rarely beats a strong linear or gradient-boosted baseline.** On Sarah's session data, LR / sklearn-MLP / PyTorch-MLP / GB all land within 0.015 AUC of each other. L07's payoff is not this scoreboard — it is the toolkit that makes L08 (images), L09 (text), and L10 (transformers) possible.
 
-# 1. Wrap data
-train_loader = DataLoader(
-    TensorDataset(X_train_tensor, y_train_tensor),
-    batch_size=64, shuffle=True,
-)
+---
 
-# 2. Loss + optimiser
-criterion = nn.BCEWithLogitsLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+## Reading a training run — a checklist
 
-# 3. Training loop
-for epoch in range(20):
-    model.train()
-    for X_batch, y_batch in train_loader:
-        optimizer.zero_grad()
-        logits = model(X_batch).squeeze(-1)
-        loss = criterion(logits, y_batch.float())
-        loss.backward()
-        optimizer.step()
+Before you accept a trained model's number — or change a hyperparameter in frustration — run the loss curves through this three-step check:
 
-    # Evaluate at end of epoch
-    model.eval()
-    with torch.no_grad():
-        val_logits = model(X_val_tensor).squeeze(-1)
-        val_loss = criterion(val_logits, y_val_tensor.float()).item()
-        val_acc = ((torch.sigmoid(val_logits) > 0.5) == y_val_tensor).float().mean().item()
-    print(f"Epoch {epoch+1}: train_loss={loss.item():.3f}, val_loss={val_loss:.3f}, val_acc={val_acc:.3f}")
-```
+1. **Did it converge?** Plot train loss and validation loss against epoch. Train loss should fall and then plateau. If it is still falling sharply at the last epoch, you stopped too early. If it is bouncing wildly, the learning rate is too high. If it never moved, the learning rate is too low or your data isn't reaching the model.
+2. **Is it overfitting?** Train loss keeps falling while validation loss bottoms out and starts rising — that gap is overfitting. Fix it with early stopping (restore the weights from the best validation epoch), more regularisation, more data, or a smaller model. Do not look at the test set while tuning.
+3. **Is the learning rate right?** A healthy loss curve drops fast at first, then bends and plateaus smoothly. A jagged or exploding curve means lr too high; a near-flat curve means lr too low. Try a 10× sweep (`1e-2`, `1e-3`, `1e-4`) before tuning anything else.
 
-### Common pitfalls
+Skip any of these and you'll either ship an undertrained model, an overfit one, or burn an afternoon tuning architecture when the real bug was the learning rate.
 
-- **Forgetting `optimizer.zero_grad()`** — gradients accumulate by default. Without zeroing, your "gradient" is the sum of all previous batches' gradients.
-- **Forgetting `model.eval()` / `model.train()`** — affects dropout and batch norm. Wrong mode = wrong predictions.
-- **Using `BCELoss` without manually applying sigmoid** — `BCELoss` expects probabilities (post-sigmoid), `BCEWithLogitsLoss` expects raw logits. Mixing them up silently breaks training.
-- **Not setting `random_state`** — neural networks are sensitive to initialisation. Set both `torch.manual_seed(42)` AND any data-shuffling seed.
+---
 
-### Adam vs SGD
+## Check your understanding
 
-| Optimiser | When |
+Work through these after finishing the three Part notebooks. Attempt each question on your own first.
+
+### Part 1 — Perceptron → MLP
+
+**Q1 — Why does XOR break a single perceptron?** A colleague says "we should just use a bigger perceptron with more inputs." Why doesn't that fix XOR?
+
+> *Sample answer:* A perceptron computes `activation(w·x + b)` — its decision boundary is a single hyperplane (a straight line in 2D). The XOR pattern (1s in opposite corners) cannot be separated by *any* straight line, no matter how the weights are tuned. Adding more *inputs* keeps the boundary linear in those inputs. The fix is depth + a non-linearity between layers, not width of a single layer.
+
+**Q2 — Why does the non-linearity matter?** What would happen if you built a 5-layer MLP but left every activation function as the identity (no ReLU, no sigmoid)?
+
+> *Sample answer:* The whole network collapses to a single linear function. Composing linear maps gives another linear map, so the 5-layer network has exactly the same expressive power as one linear layer — it cannot learn XOR or any other non-linear pattern. The non-linearity between layers is what makes "deep" different from "wide-but-flat."
+
+**Q3 — When does an MLP actually win on tabular data?** Sarah's session-completion benchmark shows LR, MLP, and gradient boosting all within 0.015 AUC. When *would* the MLP pull ahead?
+
+> *Sample answer:* When the data is large (typically millions of rows), the features have rich non-linear interactions that aren't already captured by feature engineering, or when you need to ensemble with other neural models. On small, mostly-linear tabular sets — like 8,000 sessions with 9 engineered features — a well-tuned linear model is hard to beat. The MLP's real edge appears in L08–L10, where the input is pixels or tokens rather than tabular features.
+
+### Part 2 — Gradient descent + backprop
+
+**Q4 — What does `optimizer.zero_grad()` do, and what breaks if you forget it?** Walk through the consequence.
+
+> *Sample answer:* PyTorch *accumulates* gradients in `.grad` on every `backward()` call rather than overwriting them. `optimizer.zero_grad()` clears the slate before the next forward/backward pass. If you forget it, each batch's gradient is added to the previous batches' gradients, so by step 10 your "gradient" is the sum of ten batches and `optimizer.step()` takes a wildly oversized step in a stale direction. Training will diverge or stall.
+
+**Q5 — Learning rate too high vs too low.** You start gradient descent at `w=10` on `L(w)=(w-3)²`. With `lr=0.1` you converge smoothly. Describe what you'd see with `lr=1.5` and with `lr=0.001`.
+
+> *Sample answer:* With `lr=1.5`, each step overshoots the minimum (3) and lands further on the other side; the next step overshoots back even further. The iterates oscillate with growing amplitude and the loss diverges. With `lr=0.001`, every step is tiny — the path crawls toward 3 and may not arrive within your epoch budget. Cost is wasted compute, not divergence. The sweet spot for this problem is roughly `0.01`–`0.1`; Adam removes most of this manual tuning by adapting the rate per parameter.
+
+**Q6 — `BCELoss` vs `BCEWithLogitsLoss`.** A teammate's training run is silently producing garbage. Their model ends with `nn.Linear(hidden, 1)` (raw logits) and they use `criterion = nn.BCELoss()`. What's wrong?
+
+> *Sample answer:* `BCELoss` expects probabilities in `[0, 1]` (post-sigmoid). Raw logits can be any real number; feeding them to `BCELoss` gives nonsensical (and numerically unstable) gradients. Two fixes: either apply `torch.sigmoid` inside `forward` and keep `BCELoss`, or — preferred — leave the model returning raw logits and switch to `nn.BCEWithLogitsLoss()`, which fuses sigmoid and BCE for numerical stability.
+
+### Part 3 — PyTorch training loop
+
+**Q7 — The five-line training step.** Without looking, write out the five lines inside a typical PyTorch training-batch loop, in order, and say what each one does.
+
+> *Sample answer:*
+> 1. `optimizer.zero_grad()` — clear stale gradients from the previous batch.
+> 2. `logits = model(X_batch)` — forward pass; PyTorch records the operations for autograd.
+> 3. `loss = criterion(logits, y_batch)` — compute the scalar loss.
+> 4. `loss.backward()` — autograd walks the graph backwards and fills `.grad` on every parameter.
+> 5. `optimizer.step()` — update each parameter using its `.grad` and the optimiser's rule (e.g. Adam).
+
+**Q8 — Spotting overfitting in a training curve.** Train loss is 0.18 at epoch 30 and still falling; validation loss bottomed out at 0.31 around epoch 12 and has been creeping back up to 0.38. Is this model healthy? What do you do?
+
+> *Sample answer:* No — this is textbook overfitting. The train/val gap is widening because the model is memorising training-set quirks that don't generalise. Use early stopping: restore the weights from epoch 12 (the best validation loss) and stop training. If you want better validation loss, try a smaller model, more data, dropout/weight decay, or stronger preprocessing — not more epochs.
+
+**Q9 — `model.train()` vs `model.eval()`.** Why must you call `model.eval()` before evaluating on the validation set, even if your model has no dropout or batch-norm yet?
+
+> *Sample answer:* For this lesson's tiny MLP it doesn't change the numbers — but it's a habit that prevents silent bugs the moment you add dropout or batch-norm. Dropout zeroes random activations only during training; batch-norm uses batch statistics in `train` mode and stored running statistics in `eval` mode. Forgetting the switch gives randomised or batch-dependent predictions at evaluation time. Always wrap evaluation in `model.eval()` plus `with torch.no_grad():`.
+
+---
+
+## Where L07 fits in the course
+
+L07 introduces the neural-network playbook — model, loss, optimiser, training loop — that every remaining lesson specialises.
+
+| Lesson | How L07 shows up |
 |---|---|
-| **SGD** | Simple, classical. Often needs careful learning-rate tuning and a schedule. |
-| **Adam** | Adaptive per-parameter learning rate. Default choice for most tabular and NLP problems. |
-| **AdamW** | Adam with proper weight decay. Standard for transformers. |
-
-For this lesson, use **Adam with `lr=1e-3`** — almost always reasonable.
+| **L08 — Computer Vision** | Same five-line training step. The model becomes a CNN (convolutional layers, pooling) and the input is a tensor of pixels rather than a row of features. Transfer learning swaps in a pretrained backbone. |
+| **L09 — NLP & Embeddings** | Same training loop again. The model becomes an embedding + sequence encoder; the input is tokenised text rather than a numeric vector. Loss and optimiser are unchanged. |
+| **L10 — Transformers & GenAI** | The architecture is a transformer, the optimiser is AdamW, the loss is cross-entropy over the vocabulary — but the outer training loop is the same `zero_grad → forward → loss → backward → step` pattern from this week. |
 
 ---
 
-## Part 4 — When to use neural networks (vs L04 gradient boosting)
-
-| Property | MLP shines | Gradient Boosting shines |
-|---|---|---|
-| **Tabular data, moderate size (10k–1M rows)** | Sometimes wins | Usually wins |
-| **Tabular data, big (>10M rows)** | Often wins | Slower, may saturate |
-| **Image / text / audio** | Wins decisively | Doesn't really apply |
-| **Sparse high-dim features** | Wins | Can struggle |
-| **Need interpretable feature importance** | Hard | Built-in |
-| **Need fast training + few hyperparameters** | Worse | Better |
-| **Need state-of-the-art on benchmarks** | Sometimes | Sometimes |
-
-**Rule of thumb for L07's use case (tabular session data):** start with gradient boosting (L04). Only move to MLPs if you have a specific reason (much larger data, need to ensemble with other neural nets, etc.) or if you're benchmarking.
-
-L07's REAL value is the foundation for L08–L10, where neural networks are the only practical choice.
-
----
-
-## Friday — what Sarah presents
-
-Sarah's session-completion model is now a comparison table:
-
-| Model | Test AUC | When to use |
-|---|---|---|
-| Logistic Regression (L03 baseline) | ~0.761 | Most interpretable |
-| Gradient Boosting (L04 toolkit) | ~0.747 | Usually wins on tabular — but didn't here |
-| sklearn MLP | ~0.761 | Tied with LR |
-| PyTorch MLP | ~0.756 | Foundation for deep learning |
-
-**Honest read:** on Sarah's session-completion task all four models land within 0.015 AUC of each other. Logistic regression and the sklearn MLP are statistically indistinguishable; gradient boosting is the *lowest* of the four. This is what tabular ML actually looks like — the algorithm rarely matters as much as the features.
-
-The right deployment choice for THIS task is probably logistic regression (cheapest, most interpretable, top AUC). The MLP work pays off in L08-L10 where we leave tabular data behind.
-
-Marcus listens, nods, then asks:
-
-> *"OK. Now — we're starting an Instagram campaign. Can you automatically tag product PHOTOS so they auto-categorise as 'dress', 'jeans', 'jacket', etc.?"*
-
-That question — **prediction from images** — is the engine of **L08 (Computer Vision).**
-
----
-
-## Glossary
-
-See [`reference.md`](./reference.md) for a 20-term glossary covering perceptrons, activations, gradient descent, PyTorch, and deep-learning vocabulary.
+> *"OK. Now — we're starting an Instagram campaign. Can you automatically tag product PHOTOS so they auto-categorise as 'dress', 'jeans', 'jacket', etc.?"* — Marcus, after Sarah's Friday presentation.
+>
+> That question — *prediction from images* — is the engine of **L08 (Computer Vision)**.
