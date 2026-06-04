@@ -65,7 +65,7 @@ You will:
 
 ### Phase 2 — In class: concept review + hands-on notebooks (~3 hrs)
 
-**Concept reference →** [**lesson.md**](./lesson.md)
+**Short reference & review →** [**lesson.md**](./lesson.md) (overview, key takeaways, model-shipping checklist, L05→L10 course map)
 
 **Notebooks — run in order:**
 
@@ -119,7 +119,7 @@ Optional material lives in [`notebooks/optional_extensions.ipynb`](./notebooks/o
 README.md                              ← You are here
 setup.md                               ← One-time environment setup (same dsai-m3 env)
 pre-class.md                           ← Phase 1: 75-min self-study guide
-lesson.md                              ← Phase 2: Concept reference
+lesson.md                              ← Short reference: overview, takeaways, model-shipping checklist, course map
 reference.md                           ← Phase 3: Further reading + glossary
 environment.yml                        ← Conda environment spec (no new packages vs L03)
 slides/
