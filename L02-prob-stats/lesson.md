@@ -1,231 +1,55 @@
 # Lesson — L02 Probability & Statistics for Machine Learning
 
-> **Chapter 2 of the NorthStar Retail story.** *Sarah Chen · Customer Experience Analyst · NorthStar Retail · January 2023.*
-> On Friday afternoon, Priya said: *"Your model says 60% of reviews are positive. But are the positive ones actually positive? How do we know we can trust that number?"*
+> **Chapter 2 of the NorthStar Retail story.** *Sarah Chen · Customer Experience Analyst · January 2023.*
+> Friday afternoon, Priya asked: *"Your model says 60% of reviews are positive. But are the positive ones actually positive? How do we know we can trust that number?"*
 > Sarah didn't have an answer. This lesson is how she gets one.
 
-Use this document as your concept reference — before, during, and after the session. Each section explains a key idea in plain English, anchors it to Sarah's week at NorthStar, and shows why it matters for the rest of the course.
-
-| Section | Notebook | Sarah's day | Time |
-|---|---|---|---|
-| Part 1: Distributions | `notebooks/02_distributions.ipynb` | Tuesday | ~60 min |
-| Part 2: The CLT + Confidence Intervals | `notebooks/03_confidence_intervals.ipynb` | Wednesday | ~60 min |
-| Part 3: A/B Testing + P-values | `notebooks/04_ab_testing.ipynb` | Thursday | ~60 min |
-| Check your understanding | at the end of this document | — | ~20 min |
+This document is a **short reference** — the lesson itself is taught in the notebooks. Read it for orientation before class, then come back to it for the takeaways, the honest-reporting checklist, the review questions, and the course map.
 
 ---
 
-## The bridge from L01
+## How L02 is taught
 
-In L01, Sarah ran a pre-trained sentiment model on 10,000 NorthStar reviews and reported: *"60% positive, 40% negative."* The model ran in seconds. The result looked confident.
+| Stage | Where to go |
+|---|---|
+| **Pre-class** | `pre-class.md` + `notebooks/01_monday_morning.ipynb` |
+| **In-class — Part 1: Distributions** | `notebooks/02_distributions.ipynb` |
+| **In-class — Part 2: CLT + Confidence Intervals** | `notebooks/03_confidence_intervals.ipynb` |
+| **In-class — Part 3: A/B Testing + p-values** | `notebooks/04_ab_testing.ipynb` |
+| **Self-study** | `notebooks/assignment.ipynb` + `notebooks/optional_extensions.ipynb` |
+| **Reference & review** | This document |
 
-Then Priya asked the question that statistics exists to answer: **"Could it have been 50% if we just had a different week of reviews?"**
-
-Sarah's number is a *sample statistic* — computed from one particular batch of data. The true sentiment rate across all NorthStar customers (past, present, future) is a *population parameter* that nobody can measure directly. Probability and statistics are the tools that connect the two: they let Sarah say how far off her sample number is likely to be, and how confident she can be in any claim she makes from it.
-
----
-
-## Why Probability & Statistics matters for Machine Learning
-
-You will use these ideas in every ML lesson that follows.
-
-**Distributions tell you what "normal" looks like** — before you can detect an anomaly, you need a baseline. Before you can evaluate a model's error, you need to understand the spread of the data. Every feature you feed to a model has a distribution, and that shape affects how the model trains and how its outputs should be interpreted.
-
-**Confidence intervals tell you how uncertain your estimates are** — accuracy of 84% sounds precise. But 84% of *what sample*? From how many examples? A confidence interval is the honest version: "between 78% and 89%, with 95% confidence." This is the language of any serious ML evaluation report.
-
-**P-values and A/B tests tell you whether interventions actually work** — once you have a model, the next question is always "does acting on this model's output change anything?" The A/B test is how you answer that rigorously, without fooling yourself into seeing patterns that are just random variation.
+The notebooks are the spine. Run them in order. Come back here for the consolidated takeaways and the review questions.
 
 ---
 
-## Part 1: Distributions
+## Overview
 
-### What is a distribution?
-
-**The idea in plain English:** A distribution is the pattern of how often each value appears in a dataset. Plot every review's polarity score on a number line and mark how many reviews land at each value — the shape that emerges is the distribution.
-
-**Real-world analogy:** Think of a coffee shop's daily customer count. Some days are quiet (40 customers), some are busy (200 customers), but most are somewhere in the middle. If you drew a histogram of every day's count over a year, you'd see a shape — maybe a bell curve, maybe a lopsided one. That shape is the distribution of daily footfall. It tells you what "a normal day" looks like, and which days were unusual.
-
-**Why it matters for ML:** Most ML algorithms make assumptions about the distributions of the features they receive. A linear model assumes a roughly normal spread. Tree-based models are distribution-agnostic but still affected by extreme outliers. Knowing the distribution helps you decide whether to apply transformations (like log-scaling skewed data) before training.
+Sarah's L01 model said "60% positive" — but that was a single number computed from one batch of 10,000 reviews. Priya's question, *how sure are we?*, is the question that probability and statistics exist to answer. By Friday Sarah will hold three new tools: **distributions** (to read the shape of any column of data), **confidence intervals** (to put an honest range around any number she reports), and **A/B testing with p-values** (to decide whether an intervention actually changed anything, or whether the apparent difference is just noise). Every model evaluation, every business experiment, every dashboard number for the rest of the course is read through these three lenses.
 
 ---
 
-### Normal vs skewed distributions
+## Key takeaways
 
-**The idea in plain English:** A *normal* (bell-curve) distribution is symmetric — the mean and median are nearly equal, and values thin out evenly on both sides. A *skewed* distribution leans in one direction — there are more extreme values on one side than the other, pulling the mean away from the median.
-
-**Real-world analogy:** Heights of adult men in a country follow a roughly normal distribution — most men are somewhere near the average, with roughly equal numbers a bit shorter and a bit taller. Annual household incomes follow a right-skewed distribution — most households earn a moderate amount, but a long tail of very high earners pulls the mean upward. The median income is typically thousands of pounds below the mean, because the average is pulled by the wealthy tail.
-
-This is why headlines say "average household income rose" while many families feel no improvement — they're seeing the median, not the mean.
-
-**Why it matters for ML:** Skewed features can mislead algorithms. A small number of extreme values can dominate the model's learning. Recognising skew is the first step to deciding whether to apply a log transformation or winsorise outliers before training. Sarah's polarity scores are mildly skewed — something the `02_distributions.ipynb` notebook reveals the moment she plots them.
-
----
-
-### Z-scores: measuring how unusual a value is
-
-**The idea in plain English:** A Z-score answers the question: *"How many standard deviations away from the average is this value?"* A Z-score of 0 means exactly average. A Z-score of 2 means "two standard deviations above average" — unusual. A Z-score of -3 means "three standard deviations below average" — very unusual.
-
-Formula: `z = (value − mean) / standard deviation`
-
-**Real-world analogy:** Imagine you score 85 on an exam. Is that good? It depends on how everyone else did. If the class average was 60 and the standard deviation was 10, your Z-score is (85−60)/10 = 2.5 — you're in the top 1% of the class. If the average was 82 and the standard deviation was 2, your Z-score is 1.5 — still good, but not exceptional. The raw score means nothing without context; the Z-score provides that context automatically.
-
-**Why it matters for ML:** Z-scores are the foundation of feature scaling (standardisation) — one of the most common data preprocessing steps before training. They are also how anomaly detection works: flag any value with |Z| > 3 as an outlier worth investigating.
+1. **A single number is never the whole story — the distribution behind it is.** Before you trust a mean, look at the shape. A right-skewed distribution makes the mean overstate the typical case; report the median or segment the data.
+2. **Z-scores normalise "is this unusual?" across any scale.** `z = (value − mean) / sd`. |Z| > 3 is the working definition of an outlier worth investigating.
+3. **The Central Limit Theorem is why statistics works on messy data.** Even when the underlying data is skewed, the *distribution of sample means* approaches normal as the sample grows. Rule of thumb: n ≥ 30 and you can use normal-based formulas safely.
+4. **Every reported number from a sample needs a confidence interval.** "84% accuracy" is half a fact. "84% (95% CI: 78–89%)" is the honest version. To halve the CI width you must quadruple the sample size — uncertainty has a price.
+5. **The 95% in "95% CI" is about the method, not this one interval.** If you computed CIs this way 100 times, ~95 of them would contain the true value. You cannot assign a probability to whether this specific interval does.
+6. **A p-value answers a precise question: "could chance alone produce a difference this large?"** p < 0.05 → reject the no-effect story. p ≥ 0.05 → not enough evidence to reject; this is *not* the same as proving no effect.
+7. **Statistical significance ≠ practical significance.** With a large enough sample, a 0.01% difference becomes "significant." Always report effect size alongside the p-value, and let the business decide whether the effect is worth acting on.
 
 ---
 
-### Quick Check — Part 1
+## Honestly reporting a number — a checklist
 
-**Q1:** Sarah plots the polarity scores for 10,000 reviews and finds the mean is 0.12 and the median is 0.06. What does this tell her about the distribution's shape?
+Before you cite a number from data — in a slide, an email, a dashboard — run it through this three-step check:
 
-> **Sample answer:** The mean (0.12) is higher than the median (0.06), which means the distribution is right-skewed — a long tail of very positive reviews is pulling the mean upward. The median better represents the "typical" review. Sarah should report the median sentiment when describing a "typical" review, and be explicit that a small number of very positive reviews are inflating the mean.
+1. **What is the shape of the data behind this number?** If the distribution is skewed, the mean may mislead. Report the median, segment the data, or be explicit about which summary you chose and why.
+2. **What range is the true value likely in?** Any number computed from a sample needs a confidence interval. "84% accuracy" alone is dishonest by omission. "84% (95% CI: 78–89%) on 200 hand-labelled reviews" is defensible.
+3. **Could this difference be random variation?** If you are comparing two groups (with vs without an intervention), you owe the reader both a p-value *and* an effect size. Either one on its own can mislead.
 
-**Q2:** A review has a polarity score of 0.92. The dataset's mean polarity is 0.12 and the standard deviation is 0.36. Calculate the Z-score and interpret it.
-
-> **Sample answer:** Z = (0.92 − 0.12) / 0.36 = 0.80 / 0.36 ≈ 2.22. This review is about 2.2 standard deviations above the mean — positive, and a bit unusual, but not extreme. It would not be flagged as a statistical outlier (the typical cut-off is |Z| > 3).
-
-**Q3:** Priya asks whether the distribution of review lengths is likely to be normal or skewed. Without running any code, what would you predict — and why?
-
-> **Sample answer:** Right-skewed. Most reviews are probably short (a few words or a sentence or two), but a small number of very detailed complaints or essays will stretch the tail to the right. Text length in user-generated content is almost always right-skewed. The same pattern appears in social media posts, emails, and support tickets.
-
----
-
-## Part 2: The Central Limit Theorem + Confidence Intervals
-
-### Why sampling works
-
-**The idea in plain English:** Nobody can measure every customer, every patient, or every transaction. Instead, we measure a *sample* — a smaller group selected to be representative of the whole. The big question is: how much can we trust a sample statistic (like "84% accuracy on 200 reviews") as an estimate of the true value (accuracy on all reviews ever)?
-
-**Real-world analogy:** Before an election, pollsters can't ask every voter. They ask a carefully chosen sample of a few thousand, and they report the result with a margin of error: "Party A leads with 43%, ± 3 percentage points." That margin of error comes from exactly the mathematics you are learning here.
-
-**Why it matters for ML:** Every model evaluation is a sampling problem. You evaluate your model on a test set — a sample. The accuracy number you get is a sample statistic. The real accuracy, on all possible future data, is a population parameter. Confidence intervals are how you communicate the uncertainty honestly.
-
----
-
-### The Central Limit Theorem
-
-**The idea in plain English:** Here is the most important result in statistics for machine learning: *even if the underlying data is not normally distributed, the average of many samples from that data will follow a normal distribution.* The larger the sample, the more normal the distribution of sample means becomes.
-
-**Real-world analogy:** Imagine a jar of Skittles with different colours in very unequal proportions — not normal at all. Now take a handful of 30 Skittles, count the red ones, put them back, repeat 1,000 times. Plot the count of red Skittles per handful. Even though the jar's proportions are lopsided, the distribution of your handful counts will look like a bell curve. That is the CLT at work.
-
-**Why it matters for ML:** The CLT is why so many ML evaluation techniques (confidence intervals, t-tests, hypothesis tests) work in practice on messy, non-normal data. As long as your sample is large enough, you can use normal-distribution-based mathematics even when the underlying data is skewed, bimodal, or oddly shaped.
-
-*The rule of thumb:* samples of 30+ are usually enough for the CLT to apply. The `03_confidence_intervals.ipynb` notebook shows this visually by resampling Sarah's labelled-review accuracy 1,000 times.
-
----
-
-### Confidence intervals
-
-**The idea in plain English:** Sarah hand-labels 200 reviews and computes 84% accuracy. But 200 is a small sample. If she had labelled a different 200, she might have gotten 81% or 87%. A confidence interval quantifies that range: "based on this sample, the true accuracy is likely between 78% and 89%."
-
-More precisely: if you ran this labelling exercise many, many times with different samples of 200, 95% of the confidence intervals you computed would contain the true accuracy. That's what "95% confidence" means.
-
-**The formula (approximate, for proportions):**
-
-```
-CI = p̂  ±  1.96 × sqrt( p̂(1 − p̂) / n )
-```
-
-where p̂ is your sample proportion (0.84), n is your sample size (200), and 1.96 is the Z-score for 95% confidence.
-
-**Real-world analogy:** Polling again. "43% ± 3 points" is a 95% confidence interval. The pollster is saying: "if we ran this poll a hundred more times, 95 of them would give a result within 3 points of 43%." The remaining 5 polls would fall outside — not because the poll was wrong, but because random sampling sometimes produces unusual results.
-
-**The most common mis-reading:** *"There is a 95% probability that the true accuracy is in this interval."* This sounds right but is subtly wrong. The true accuracy is a fixed (if unknown) number — it doesn't have a probability of being in any range. What has the 95% probability is the *method*: 95% of intervals computed this way will capture the true value. This is a fine distinction, but it matters in L03 when you need to be precise about what your model evaluation is actually claiming.
-
-**Why it matters for ML:** Any time you report a model's accuracy, precision, or recall, you should report it with a confidence interval. A model with 84% (95% CI: 78–89%) is saying something very different from a model with 84% (95% CI: 83–85%).
-
----
-
-### Quick Check — Part 2
-
-**Q1:** Sarah computes a 95% confidence interval of [78%, 89%] for her model's accuracy. Her colleague says: "So there's a 95% chance the real accuracy is in that range." Is the colleague right? Why or why not?
-
-> **Sample answer:** Not quite. The 95% refers to the method, not this specific interval. The true accuracy is a fixed (if unknown) number. A better statement is: "If we repeated this labelling exercise many times with different samples of 200 reviews, 95% of the intervals we computed would contain the true accuracy." It's a subtle distinction, but it matters: you cannot assign a probability to whether one specific interval contains the truth.
-
-**Q2:** Sarah wants a narrower confidence interval. She currently has n=200 reviews labelled. What should she do — and roughly how much more labelling effort will she need to halve the interval width?
-
-> **Sample answer:** She should label more reviews. The interval width is proportional to 1/√n, so to halve the width she needs to quadruple the sample size: from 200 to roughly 800 reviews. This illustrates the "diminishing returns" of sampling — each additional reduction in uncertainty requires exponentially more data.
-
-**Q3:** The Central Limit Theorem says sample means follow a normal distribution regardless of the underlying data's shape. Why does this make it safe to use confidence intervals even when your data is skewed?
-
-> **Sample answer:** Because the confidence interval formula uses the distribution of the *sample mean* (or proportion), not the distribution of the raw data. Even if individual polarity scores are skewed, the distribution of the average polarity across many different samples will be approximately normal — that's the CLT. So the formula (which assumes normality) still gives reliable results, as long as the sample is large enough (rule of thumb: n ≥ 30).
-
----
-
-## Part 3: A/B Testing + P-values
-
-### Designing an A/B test
-
-**The idea in plain English:** An A/B test is an experiment. You take two groups — a *control group* that keeps doing things the old way, and a *treatment group* that experiences the change — and you compare one specific outcome metric between them. The goal is to decide: is any difference in the metric real, or could it have happened by random chance?
-
-**Real-world analogy:** A supermarket wants to know whether putting fruit near the checkout increases healthy snack purchases. They redesign half their stores (treatment) and leave the other half unchanged (control). After 4 weeks, they compare the purchase rates. That's an A/B test. The decision about whether the difference is "real" requires statistics — because random store-to-store variation could explain a small difference even if fruit placement does nothing.
-
-**The four components you must define before running a test:**
-1. **Control group** — the group that does not receive the intervention
-2. **Treatment group** — the group that receives the intervention
-3. **Outcome metric** — the one number that defines success (keep it singular; testing multiple metrics at once inflates false discoveries)
-4. **Sample size** — how many observations per group before you stop and decide
-
-In Sarah's Thursday test: control = negative-flagged customers who get no coupon; treatment = negative-flagged customers who receive an apology coupon; metric = first-30-days complaint rate; sample = determined in the notebook.
-
----
-
-### The p-value
-
-**The idea in plain English:** The p-value answers a specific question: *"If the intervention had zero effect, what is the probability of seeing a difference at least this large, purely by chance?"*
-
-A small p-value (typically below 0.05) means: this result would be very unlikely by chance alone, so we reject the "no effect" hypothesis. A large p-value means: this result is easily explained by random variation; we don't have enough evidence to claim the intervention worked.
-
-**Real-world analogy:** You flip a coin 20 times and get 16 heads. Is the coin biased, or did you just get lucky? The p-value is exactly the probability of getting 16 or more heads on a fair coin. If that probability is very small (it's about 0.6%), you conclude the coin is probably biased. If the probability were high (say, 30%), you'd shrug and say "could easily be chance."
-
-**Why it matters for ML:** Every time you A/B test a deployed model's output — does sending the model's recommended email improve conversion? Does flagging the model's high-risk customers reduce churn? — you need a p-value to tell you whether the effect is real. Without it, you're just telling stories.
-
----
-
-### The three most common mis-readings of a p-value
-
-These mistakes appear constantly in business, journalism, and even some published research. Know them so you don't repeat them.
-
-**Mis-reading 1:** *"p = 0.03 means there is a 3% probability that the null hypothesis is true."*
-
-**The truth:** The p-value is the probability of the *data given the null hypothesis* — not the probability of the *null hypothesis given the data*. These are completely different. (The probability of the null hypothesis requires a Bayesian framework; see `optional_extensions.ipynb`.)
-
-**Mis-reading 2:** *"p = 0.04, which is significant — so the effect is large and important."*
-
-**The truth:** Statistical significance and practical significance are separate. With a large enough sample, even a tiny, meaningless difference will produce a p-value below 0.05. Always report the *effect size* (how large was the actual difference?) alongside the p-value.
-
-**Mis-reading 3:** *"p = 0.06 — the result is not significant, so the intervention had no effect."*
-
-**The truth:** A p-value above 0.05 means you lack *sufficient evidence* to reject the null hypothesis — not that the null hypothesis is true. It might mean the effect is real but your sample was too small to detect it. "Absence of evidence is not evidence of absence."
-
----
-
-### Quick Check — Part 3
-
-**Q1:** Sarah runs an A/B test on Aisha's apology coupon. The p-value is 0.038. Marcus asks: "Does this mean there's only a 3.8% chance the coupon didn't work?" How should Sarah correct him?
-
-> **Sample answer:** Gently. The p-value of 0.038 means: if the coupon had zero effect, there is only a 3.8% probability of seeing a difference at least this large by random chance. Since this is below the 0.05 threshold, Sarah rejects the null hypothesis — the evidence suggests the coupon has a real effect. But the p-value does not directly tell us the probability that the null hypothesis is true or false. That requires a different framework (Bayesian inference). For business purposes, the practical message is: "We have strong statistical evidence the coupon reduced complaints; based on this test, we recommend rolling it out."
-
-**Q2:** *Imagine a different version of Sarah's experiment, run on a much larger sample.* The coupon group had a complaint rate of 12.1% vs the control group's 13.0% — a 0.9 percentage point difference, p = 0.002. Should NorthStar roll out the coupon to all customers immediately?
-
-> **Sample answer:** Not necessarily. A 0.9 percentage point reduction is *statistically* significant (very low p-value, because the sample is huge) but may not be *practically* significant. The business question is: does the revenue from reduced churn outweigh the cost of the coupons? A 0.9pp reduction on, say, 10,000 at-risk customers is 90 fewer complaints — is the value of those 90 retained customers worth more than the coupon spend? Marcus's instinct to ask "will this actually reduce churn or just cost us money?" is exactly the right framing. (This is *why* effect size matters: with enough data, almost any non-zero effect becomes "significant," and you need an outside-statistics judgement to decide whether to act.)
-
-**Q3:** A colleague runs a test with 50 customers per group, finds p = 0.08, and concludes "the coupon doesn't work." What might be wrong with this conclusion?
-
-> **Sample answer:** With only 50 customers per group, the test is underpowered — the sample size is too small to reliably detect real effects. A 0.08 p-value means there's insufficient evidence to reject the null hypothesis, but that's not the same as evidence of no effect. The real effect could be real but undetectable at this sample size. The colleague should increase the sample size (often hundreds per group are needed for a small effect) before concluding anything. "We couldn't detect an effect" is very different from "the coupon doesn't work."
-
----
-
-## Putting it all together
-
-Sarah's Friday presentation uses all three tools in sequence, and they form a natural chain.
-
-**Distributions first.** Before you can interpret any number, you need to understand the shape of the data it came from. Skewed polarity scores mean the mean overstates "positive" sentiment. Sarah leads with the histogram so the audience understands what the raw data looks like.
-
-**Confidence intervals second.** Sarah's model accuracy of 84% is a point estimate from a sample. The confidence interval (78–89%) is the honest version — it tells Priya the range of accuracy the model is likely to have in the real world, not just on 200 hand-labelled reviews.
-
-**A/B test and p-value third.** Now that the model is trusted (within its CI), the question becomes "should we act on it?" The A/B test on Aisha's apology coupon is the answer. Sarah reports the effect (0.9pp reduction in complaints) and the statistical confidence (p < 0.05).
-
-In every ML project you will run in this course, these three steps appear in some form. L03 adds the tools to build models from labelled data; L04 adds feature engineering and evaluation depth. But the statistical vocabulary you built today is the lens through which every later model is judged.
+Skip any of these and you have confident-sounding nonsense — the most expensive kind of mistake in business.
 
 ---
 
@@ -284,10 +108,23 @@ Work through these after finishing the three Part notebooks. Attempt each questi
 
 ---
 
-## Sarah's question for L03 (the bridge forward)
+## Where L02 fits in the course
 
-By Friday afternoon, Sarah has defended three numbers: a sentiment rate, an accuracy interval, and an A/B test result. Priya nods. Marcus nods. The room is quiet for a moment, and then Marcus says:
+L02 is the lens every later lesson is read through — whenever you report a model number, claim a difference, or detect an anomaly, you are using L02 tools.
 
-> *"OK, the sentiment model holds up. But you used a pre-trained one — off the shelf. Can you build us a model that predicts churn from our own customer data? Something we actually trained on NorthStar behaviour?"*
+| Lesson | How L02 shows up |
+|---|---|
+| **L03 — Supervised Learning** | Train/validate split metrics are sample statistics — every accuracy/precision/recall number needs a CI. The threshold-choice exercise is an effect-size question. |
+| **L04 — Supervised Learning (Advanced)** | Hyperparameter tuning compares many model variants; you'll use confidence intervals to decide whether one really beats another or just got a lucky split. |
+| **L05 — Unsupervised Learning** | Anomaly detection is a Z-score generalisation. Cluster quality metrics are sample statistics with CIs. |
+| **L06 — Time Series** | Forecast intervals are confidence intervals projected forward. Distributional shape determines whether your forecast is honest. |
+| **L07 — Neural Networks** | Validation loss curves are noisy samples; you need CIs to tell whether one architecture genuinely beats another. |
+| **L08 — Computer Vision** | Test-set accuracy on a held-out image set is a sample proportion — same CI math. |
+| **L09 — NLP & Embeddings** | Retrieval evaluation (precision@k, recall@k) is sampled and needs CIs. |
+| **L10 — Transformers & GenAI** | A/B testing of prompts and retrieval strategies is the *only* way to make rigorous claims about an LLM pipeline. |
 
-Sarah doesn't have an answer today. That question — *can I build a model?* — is the engine of **L03 (Supervised Learning)**. Come to L03 ready to train your first model from scratch.
+---
+
+> *"OK, the sentiment model holds up. But you used a pre-trained one — off the shelf. Can you build us a model that predicts churn from our own customer data? Something we actually trained on NorthStar behaviour?"* — Marcus, after Sarah's Friday presentation.
+>
+> That question — *can I build a model?* — is the engine of **L03 (Supervised Learning)**.

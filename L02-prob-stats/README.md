@@ -73,7 +73,7 @@ You will:
 
 **Goal:** Deepen the concepts with the instructor and build real skill.
 
-**Concept reference →** [**lesson.md**](./lesson.md)
+**Short reference & review →** [**lesson.md**](./lesson.md) (overview, key takeaways, honest-reporting checklist, 10-question review, L02→L10 course map)
 
 **Notebooks — run in order:**
 
@@ -124,7 +124,7 @@ Optional material lives in [`notebooks/optional_extensions.ipynb`](./notebooks/o
 README.md                           ← You are here
 setup.md                            ← One-time environment setup (do this first)
 pre-class.md                        ← Phase 1: 75-min self-study guide
-lesson.md                           ← Phase 2: Concept reference for all key topics
+lesson.md                           ← Short reference: overview, takeaways, honest-reporting checklist, review Q&A, course map
 reference.md                        ← Phase 3: Further reading + glossary (~25 terms)
 environment.yml                     ← Conda environment spec (scipy + statsmodels included)
 slides/
