@@ -1,167 +1,113 @@
-# L08 — Lesson · Computer Vision & Convolutional Neural Networks
+# Lesson — L08 Computer Vision & Convolutional Neural Networks
 
-> *Sarah's NN model from L07 shipped. The team is unblocked on checkout-completion prediction. Then Marcus walks over with the next ask: auto-tag product photos. Same network playbook, very different input.*
+> **Chapter 8 of the NorthStar Retail story.** *Sarah Chen · Customer Experience Analyst · Mid-year, post-L07.*
+> Sarah's L07 neural network for checkout-completion has shipped. Then Marcus walks over: *"Our merchandising team uploads thousands of new product photos every season. Can we auto-tag them as 'dress', 'shirt', 'sneaker' so the catalogue search works on day one?"*
+> Same network playbook from L07 — but pixels are not tabular features. This lesson is how Sarah rebuilds her toolkit for images.
 
-## Part 1 — Why images break MLPs
-
-### 1.1 An image is a tensor
-
-A grayscale 28×28 image is a tensor of shape `(28, 28)`. A colour 224×224 photograph is `(3, 224, 224)` — three channels (red, green, blue), each with 224×224 pixel values. PyTorch's convention is `(batch, channels, height, width)`.
-
-A neural network only sees numbers, so an image is just **a particular shape of array** filled with pixel intensities between 0 and 255 (or 0.0 and 1.0 after normalisation).
-
-### 1.2 The flat-MLP problem
-
-The simplest thing to try is what we did in L07: flatten the image into a vector, pass it through an MLP.
-
-For 28×28 Fashion-MNIST:
-- Input dim: 784
-- Hidden layer 1: 256 neurons → **200,960 parameters** in that one layer
-- Hidden layer 2: 128 → 32,896 more
-- Output: 10 classes → 1,290 more
-- **Total: ~235K parameters** for tiny 28×28 images
-
-Bump the image to a realistic 224×224 colour photo (3×224×224 = 150,528 input features) and the first hidden layer alone needs ~38 million parameters. That's untenable.
-
-### 1.3 The spatial-locality problem
-
-There's a worse problem than parameter count: an MLP treats every input pixel as **independent of every other pixel**. The model has no built-in notion that pixel `(10, 10)` is right next to pixel `(10, 11)`. It has to *learn* that nearby pixels are related, from training data. That's expensive and fragile.
-
-Real images have two properties an MLP can't exploit:
-1. **Locality** — nearby pixels are related (edges, corners, textures live in small patches).
-2. **Translation invariance** — a sleeve is a sleeve whether it's in the top-left or bottom-right of the image.
-
-We need a model that bakes both of these in. That model is the **convolutional neural network**.
-
-## Part 2 — Convolutions
-
-### 2.1 The kernel intuition
-
-A convolution slides a small window — a **kernel** (also called a **filter**) — across the image, computing a weighted sum at each location.
-
-Take this 3×3 edge-detection kernel:
-
-```
--1  -1  -1
--1   8  -1
--1  -1  -1
-```
-
-When you slide it over a flat region of an image (all pixels similar), the centre pixel cancels the eight neighbours → output ≈ 0. When you slide it over an edge (centre pixel different from neighbours), output is large. So this single 3×3 kernel — just **9 numbers** — produces a feature map that highlights edges across the entire image.
-
-### 2.2 The parameter saving
-
-Here's the magic: that 9-parameter kernel slides everywhere. To find a sleeve-edge feature in a 224×224 image, an MLP needs separate weights for "edge at top-left" and "edge at bottom-right". A convolution learns the edge detector **once** and reuses it everywhere.
-
-A single `Conv2d(in_channels=3, out_channels=32, kernel_size=3)` layer has:
-
-- 32 kernels × (3 channels × 3 × 3) = **864 weights** + 32 biases = **896 parameters**
-
-For comparison: an MLP first layer on the same input with 32 outputs needs `3·224·224·32 ≈ 4.8 million` parameters. The convolution is **~5,000× smaller**.
-
-### 2.3 Stride, padding, pooling
-
-- **Stride** — how many pixels the kernel jumps between applications. Stride 2 halves the output size.
-- **Padding** — adding a border of zeros around the input so the kernel can reach the edges and the output keeps the same size.
-- **Max pooling** — after a conv layer, take the max over each 2×2 block. Shrinks the feature map, throws away precise location, keeps the strongest activation. Classic CNN pattern: `Conv → ReLU → MaxPool`.
-
-### 2.4 Stacking conv layers
-
-One conv layer learns simple features (edges, blobs). Stack a second on top of it and you learn combinations of those features (corners, sleeve curves). Stack a third and you learn whole-object patterns (a shirt collar, a sneaker laces). This compositionality is why deep CNNs work.
-
-## Part 3 — Building a CNN in PyTorch
-
-### 3.1 The minimum architecture
-
-A working CNN for Fashion-MNIST needs just five blocks:
-
-```python
-class TinyCNN(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=3, padding=1),   # 1×28×28 → 16×28×28
-            nn.ReLU(),
-            nn.MaxPool2d(2),                              # 16×28×28 → 16×14×14
-            nn.Conv2d(16, 32, kernel_size=3, padding=1),  # 16×14×14 → 32×14×14
-            nn.ReLU(),
-            nn.MaxPool2d(2),                              # 32×14×14 → 32×7×7
-        )
-        self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(32 * 7 * 7, 64),
-            nn.ReLU(),
-            nn.Linear(64, 10),
-        )
-    def forward(self, x):
-        return self.classifier(self.features(x))
-```
-
-That's ~106K parameters, less than half the MLP's count, and on Fashion-MNIST it pulls **~88% test accuracy vs the MLP's ~87%** — modest on this easy dataset, but with under half the parameters. On CIFAR-10 (assignment) the CNN beats the MLP by 10+ points; the gap widens as image complexity grows.
-
-### 3.2 The training loop is identical to L07
-
-The PyTorch training-loop pattern from L07 (`zero_grad → forward → loss → backward → step`) works unchanged. CNNs aren't a different framework, they're a different *architecture* dropped into the same loop.
-
-## Part 4 — Transfer learning
-
-### 4.1 The problem with small data
-
-Sarah's actual photo collection is 500 images per category, not 60,000. Train a CNN from scratch on 500 images and you'll over-fit aggressively. So what do you do when you have a tiny dataset?
-
-**Don't train from scratch. Start from a model someone else already trained.**
-
-### 4.2 What pretrained means
-
-Researchers have trained big CNNs (ResNet, EfficientNet, ViT) on ImageNet — 1.2 million labelled photos across 1,000 categories. Those models have learned a hierarchy of visual features: edges, textures, object parts, whole-object detectors.
-
-Most of that hierarchy is **task-independent**. Sleeve detectors and texture filters trained on ImageNet work just fine on Fashion-MNIST.
-
-### 4.3 The two transfer-learning patterns
-
-**Feature extraction** — freeze the pretrained backbone, replace only the final classification head with a new one for your classes, train only that head. Works great when your data is small and similar to the pretraining domain.
-
-**Fine-tuning** — same as above, but after a few epochs of head-only training, *unfreeze* the last few backbone layers and continue training with a tiny learning rate. Squeezes out the last few accuracy points when you have somewhat more data.
-
-### 4.4 The honest expectation
-
-Transfer learning isn't free. It wins when the **pretrained domain is close to your domain**. ImageNet → product catalogue photos (colour, natural) is a great match. ImageNet → Fashion-MNIST (grayscale silhouettes) is a poor match — head-only transfer can actually underperform a from-scratch CNN there.
-
-When the domain gap is wide, **don't just train the head — fine-tune**. Unfreeze the last conv block (`layer4` in ResNet), use a tiny learning rate (1e-4), and let the deepest features adapt to your data. That's where transfer learning recovers its reputation. NB 04 walks through both outcomes back to back so you can see the difference.
-
-## Part 5 — When to use what
-
-| Scenario | Recommendation |
-|----------|----------------|
-| Tabular features (rows × columns) | Stick with gradient boosting or logistic regression (see L04, L02) |
-| 10K+ small images, 10 classes | Train a small CNN from scratch |
-| < 1K images per class | Transfer learning with a pretrained backbone |
-| 100+ classes, lots of data | Fine-tune a larger pretrained model |
-| Production scale, need fast inference | Compile to ONNX or use a smaller backbone (MobileNet) |
-| Need it Tuesday | Call a hosted vision API and revisit later |
-
-## Part 6 — Sarah's recommendation to Marcus
-
-Sarah's verdict for the catalogue auto-tagger:
-
-> *"Start with transfer learning on a pretrained ResNet18 and **fine-tune the last conv block**, not just the head. Our product photos are colour and natural-photo-like, so the ImageNet pretraining transfers well — but only after we let the deepest layer adapt to clothing. From-scratch CNN would need 10× more labelled data and still might not catch up on shirt/T-shirt/coat ambiguity."*
-
-She also flags the production reality:
-
-> *"For the launch, we should auto-tag with the model AND surface the top-3 predictions to merchandisers for confirmation. Treat the model as a first-pass labeller, not a final source of truth. The merchandisers stay in the loop until we trust the model's confidence calibration."*
-
-This is the right pattern. Models in production should know when to defer.
-
-## Bridge to L09
-
-Marcus's next question after the photo tagger ships: *"Can we also do natural-language search? A customer types 'blue summer dress' and we surface the right products?"*
-
-Same neural-network family, completely different input modality. Pixels → words. We need to learn how to turn text into vectors, and how to compare those vectors. That's **embeddings** and the beginning of L09.
+This document is a **short reference** — the lesson itself is taught in the notebooks. Read it for orientation before class, then come back to it for the takeaways, the transfer-learning checklist, the review questions, and the course map.
 
 ---
 
-## Recap — three things to remember
+## How L08 is taught
 
-1. **Convolutions exploit locality and translation invariance.** Same kernel slides everywhere → fewer parameters, better inductive bias for images.
-2. **The PyTorch training loop doesn't change.** Conv2d/MaxPool2d are drop-in replacements for Linear. The training pattern from L07 still works.
-3. **Don't train CNNs from scratch on small data — but check the domain gap.** Reach for a pretrained backbone first. If your domain is close to ImageNet (colour natural photos), head-only feature extraction often suffices. If your domain is far (grayscale silhouettes, X-rays, satellite imagery), expect to fine-tune the last conv block — head-only can actually lose to a from-scratch CNN, as we saw on Fashion-MNIST.
+| Stage | Where to go |
+|---|---|
+| **Pre-class** | `pre-class.md` + `notebooks/01_monday_morning.ipynb` |
+| **In-class — Part 1: Convolutions intuition** | `notebooks/02_convolutions_intuition.ipynb` |
+| **In-class — Part 2: Build your first CNN** | `notebooks/03_first_cnn.ipynb` |
+| **In-class — Part 3: Transfer learning** | `notebooks/04_transfer_learning.ipynb` |
+| **Self-study** | `notebooks/assignment.ipynb` + `notebooks/optional_extensions.ipynb` |
+| **Reference & review** | This document |
+
+The notebooks are the spine. Run them in order. Come back here for the consolidated takeaways and the review questions.
+
+---
+
+## Overview
+
+Sarah's L07 MLP solved a tabular problem (9 numeric features → checkout-completion probability). Marcus's catalogue-tagger problem looks superficially similar — "another classifier" — but the input is a grid of pixels, and a flattened MLP on 224×224 colour photos blows up to ~38 million parameters in the first layer alone. Worse, the MLP has no built-in notion that pixel (10, 10) sits next to pixel (10, 11) — it has to *learn* spatial structure from scratch. **Convolutional neural networks (CNNs)** fix both problems by sliding a small learnable kernel over the image: locality and translation invariance baked in, parameter count slashed by orders of magnitude. And when Sarah's actual data is 500 photos per category rather than 60,000, she'll reach for **transfer learning** — starting from a ResNet18 someone already trained on 1.2M ImageNet photos — and decide whether head-only feature extraction is enough or whether the domain gap demands fine-tuning the last conv block too.
+
+---
+
+## Key takeaways
+
+1. **Images are tensors, but flattening them is wasteful.** PyTorch's convention is `(batch, channels, height, width)`. A flat-MLP on a 224×224 colour photo needs ~38M parameters in the first layer alone and has to relearn spatial structure from scratch.
+2. **Convolutions exploit locality and translation invariance.** A single 3×3 kernel — 9 weights — slides across the whole image. The same edge-detector finds an edge at the top-left and the bottom-right; the MLP would need separate weights for each location.
+3. **The classic CNN block is `Conv → ReLU → MaxPool`.** Stride controls down-sampling; padding preserves output size; pooling discards precise location and keeps the strongest activation. Stack a few blocks and the network learns edges → parts → objects.
+4. **The PyTorch training loop is unchanged from L07.** `Conv2d` and `MaxPool2d` are drop-in replacements for `Linear`. The `zero_grad → forward → loss → backward → step` pattern still works — CNNs are a different *architecture*, not a different framework.
+5. **Don't train from scratch on small data — start pretrained.** ResNet/EfficientNet/ViT weights from ImageNet encode a hierarchy of visual features (edges, textures, parts, objects) that transfer to most natural-photo tasks. With < 1K images per class, transfer learning is almost always the right starting point.
+6. **Feature extraction vs fine-tuning depends on the domain gap.** Pretrained domain close to yours (ImageNet → product photos) → freeze the backbone, train only the new head. Domain far away (ImageNet → grayscale silhouettes, X-rays, satellite) → unfreeze the last conv block and fine-tune with a tiny learning rate (e.g. `1e-4`). Head-only transfer can actually *underperform* a from-scratch CNN on a poorly-matched domain.
+7. **Pretrained models impose preprocessing contracts.** Match ImageNet normalisation (`mean=[0.485, 0.456, 0.406]`, `std=[0.229, 0.224, 0.225]`), resize inputs to a sensible scale for the backbone's receptive field, and convert grayscale to RGB if needed. Mismatched preprocessing silently destroys accuracy.
+
+---
+
+## Choosing a transfer-learning strategy — a checklist
+
+Before you decide whether to train from scratch, extract features, or fine-tune, run the project through this three-step check:
+
+1. **How much labelled data do I actually have, per class?** Under ~1K per class → start pretrained, do not train from scratch. 10K+ per class → from-scratch CNN becomes viable; pretrained is still a strong baseline to beat.
+2. **How close is my domain to ImageNet?** Colour natural-photo inputs (product photos, animals, vehicles, food) → head-only feature extraction will already lift you a lot. Grayscale, medical scans, satellite, line drawings → expect head-only to underperform; budget for fine-tuning the last conv block (`layer4` in ResNet).
+3. **Have I matched the pretrained model's preprocessing contract?** ImageNet normalisation stats, RGB (3-channel) inputs, an input resolution the backbone was designed for. If you skip this, your "transfer-learning baseline" is measuring preprocessing bugs, not the model.
+
+Skip any of these and you will reach for fine-tuning when feature extraction would suffice, or report a from-scratch CNN as "better than transfer learning" when really your preprocessing was wrong.
+
+---
+
+## Check your understanding
+
+Work through these after finishing the three Part notebooks. Attempt each question on your own first.
+
+### Part 1 — Convolutions intuition
+
+**Q1 — Why not just flatten?** A teammate says: *"Let's just flatten the 224×224 colour photo and feed it to the same MLP that worked for L07."* Give two distinct reasons why this is a poor choice.
+
+> **Sample answer:** (1) **Parameter count.** Flattened input is 3 × 224 × 224 = 150,528 features. Even a modest 256-neuron hidden layer needs ~38 million weights just in that one layer — untenable to train and memorise. (2) **No spatial prior.** An MLP treats every pixel as independent of every other pixel. It has no built-in notion that pixel (10, 10) sits next to pixel (10, 11), and no way to recognise that a sleeve in the top-left is the same feature as a sleeve in the bottom-right. The model has to learn locality and translation invariance from scratch, from training data — expensive and fragile.
+
+**Q2 — Kernel arithmetic.** A `Conv2d(in_channels=3, out_channels=32, kernel_size=3)` layer is applied to a 224×224 colour image. How many learnable parameters does the layer have, and how does that compare to the equivalent MLP first layer producing 32 outputs?
+
+> **Sample answer:** Conv parameters = 32 kernels × (3 channels × 3 × 3) + 32 biases = 864 + 32 = **896**. MLP equivalent (Linear(150528 → 32) + bias) = 150,528 × 32 + 32 ≈ **4.82 million**. The convolution is roughly **5,000× smaller** — because the same kernel is reused at every spatial location instead of having separate weights per pixel.
+
+**Q3 — Stride, padding, pooling.** In one sentence each, what does **stride 2**, **padding 1** (with kernel 3), and a **2×2 max-pool** do to the output feature map's spatial size?
+
+> **Sample answer:** **Stride 2** halves the output height and width (the kernel jumps by 2 pixels at a time). **Padding 1** with a 3×3 kernel keeps the output the same size as the input (the border of zeros lets the kernel reach the edges). **2×2 max-pool** halves the height and width and keeps the strongest activation in each 2×2 block.
+
+### Part 2 — Building a CNN
+
+**Q4 — Output-shape tracing.** A `TinyCNN` has `Conv2d(1, 16, 3, padding=1) → MaxPool2d(2) → Conv2d(16, 32, 3, padding=1) → MaxPool2d(2)` applied to a 1×28×28 Fashion-MNIST image. What is the shape going into the first `Linear` layer after `Flatten()`?
+
+> **Sample answer:** After the first conv (padding 1 keeps size): 16×28×28. After the first pool: 16×14×14. After the second conv: 32×14×14. After the second pool: 32×7×7. Flattened: **32 × 7 × 7 = 1,568 features**. The first `Linear` therefore needs `in_features=1568`.
+
+**Q5 — Training-loop reuse.** Your CNN gets ~88% on Fashion-MNIST; the MLP from L07 got ~87%. A colleague says: *"Tiny improvement — and a whole new framework to learn."* Correct them.
+
+> **Sample answer:** The framework is unchanged — `zero_grad → forward → loss → backward → step` is identical to L07. `Conv2d`/`MaxPool2d` are drop-in replacements for `Linear`. The Fashion-MNIST gap looks small (88 vs 87%) because the dataset is easy and small, but it is achieved with about half the parameters; and on a realistic dataset like CIFAR-10 (assignment) the CNN beats the MLP by 10+ percentage points. The improvement scales with image complexity — Fashion-MNIST hides it.
+
+### Part 3 — Transfer learning
+
+**Q6 — Strategy choice.** You have 500 product photos per category across 12 categories of clothing — colour, taken in studio. Should you (a) train a CNN from scratch, (b) use a pretrained ResNet18 with head-only feature extraction, or (c) use the pretrained ResNet18 and fine-tune the last conv block? Justify.
+
+> **Sample answer:** **(b) — head-only feature extraction is the right first move, and (c) is a reasonable second move.** 500 images per class is far too small to train a CNN from scratch (it will overfit). The domain — colour studio photos of clothing — is close to ImageNet, so the pretrained backbone's edge/texture/part detectors transfer directly; freezing the backbone and training only the new 12-output head usually lifts accuracy substantially in a few minutes. If you need more, unfreeze `layer4` and fine-tune with a small learning rate (`1e-4`) for a few more epochs. Skip the from-scratch option.
+
+**Q7 — Domain-gap surprise.** On Fashion-MNIST (NB 04) head-only transfer learning **lost** to a from-scratch CNN. On CIFAR-10 (assignment) head-only transfer **wins**. What is the structural difference, and what should you do when transfer learning underperforms?
+
+> **Sample answer:** Fashion-MNIST is **grayscale 28×28 silhouettes**; CIFAR-10 is **colour 32×32 natural photos**. ImageNet pretraining is colour natural photos, so the feature hierarchy transfers much better to CIFAR-10. When the pretrained domain is far from yours (grayscale, X-rays, satellite imagery), head-only feature extraction can underperform because the frozen filters were tuned for the wrong kind of image. The fix is to **unfreeze the last conv block** (e.g. `layer4` in ResNet) and fine-tune with a tiny learning rate (`1e-4`), letting the deepest features adapt to your data while leaving the early generic edge/texture filters intact.
+
+**Q8 — Preprocessing pitfall.** You load a pretrained ResNet18, replace `fc`, train the head on your 64×64 grayscale dataset, and accuracy is dismal. Name three preprocessing checks before you blame the model.
+
+> **Sample answer:** (1) **Channels** — ResNet18 expects 3-channel RGB input. If your data is grayscale, convert to 3-channel (e.g. by repeating the channel) before feeding it in. (2) **Normalisation** — apply ImageNet normalisation (`mean=[0.485, 0.456, 0.406]`, `std=[0.229, 0.224, 0.225]`). Using your own dataset's stats, or skipping normalisation entirely, silently destroys accuracy because the pretrained weights expect that exact pixel scale. (3) **Input size** — ResNet18 was designed for ~224×224 input. 64×64 is too small for its receptive field; resize up (96×96 minimum, 224×224 if you can afford it) before normalising.
+
+---
+
+## Where L08 fits in the course
+
+L08 closes the supervised-deep-learning arc and hands the network playbook to a different modality.
+
+| Lesson | How L08 shows up |
+|---|---|
+| **L09 — NLP & Embeddings** | Pretrained-model thinking carries over from vision to text. The "freeze the backbone, swap the head" pattern becomes "use a pretrained encoder, build a downstream task on top of the embeddings." Domain-gap reasoning still applies. |
+| **L10 — Transformers & GenAI** | Vision Transformers (ViT) replace the CNN inductive bias with attention, but the transfer-learning playbook (pretrain on giant data, fine-tune for your task) is exactly what L08 trained you for. Multimodal models (CLIP) glue an L08-style image encoder to an L09-style text encoder. |
+
+---
+
+> *"OK, the photo tagger ships. But Marcus has one more ask: can a customer type 'blue summer dress' and we surface the right products? Not from tags — from the words themselves."* — Marcus, after the catalogue launch.
+>
+> That question — *can we make text-to-product search work?* — is the engine of **L09 (NLP & Embeddings)**.

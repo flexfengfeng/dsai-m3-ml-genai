@@ -55,7 +55,7 @@ By the end of L08 you will be able to:
 | `README.md`              | This file — orientation |
 | `setup.md`               | Environment install (`pip install torch torchvision`) |
 | `pre-class.md`           | 75-min self-study before class |
-| `lesson.md`              | Full concept reference & narrative |
+| `lesson.md`              | Short reference: overview, takeaways, transfer-learning checklist, review Q&A, L09→L10 course map |
 | `reference.md`           | Glossary of 20 CV/CNN terms |
 | `environment.yml`        | Conda env spec |
 | `slides/`                | `.pptx` deck + `slides_outline.md` |
