@@ -74,7 +74,7 @@ You will:
 
 **Goal:** Build the pipeline end-to-end with the instructor — preprocess, train, evaluate, decide.
 
-**Concept reference →** [**lesson.md**](./lesson.md)
+**Short reference & review →** [**lesson.md**](./lesson.md) (overview, key takeaways, threshold-choice checklist, 9-question review, L04→L10 course map)
 
 **Notebooks — run in order:**
 
@@ -125,7 +125,7 @@ Optional material lives in [`notebooks/optional_extensions.ipynb`](./notebooks/o
 README.md                              ← You are here
 setup.md                               ← One-time environment setup
 pre-class.md                           ← Phase 1: 75-min self-study guide
-lesson.md                              ← Phase 2: Concept reference for all key topics
+lesson.md                              ← Short reference: overview, takeaways, threshold checklist, review Q&A, course map
 reference.md                           ← Phase 3: Further reading + glossary (~20 terms)
 environment.yml                        ← Conda environment spec
 slides/
