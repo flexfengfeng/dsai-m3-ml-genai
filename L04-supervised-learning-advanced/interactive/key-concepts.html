@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>L04 — Make It Better · Interactive Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f0e8d4; --paper-2:#e7dcc1; --paper-3:#d9cca8;
+  --ink:#13110c; --ink-2:#3a3528; --ink-soft:#65604f;
+  --rule:#1b1812; --accent:#cf3a17; --accent-2:#7a1d0a;
+  --teal:#0e4540; --teal-2:#1c6e66; --mustard:#b8881f;
+  --grain-op:.55;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:"Newsreader",Georgia,serif;font-weight:380;font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background-image:radial-gradient(1200px 600px at 80% -10%,rgba(207,58,23,.08),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(14,69,64,.07),transparent 60%),repeating-linear-gradient(0deg,rgba(20,17,12,.025) 0 1px,transparent 1px 3px);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:multiply;opacity:var(--grain-op);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+::selection{background:var(--accent);color:var(--paper)}
+.italic{font-style:italic;font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.rule-dot{border:0;border-top:1.5px dotted var(--rule);margin:0}
+
+.masthead{padding:28px 6vw 18px;border-bottom:1px solid var(--rule)}
+.masthead-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.masthead-title{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-style:italic;font-size:clamp(34px,5vw,56px);letter-spacing:-.03em;line-height:.85}
+.masthead-title sup{font-size:.4em;vertical-align:super;letter-spacing:0;font-style:normal;color:var(--accent)}
+.tag{display:inline-block;padding:3px 8px;background:var(--ink);color:var(--paper);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.dateline{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.masthead-meta{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end}
+
+.cover{padding:5vh 6vw 6vh;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+@media (max-width:900px){.cover-grid{grid-template-columns:1fr;gap:24px}}
+.cover h1{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:300;font-size:clamp(56px,11vw,168px);line-height:.84;letter-spacing:-.04em;margin:.1em 0}
+.cover h1 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.cover-lede{font-family:"Newsreader",serif;font-size:clamp(18px,1.6vw,22px);font-style:italic;color:var(--ink-2);max-width:46ch;line-height:1.45}
+.cover-lede .dropcap{float:left;font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:5.2em;line-height:.78;padding:.08em .1em 0 0;color:var(--accent);font-weight:330}
+.cover-side{display:flex;flex-direction:column;gap:18px}
+.fact-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule)}
+.fact{padding:14px;border-right:1px solid var(--rule)}
+.fact:last-child{border-right:0}
+.fact .num{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:42px;line-height:1;letter-spacing:-.04em}
+.fact .lab{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+.byline{display:flex;gap:18px;align-items:center;margin-top:8px}
+.byline .badge{width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:500;font-style:italic;font-size:22px}
+.byline b{display:block;font-family:"Newsreader",serif;font-weight:600}
+
+section{padding:7vh 6vw;border-bottom:1px solid var(--rule);position:relative}
+.section-head{display:grid;grid-template-columns:120px 1fr;gap:32px;margin-bottom:48px;align-items:start}
+@media (max-width:760px){.section-head{grid-template-columns:1fr;gap:8px}}
+.section-num{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:84px;line-height:.8;color:var(--accent);font-weight:340}
+.section-title h2{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:340;font-size:clamp(34px,4.4vw,56px);line-height:.95;letter-spacing:-.03em;margin:0 0 .25em}
+.section-title h2 em{font-style:italic;color:var(--accent)}
+.section-title .deck{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:20px;max-width:62ch}
+
+.lvt{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid var(--rule)}
+@media (max-width:760px){.lvt{grid-template-columns:1fr}}
+.lvt-col{padding:22px;background:var(--paper)}
+.lvt-col + .lvt-col{border-left:1px solid var(--rule);background:var(--paper-2)}
+@media (max-width:760px){.lvt-col + .lvt-col{border-left:0;border-top:1px solid var(--rule)}}
+.lvt-col h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:28px;letter-spacing:-.02em;margin:.1em 0 .35em}
+.lvt-col h3 em{color:var(--accent)}
+.lvt-svg{width:100%;height:280px;display:block;border:1px solid var(--rule);background:var(--paper-3)}
+.lvt-foot{margin-top:12px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15.5px;line-height:1.5}
+.lvt-tag{display:inline-block;padding:2px 8px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--rule)}
+.lvt-tag.bad{background:transparent;color:var(--ink-2)}
+.lvt-tag.good{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.tree-rules{margin-top:14px;font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.5;color:var(--ink-2);background:var(--paper-3);padding:12px 14px;border:1px dashed var(--rule)}
+.tree-rules .leaf{color:var(--accent);font-weight:700}
+
+.bvb{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid var(--rule)}
+@media (max-width:760px){.bvb{grid-template-columns:1fr}}
+.bvb-col{padding:24px;background:var(--paper-2)}
+.bvb-col + .bvb-col{border-left:1px solid var(--rule);background:var(--paper)}
+@media (max-width:760px){.bvb-col + .bvb-col{border-left:0;border-top:1px solid var(--rule)}}
+.bvb-col h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:30px;letter-spacing:-.02em;margin:.1em 0 .25em}
+.bvb-col h3 em{color:var(--accent)}
+.bvb-col .sum{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:16px;margin:0 0 14px}
+.bvb-svg{width:100%;height:200px;display:block;border:1px solid var(--rule);background:var(--paper-3)}
+.bvb-list{margin:14px 0 0;padding-left:0;list-style:none}
+.bvb-list li{display:grid;grid-template-columns:14px 1fr;gap:8px;font-size:15px;color:var(--ink-2);line-height:1.45;margin-bottom:6px}
+.bvb-list li::before{content:"●";color:var(--accent);font-size:10px;line-height:1.6;text-align:center}
+.bvb-list li b{color:var(--ink)}
+
+.duet{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}
+@media (max-width:900px){.duet{grid-template-columns:1fr}}
+.duet-ctrl{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.duet-ctrl h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.02em;margin:0 0 .4em}
+.duet-ctrl label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);display:block;margin-top:14px}
+.duet-ctrl input[type=range]{width:100%;accent-color:var(--accent);margin-top:6px}
+.duet-vals{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-2)}
+.duet-vis{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.duet-svg{width:100%;height:240px;display:block}
+.duet-readout{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.duet-readout .cell{border:1px solid var(--rule);background:var(--paper);padding:10px 12px}
+.duet-readout .k{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.duet-readout .v{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:28px;line-height:1;letter-spacing:-.02em;margin-top:4px}
+.duet-readout .v.is-bad{color:var(--accent)}
+.duet-readout .v.is-good{color:var(--teal)}
+.duet-verdict{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:22px;line-height:1.15;letter-spacing:-.015em;margin-top:14px;min-height:2.4em}
+.duet-verdict em{color:var(--accent)}
+
+.bake{border:1px solid var(--rule);overflow-x:auto;background:var(--paper)}
+.bake table{width:100%;border-collapse:collapse;font-family:"JetBrains Mono",monospace;font-size:13px}
+.bake th,.bake td{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:14px 16px;text-align:left;vertical-align:middle}
+.bake th:last-child,.bake td:last-child{border-right:0}
+.bake th{background:var(--ink);color:var(--paper);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.bake td.name{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;letter-spacing:-.01em;color:var(--ink)}
+.bake td.f1{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:24px;letter-spacing:-.02em}
+.bake tr.winner{background:var(--paper-3)}
+.bake tr.winner td.f1{color:var(--teal)}
+.bake .stars{letter-spacing:2px;color:var(--mustard)}
+.bake .pill{font-size:10px;letter-spacing:.14em;padding:2px 8px;border:1px solid var(--rule);text-transform:uppercase;background:var(--paper)}
+.bake .pill.ship{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.bake-note{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15.5px;line-height:1.5;max-width:72ch}
+
+.honest{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.honest{grid-template-columns:1fr}}
+.h-card{border:1px solid var(--rule);background:var(--paper-2);padding:22px;display:flex;flex-direction:column;gap:10px;position:relative}
+.h-card .n{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:62px;line-height:.8;color:var(--accent);font-weight:340}
+.h-card h4{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.015em;margin:.2em 0 .1em}
+.h-card p{font-family:"Newsreader",serif;color:var(--ink-2);font-size:15.5px;line-height:1.5;margin:0}
+.h-card .ex{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);letter-spacing:.04em;background:var(--paper);border:1px dashed var(--rule);padding:8px 10px;margin-top:6px}
+.h-card .ex.good{border-color:var(--teal);color:var(--teal)}
+.h-card .ex.bad{border-color:var(--accent);color:var(--accent-2)}
+
+.pull{padding:8vh 6vw;background:var(--ink);color:var(--paper);position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.pull::before{content:"";position:absolute;inset:0;background:radial-gradient(800px 400px at 80% 30%,rgba(207,58,23,.22),transparent 60%);pointer-events:none}
+.pull blockquote{margin:0;max-width:24ch;font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 1;font-style:italic;font-weight:300;font-size:clamp(34px,5vw,72px);letter-spacing:-.025em;line-height:1}
+.pull blockquote em{color:var(--accent);font-style:italic}
+.pull cite{display:block;margin-top:18px;font-family:"JetBrains Mono",monospace;font-style:normal;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cfc6ad}
+
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:760px){.qa-grid{grid-template-columns:1fr}}
+.qa{background:var(--paper-2);border:1px solid var(--rule);padding:18px 20px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:background .2s;position:relative}
+.qa::before{content:attr(data-qn);position:absolute;top:10px;right:14px;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-soft);letter-spacing:.14em}
+.qa:hover{background:var(--paper-3)}
+.qa b{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;line-height:1.15;letter-spacing:-.015em;padding-right:48px}
+.qa .a{display:none;font-family:"Newsreader",serif;font-size:15.5px;color:var(--ink-2);line-height:1.5;border-top:1px dotted var(--rule);padding-top:10px;margin-top:2px}
+.qa.on{background:var(--ink);color:var(--paper)}
+.qa.on b{color:var(--paper)}
+.qa.on::before{color:var(--accent)}
+.qa.on .a{display:block;color:#e3d8be;border-color:#5e5641}
+.hint{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-top:2px}
+.qa.on .hint{color:#f5c2ad}
+
+.map{display:grid;grid-template-columns:repeat(10,1fr);gap:0;border:1px solid var(--rule);overflow:hidden}
+@media (max-width:1100px){.map{grid-template-columns:repeat(5,1fr)}}
+@media (max-width:600px){.map{grid-template-columns:repeat(2,1fr)}}
+.node{padding:16px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--paper);position:relative;cursor:default}
+.node:last-child{border-right:0}
+.node .ix{position:absolute;top:10px;left:12px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-soft)}
+.node .ttl{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:20px;letter-spacing:-.01em;line-height:1.05}
+.node .sub{font-family:"Newsreader",serif;font-size:13px;color:var(--ink-2);margin-top:4px;display:none}
+.node:hover .sub{display:block}
+.node.is-now{background:var(--accent);color:var(--paper)}
+.node.is-now .ix,.node.is-now .sub{color:#ffe1d3}
+.node .lens{position:absolute;top:10px;right:10px;font-family:"JetBrains Mono",monospace;font-size:10px;background:var(--teal);color:var(--paper);padding:1px 5px;letter-spacing:.1em}
+
+footer{padding:5vh 6vw;display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap}
+footer .colophon{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);max-width:60ch}
+footer .stamp{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:38px;letter-spacing:-.02em;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-row">
+    <div>
+      <div class="dateline">M3 &middot; Module Three &middot; Machine Learning &amp; GenAI</div>
+      <div class="masthead-title">Make It <span class="italic">Better</span><sup>L04</sup></div>
+    </div>
+    <div class="masthead-meta">
+      <span class="tag">Interactive &middot; Field Notes</span>
+      <span class="dateline">Vol. 1 &middot; Issue 04 &middot; Trees &amp; Ensembles</span>
+    </div>
+  </div>
+</header>
+
+<section class="cover">
+  <div class="cover-grid">
+    <div>
+      <div class="label" style="color:var(--accent)">Chapter Four &middot; Same data, harder algorithms</div>
+      <h1>"Try those <em>tree</em>-based<br>models you mentioned."</h1>
+      <p class="cover-lede"><span class="dropcap">M</span>arcus signed off on Sarah's logistic regression on Friday and left her one note: <em>make it better.</em> Same dataset, same target column. By Friday she has to put a decision tree, a random forest, and a gradient booster on the table next to last week's baseline &mdash; and tell the team which one to ship. The week's real lesson isn't which model wins on F1. It's how to tune honestly, compare fairly, and pick the model the team can operate.</p>
+    </div>
+    <div class="cover-side">
+      <div class="fact-strip">
+        <div class="fact"><div class="num">3</div><div class="lab">New algorithms to try</div></div>
+        <div class="fact"><div class="num">1</div><div class="lab">Baseline to beat</div></div>
+        <div class="fact"><div class="num">3am</div><div class="lab">"Who debugs it?" test</div></div>
+      </div>
+      <div class="byline">
+        <div class="badge">SC</div>
+        <div><b>Sarah Chen</b><span class="label">Cust. Experience Analyst &middot; Jan 2023</span></div>
+      </div>
+      <hr class="rule-dot"/>
+      <div class="label" style="letter-spacing:.18em;font-style:italic;color:var(--ink-2)">Move the sliders. Read the verdicts. Every figure here is live.</div>
+    </div>
+  </div>
+</section>
+
+<section id="s1">
+  <div class="section-head">
+    <div class="section-num">I.</div>
+    <div class="section-title">
+      <div class="label">Why trees?</div>
+      <h2>Non-linear interactions, <em>for free.</em></h2>
+      <p class="deck">A logistic regression looks for one straight boundary. A decision tree can carve the space into rectangles &mdash; "tenure &lt; 12 AND returns_per_purchase &gt; 0.10" is one split, no feature engineering required. And no scaler in sight.</p>
+    </div>
+  </div>
+
+  <div class="lvt">
+    <div class="lvt-col">
+      <span class="lvt-tag bad">Logistic regression &middot; one line</span>
+      <h3>The <em>straight</em> boundary.</h3>
+      <svg class="lvt-svg" id="linSvg" viewBox="0 0 360 280" preserveAspectRatio="xMidYMid meet"></svg>
+      <p class="lvt-foot">Linear models draw one hyperplane. When churners cluster in two opposite corners, a single line cannot separate them &mdash; accuracy hits a ceiling unless you hand-engineer an interaction term.</p>
+    </div>
+    <div class="lvt-col">
+      <span class="lvt-tag good">Decision tree &middot; recursive rectangles</span>
+      <h3>The <em>step</em> boundary.</h3>
+      <svg class="lvt-svg" id="treeSvg" viewBox="0 0 360 280" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="tree-rules">
+        if tenure &lt; 0.4 &amp; returns &gt; 0.55 &rarr; <span class="leaf">churn</span><br>
+        elif tenure &gt; 0.6 &amp; returns &gt; 0.70 &rarr; <span class="leaf">churn</span><br>
+        elif tenure &lt; 0.15 &amp; returns &lt; 0.25 &rarr; <span class="leaf">churn</span><br>
+        else &rarr; stay
+      </div>
+      <p class="lvt-foot">Trees split on thresholds, not distances &mdash; so they pick up interactions automatically and ignore scale. Skip <span class="mono">StandardScaler</span> for tree models. You still need to one-hot encode categoricals.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="section-head">
+    <div class="section-num">II.</div>
+    <div class="section-title">
+      <div class="label">Two philosophies</div>
+      <h2>Bagging averages. <em>Boosting</em> corrects.</h2>
+      <p class="deck">Random forests and gradient boosters both ensemble many trees, but they reach the answer from opposite directions. One reduces variance by averaging independent trees. The other builds expertise one mistake at a time.</p>
+    </div>
+  </div>
+
+  <div class="bvb">
+    <div class="bvb-col">
+      <h3>Random forest &middot; <em>bagging.</em></h3>
+      <p class="sum">Grow many <em>deep</em> trees, each on a different bootstrap sample and a random subset of features. Average their votes.</p>
+      <svg class="bvb-svg" id="rfSvg" viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet"></svg>
+      <ul class="bvb-list">
+        <li><b>Trains in parallel</b> &mdash; trees are independent.</li>
+        <li><b>Variance &darr;</b>, bias unchanged &mdash; smooths out the wild guesses of a single deep tree.</li>
+        <li><b>Robust default</b> &mdash; sklearn-only, sane defaults, stable across retrains.</li>
+        <li><b>Feature importance</b> is easy to compute and easy to explain.</li>
+      </ul>
+    </div>
+
+    <div class="bvb-col">
+      <h3>Gradient boosting &middot; <em>residual fitting.</em></h3>
+      <p class="sum">Start with a weak prediction. Fit a small tree to its <em>errors</em>. Add it. Repeat &mdash; each new tree corrects the running mistakes of the ensemble.</p>
+      <svg class="bvb-svg" id="gbSvg" viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet"></svg>
+      <ul class="bvb-list">
+        <li><b>Trains sequentially</b> &mdash; tree N+1 depends on tree N.</li>
+        <li><b>Higher accuracy ceiling</b> &mdash; usually beats forests on tabular data, by a little.</li>
+        <li><b>Sensitive</b> to <span class="mono">learning_rate</span>, <span class="mono">n_estimators</span>, depth. Use early stopping.</li>
+        <li><b>Brittle across retrains</b> &mdash; the same code on next week's data may not reproduce.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="s3">
+  <div class="section-head">
+    <div class="section-num">III.</div>
+    <div class="section-title">
+      <div class="label">The tuning duet</div>
+      <h2><span class="mono">learning_rate</span> and <span class="mono">n_estimators</span>, <em>together.</em></h2>
+      <p class="deck">Boosting's two main dials are not independent &mdash; lowering one almost always means raising the other. Slide them below and watch the validation F1 curve. Too few rounds: underfit. Too many at a high learning rate: overfit. Early stopping is how you let the model find the sweet spot.</p>
+    </div>
+  </div>
+
+  <div class="duet">
+    <div class="duet-ctrl">
+      <h3>Two dials</h3>
+      <label>learning_rate &middot; <span class="mono" id="lrV">0.10</span></label>
+      <input type="range" id="lrSlider" min="1" max="50" value="10">
+      <div class="duet-vals"><span>0.01 (slow)</span><span>0.50 (aggressive)</span></div>
+
+      <label style="margin-top:18px">n_estimators &middot; <span class="mono" id="nV">200</span></label>
+      <input type="range" id="nSlider" min="10" max="800" step="10" value="200">
+      <div class="duet-vals"><span>10</span><span>800</span></div>
+
+      <p style="font-family:'Newsreader',serif;font-style:italic;color:var(--ink-2);font-size:15px;margin-top:18px;line-height:1.5">Validation F1 (red) eventually peels away from training F1 (teal). That gap is the overfit. Early stopping watches the red line and halts when it stops climbing.</p>
+    </div>
+
+    <div class="duet-vis">
+      <svg class="duet-svg" id="duetSvg" viewBox="0 0 600 240" preserveAspectRatio="none"></svg>
+      <div class="duet-readout">
+        <div class="cell"><div class="k">Train F1</div><div class="v is-good" id="trF1">&mdash;</div></div>
+        <div class="cell"><div class="k">Val F1</div><div class="v" id="valF1">&mdash;</div></div>
+        <div class="cell"><div class="k">Overfit gap</div><div class="v" id="gapV">&mdash;</div></div>
+      </div>
+      <div class="duet-verdict" id="duetVerdict">&mdash;</div>
+    </div>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="section-head">
+    <div class="section-num">IV.</div>
+    <div class="section-title">
+      <div class="label">The bake-off</div>
+      <h2>F1 wins on paper. <em>Operability</em> wins ties.</h2>
+      <p class="deck">Sarah's Friday slide. Four candidates, same held-out test set, same five-fold CV. The booster wins by 0.022 F1. Whether that gap survives the operational columns &mdash; that's the actual decision.</p>
+    </div>
+  </div>
+
+  <div class="bake">
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>F1 (CV mean &plusmn; sd)</th>
+          <th>Train time</th>
+          <th>Explain.</th>
+          <th>Dependency</th>
+          <th>2am debug</th>
+          <th>Decision</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">Logistic Reg. <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:11px;color:var(--ink-soft)"> &middot; L03 baseline</span></td>
+          <td class="f1">0.671 &plusmn; 0.014</td>
+          <td>3 s</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
+          <td>sklearn</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
+          <td><span class="pill">baseline</span></td>
+        </tr>
+        <tr>
+          <td class="name">Decision Tree</td>
+          <td class="f1">0.694 &plusmn; 0.021</td>
+          <td>4 s</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
+          <td>sklearn</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
+          <td><span class="pill">demo only</span></td>
+        </tr>
+        <tr class="winner">
+          <td class="name">Random Forest</td>
+          <td class="f1">0.731 &plusmn; 0.012</td>
+          <td>22 s</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;</span><span style="opacity:.2">&#9733;</span></td>
+          <td>sklearn</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;</span><span style="opacity:.2">&#9733;</span></td>
+          <td><span class="pill ship">SHIP</span></td>
+        </tr>
+        <tr>
+          <td class="name">Gradient Boost.</td>
+          <td class="f1">0.753 &plusmn; 0.018</td>
+          <td>1m 14s</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;</span><span style="opacity:.2">&#9733;&#9733;</span></td>
+          <td>+ xgboost</td>
+          <td><span class="stars">&#9733;&#9733;</span><span style="opacity:.2">&#9733;&#9733;&#9733;</span></td>
+          <td><span class="pill">runner-up</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="bake-note">The booster's 0.022 F1 lead is real (outside the cross-val standard deviation), but it adds a third-party dependency, retrains brittly, and is harder to explain when a customer asks "why was I flagged?". Random forest closes most of the gap with none of the costs. Sarah ships the forest, keeps the booster as a runner-up to revisit if churn cost goes up.</p>
+</section>
+
+<section id="s5">
+  <div class="section-head">
+    <div class="section-num">V.</div>
+    <div class="section-title">
+      <div class="label">A checklist</div>
+      <h2>Three checks before you <em>ship.</em></h2>
+      <p class="deck">After tuning, you'll often have two or three candidates within a few F1 points of each other. Skip these and you'll ship the model that won on a metric, not the one the business can operate.</p>
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="h-card">
+      <div class="n">1</div>
+      <h4>Is the gap <em>real?</em></h4>
+      <p>Compare the F1 difference against the cross-validation standard deviation. If the gap sits inside that noise, treat the models as tied and let operations break the tie.</p>
+      <span class="ex bad">&#10005; "Booster 0.753, Forest 0.731. Ship booster."</span>
+      <span class="ex good">&#10003; "&Delta;0.022 vs sd &asymp; 0.018. Inside noise."</span>
+    </div>
+    <div class="h-card">
+      <div class="n">2</div>
+      <h4>Who <em>maintains</em> it?</h4>
+      <p>Sklearn-only beats adding a new dependency for tied accuracy. Random forest is more stable across retrains; boosting can be brittle. The model someone else can debug at 2am wins ties.</p>
+      <span class="ex bad">&#10005; "+ xgboost, + lightgbm, + optuna."</span>
+      <span class="ex good">&#10003; "Sklearn. No new infra to learn."</span>
+    </div>
+    <div class="h-card">
+      <div class="n">3</div>
+      <h4>Who <em>questions</em> it?</h4>
+      <p>If a regulator, executive, or customer might ask <em>why?</em>, a forest's feature-importance story beats a booster's. Match the model to the audience that will challenge it.</p>
+      <span class="ex bad">&#10005; "Most accurate &mdash; trust the math."</span>
+      <span class="ex good">&#10003; "Feature importance: tenure, returns, tickets."</span>
+    </div>
+  </div>
+</section>
+
+<aside class="pull">
+  <blockquote>"What about the customers who <em>don't</em> churn but also don't log in for a year? Can we find natural <em>clusters</em>... without labels?"</blockquote>
+  <cite>&mdash; Marcus &middot; after Sarah ships the tuned forest &middot; the engine of L05</cite>
+</aside>
+
+<section id="s6">
+  <div class="section-head">
+    <div class="section-num">VI.</div>
+    <div class="section-title">
+      <div class="label">Self-check</div>
+      <h2>Eight questions from the <em>field notebook.</em></h2>
+      <p class="deck">Try each mentally first. Click to flip the card. Drawn from this week's takeaways &mdash; the notebooks have the worked examples.</p>
+    </div>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa" data-qn="Q1">
+      <span class="hint">&#9656; Click to reveal</span>
+      <b>Do tree models need <span class="mono">StandardScaler</span>?</b>
+      <div class="a"><b>No.</b> Trees split on thresholds, not distances &mdash; a feature in pounds and one in proportions get the same chance. You still need to one-hot encode categoricals; you do not need to scale. But skip scaling explicitly, don't forget it.</div>
+    </div>
+
+    <div class="qa" data-qn="Q2">
+      <span class="hint">&#9656; Click to reveal</span>
+      <b>What is the one-sentence difference between bagging and boosting?</b>
+      <div class="a"><b>Bagging</b> averages many independent deep trees to <em>reduce variance</em>. <b>Boosting</b> grows trees sequentially, each fitting the running ensemble's residuals, to <em>reduce bias</em>. Parallel vs sequential; smoothing vs error-correction.</div>
+    </div>
+
+    <div class="qa" data-qn="Q3">
+      <span class="hint">&#9656; Click to reveal</span>
+      <b>Why do you lower <span class="mono">learning_rate</span> when you raise <span class="mono">n_estimators</span>?</b>
+      <div class="a">Each boosting round nudges the prediction by <span class="mono">learning_rate &times; tree_output</span>. A lower learning rate makes each nudge smaller, so you need more rounds to reach the same fit. The product matters more than either value alone. Use early stopping to auto-pick the count.</div>
+    </div>
+
+    <div class="qa" data-qn="Q4">
+      <span class="hint">&#9656; Click to reveal</span>
+      <b>You tuned the model for <span class="mono">f1</span>. The Friday slide reports <span class="mono">accuracy</span>. What's wrong?</b>
+      <div class="a">You optimised one thing and reported another. The threshold that maximises F1 is not the same one that maximises accuracy; on imbalanced data they can pull in opposite directions. Use the same scoring metric for tuning, validation, <em>and</em> the business decision &mdash; or be explicit about why they differ.</div>
+    </div>
+
+    <div class="qa" data-qn="Q5">
+      <span class="hint">&#9656; Click to reveal</span>
+      <b>Booster F1 = 0.753 &plusmn; 0.018. Forest F1 = 0.731 &plusmn; 0.012. Is the gap real?</b>
+      <div class="a"><b>Marginally.</b> The 0.022 difference sits just outside the booster's CV standard deviation &mdash; statistically there, but small. Whether you ship the booster depends on whether the gap survives the operational columns (dependency cost, explainability, retrain stability). On a tie, operations decide.</div>
+    </div>
+
+    <div class="qa" data-qn="Q6">
+      <span class="hint">&#9656; Click to reveal</span>
+      <b>A regulator asks: "Why did the model flag this customer?" Which model is easier to defend?</b>
+      <div class="a"><b>Random forest.</b> Sklearn's <span class="mono">feature_importances_</span> gives a stable, defensible ranking ("tenure, returns, ticket-rate together drive 60% of decisions"). Gradient boosting's importances are noisier and individual-tree paths are messier. Match the model to the audience that will challenge it.</div>
+    </div>
+
+    <div class="qa" data-qn="Q7">
+      <span class="hint">&#9656; Click to reveal</span>
+      <b>Why does a deep single decision tree usually overfit?</b>
+      <div class="a">With no depth limit, the tree keeps splitting until each leaf contains a tiny, peculiar subset of training rows &mdash; effectively memorising the data. Training F1 nears 1.0; validation F1 drops. Constrain via <span class="mono">max_depth</span>, <span class="mono">min_samples_leaf</span>, or ensemble many trees to average the memorisation away (that's bagging).</div>
+    </div>
+
+    <div class="qa" data-qn="Q8">
+      <span class="hint">&#9656; Click to reveal</span>
+      <b>The booster wins on F1 but adds <span class="mono">xgboost</span> as a dependency. What questions do you ask before shipping it?</b>
+      <div class="a">Three: (1) Is the F1 gap <em>outside</em> the CV standard deviation? (2) Can the team operate the new dependency &mdash; install, debug, retrain &mdash; without a single point of failure? (3) Will anyone need to <em>explain</em> a flag to a regulator or customer? If any answer is no, the simpler model usually wins.</div>
+    </div>
+  </div>
+</section>
+
+<section id="s7">
+  <div class="section-head">
+    <div class="section-num">VII.</div>
+    <div class="section-title">
+      <div class="label">A roadmap</div>
+      <h2>L04's discipline goes <em>everywhere.</em></h2>
+      <p class="deck">Honest model comparison, tuning inside a cross-validation scaffold, picking the model the team can operate &mdash; the toolkit you'll lean on through L10. Hover any tile.</p>
+    </div>
+  </div>
+
+  <div class="map">
+    <div class="node"><span class="ix">L01</span><span class="ttl">Intro to ML</span><span class="sub">The 7-step workflow.</span></div>
+    <div class="node"><span class="ix">L02</span><span class="ttl">Prob &amp; Stats</span><span class="sub">CIs around every F1 you report.</span></div>
+    <div class="node"><span class="ix">L03</span><span class="ttl">Supervised</span><span class="sub">The pipeline / CV / metrics scaffold L04 lives inside.</span></div>
+    <div class="node is-now"><span class="ix">L04</span><span class="ttl">Sup. Advanced</span><span class="sub">Trees, forests, boosting. You are here.</span></div>
+    <div class="node"><span class="lens">L04</span><span class="ix">L05</span><span class="ttl">Unsupervised</span><span class="sub">Same tune-one-knob discipline applied to K and n_components.</span></div>
+    <div class="node"><span class="lens">L04</span><span class="ix">L06</span><span class="ttl">Time Series</span><span class="sub">Gradient boosting is the standard ML approach to tabular forecasting.</span></div>
+    <div class="node"><span class="lens">L04</span><span class="ix">L07</span><span class="ttl">Neural Nets</span><span class="sub">Tuning moves to learning-rate schedules &mdash; same fairness discipline.</span></div>
+    <div class="node"><span class="lens">L04</span><span class="ix">L08</span><span class="ttl">Vision</span><span class="sub">Fine-tune vs feature-extract is the same complexity-vs-cost call.</span></div>
+    <div class="node"><span class="lens">L04</span><span class="ix">L09</span><span class="ttl">NLP</span><span class="sub">GBDT rerankers are competitive baselines for retrieval.</span></div>
+    <div class="node"><span class="lens">L04</span><span class="ix">L10</span><span class="ttl">GenAI</span><span class="sub">Prompt variants compared with the same fair-eval discipline.</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="colophon">L04 &middot; Advanced Supervised Learning &middot; Learner Edition<br>Interactive Field Notes &mdash; companion to the NorthStar Retail story.<br>Set in Fraunces, Newsreader, and JetBrains Mono.</div>
+  <div class="stamp">&mdash; end of file 04.</div>
+</footer>
+
+<script>
+/* §I · Linear vs Tree boundaries on the same point cloud */
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const lin = document.getElementById('linSvg');
+  const tre = document.getElementById('treeSvg');
+  function rng(s){return function(){s=(s*9301+49297)%233280;return s/233280;}}
+  const r = rng(42);
+  const pts = [];
+  for (let i=0;i<260;i++){
+    const x = r(), y = r();
+    let isChurn = (x<0.4 && y>0.55) || (x>0.6 && y>0.7) || (x<0.15 && y<0.25);
+    if (r() < 0.06) isChurn = !isChurn;
+    pts.push({x,y,c:isChurn});
+  }
+  function drawAxes(svg, w, h){
+    const ax = document.createElementNS(NS,'rect');
+    ax.setAttribute('x',8);ax.setAttribute('y',8);
+    ax.setAttribute('width',w-16);ax.setAttribute('height',h-16);
+    ax.setAttribute('fill','none');ax.setAttribute('stroke','#1b1812');
+    svg.appendChild(ax);
+    const xl = document.createElementNS(NS,'text');
+    xl.setAttribute('x',12);xl.setAttribute('y',h-4);
+    xl.setAttribute('font-family','JetBrains Mono, monospace');
+    xl.setAttribute('font-size','9');xl.setAttribute('fill','#65604f');
+    xl.setAttribute('letter-spacing','1.4');xl.textContent='TENURE  →';
+    svg.appendChild(xl);
+    const yl = document.createElementNS(NS,'text');
+    yl.setAttribute('x',-h+12);yl.setAttribute('y',14);
+    yl.setAttribute('transform','rotate(-90)');
+    yl.setAttribute('font-family','JetBrains Mono, monospace');
+    yl.setAttribute('font-size','9');yl.setAttribute('fill','#65604f');
+    yl.setAttribute('letter-spacing','1.4');yl.textContent='RETURNS  →';
+    svg.appendChild(yl);
+  }
+  function drawPoints(svg, w, h){
+    for (const p of pts){
+      const cx = 12 + p.x*(w-24);
+      const cy = (h-12) - p.y*(h-24);
+      const c = document.createElementNS(NS,'circle');
+      c.setAttribute('cx',cx);c.setAttribute('cy',cy);
+      c.setAttribute('r',3);
+      c.setAttribute('fill', p.c ? '#cf3a17' : '#0e4540');
+      c.setAttribute('opacity', 0.78);
+      svg.appendChild(c);
+    }
+  }
+  function drawLinear(){
+    lin.innerHTML='';
+    const w=360,h=280;
+    drawAxes(lin,w,h);
+    const top = document.createElementNS(NS,'rect');
+    top.setAttribute('x',9);top.setAttribute('y',9);
+    top.setAttribute('width',w-18);top.setAttribute('height',(h-18)*0.45);
+    top.setAttribute('fill','#cf3a17');top.setAttribute('opacity',0.08);
+    lin.appendChild(top);
+    const bot = document.createElementNS(NS,'rect');
+    bot.setAttribute('x',9);bot.setAttribute('y',9+(h-18)*0.45);
+    bot.setAttribute('width',w-18);bot.setAttribute('height',(h-18)*0.55);
+    bot.setAttribute('fill','#0e4540');bot.setAttribute('opacity',0.06);
+    lin.appendChild(bot);
+    const ln = document.createElementNS(NS,'line');
+    ln.setAttribute('x1',12);ln.setAttribute('x2',w-12);
+    const yLine = (h-12) - 0.55*(h-24);
+    ln.setAttribute('y1',yLine);ln.setAttribute('y2',yLine);
+    ln.setAttribute('stroke','#13110c');ln.setAttribute('stroke-width',2);
+    ln.setAttribute('stroke-dasharray','6 4');
+    lin.appendChild(ln);
+    drawPoints(lin,w,h);
+  }
+  function drawTree(){
+    tre.innerHTML='';
+    const w=360,h=280;
+    drawAxes(tre,w,h);
+    function fillRect(x0,y0,x1,y1,color,alpha){
+      const px0 = 12+x0*(w-24), px1 = 12+x1*(w-24);
+      const py0 = (h-12)-y1*(h-24), py1 = (h-12)-y0*(h-24);
+      const rc = document.createElementNS(NS,'rect');
+      rc.setAttribute('x',px0);rc.setAttribute('y',py0);
+      rc.setAttribute('width',px1-px0);rc.setAttribute('height',py1-py0);
+      rc.setAttribute('fill',color);rc.setAttribute('opacity',alpha);
+      tre.appendChild(rc);
+    }
+    function lineX(x,col){
+      const px = 12+x*(w-24);
+      const ln = document.createElementNS(NS,'line');
+      ln.setAttribute('x1',px);ln.setAttribute('x2',px);
+      ln.setAttribute('y1',9);ln.setAttribute('y2',h-9);
+      ln.setAttribute('stroke',col);ln.setAttribute('stroke-width',1.4);
+      ln.setAttribute('stroke-dasharray','3 3');
+      tre.appendChild(ln);
+    }
+    function lineY(x0,x1,y,col){
+      const px0 = 12+x0*(w-24), px1 = 12+x1*(w-24);
+      const py = (h-12)-y*(h-24);
+      const ln = document.createElementNS(NS,'line');
+      ln.setAttribute('x1',px0);ln.setAttribute('x2',px1);
+      ln.setAttribute('y1',py);ln.setAttribute('y2',py);
+      ln.setAttribute('stroke',col);ln.setAttribute('stroke-width',1.4);
+      ln.setAttribute('stroke-dasharray','3 3');
+      tre.appendChild(ln);
+    }
+    fillRect(0, 0.55, 0.4, 1.0, '#cf3a17', 0.18);
+    fillRect(0.6, 0.7, 1.0, 1.0, '#cf3a17', 0.18);
+    fillRect(0, 0, 0.15, 0.25, '#cf3a17', 0.18);
+    fillRect(0.15, 0, 0.4, 0.55, '#0e4540', 0.08);
+    fillRect(0.4, 0, 0.6, 1.0, '#0e4540', 0.08);
+    fillRect(0.6, 0, 1.0, 0.7, '#0e4540', 0.08);
+    fillRect(0, 0.25, 0.15, 0.55, '#0e4540', 0.08);
+    lineX(0.15,'#13110c'); lineX(0.4,'#13110c'); lineX(0.6,'#13110c');
+    lineY(0,0.4,0.55,'#13110c'); lineY(0.6,1,0.7,'#13110c'); lineY(0,0.15,0.25,'#13110c');
+    drawPoints(tre,w,h);
+  }
+  drawLinear();
+  drawTree();
+})();
+
+/* §II · RF (parallel) & GB (sequential) tree diagrams */
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  function tree(svg, cx, cy, depth, scale){
+    function rec(x,y,d,len,ang){
+      if (d===0) return;
+      const x2 = x + Math.cos(ang)*len;
+      const y2 = y + Math.sin(ang)*len;
+      const ln = document.createElementNS(NS,'line');
+      ln.setAttribute('x1',x);ln.setAttribute('y1',y);
+      ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);
+      ln.setAttribute('stroke','#13110c');
+      ln.setAttribute('stroke-width', 0.8 + d*0.25);
+      svg.appendChild(ln);
+      rec(x2,y2,d-1,len*0.7, ang - 0.5);
+      rec(x2,y2,d-1,len*0.7, ang + 0.5);
+    }
+    rec(cx, cy, depth, 18*scale, -Math.PI/2);
+  }
+  const rf = document.getElementById('rfSvg');
+  for (let i=0;i<7;i++) tree(rf, 60 + i*72, 130, 4, 1);
+  const avg = document.createElementNS(NS,'circle');
+  avg.setAttribute('cx',300);avg.setAttribute('cy',30);
+  avg.setAttribute('r',18);
+  avg.setAttribute('fill','#cf3a17');avg.setAttribute('stroke','#13110c');
+  rf.appendChild(avg);
+  const avgT = document.createElementNS(NS,'text');
+  avgT.setAttribute('x',300);avgT.setAttribute('y',34);
+  avgT.setAttribute('text-anchor','middle');
+  avgT.setAttribute('font-family','Fraunces, serif');
+  avgT.setAttribute('font-style','italic');
+  avgT.setAttribute('font-size','13');
+  avgT.setAttribute('fill','#f0e8d4');
+  avgT.textContent='avg';
+  rf.appendChild(avgT);
+  for (let i=0;i<7;i++){
+    const x = 60 + i*72;
+    const ln = document.createElementNS(NS,'line');
+    ln.setAttribute('x1',x);ln.setAttribute('y1',112);
+    ln.setAttribute('x2',300);ln.setAttribute('y2',48);
+    ln.setAttribute('stroke','#65604f');
+    ln.setAttribute('stroke-width',0.8);
+    ln.setAttribute('opacity',0.5);
+    rf.appendChild(ln);
+  }
+
+  const gb = document.getElementById('gbSvg');
+  const defs = document.createElementNS(NS,'defs');
+  const mk = document.createElementNS(NS,'marker');
+  mk.setAttribute('id','ah');mk.setAttribute('viewBox','0 0 10 10');
+  mk.setAttribute('refX','9');mk.setAttribute('refY','5');
+  mk.setAttribute('markerWidth','6');mk.setAttribute('markerHeight','6');
+  mk.setAttribute('orient','auto');
+  const path = document.createElementNS(NS,'path');
+  path.setAttribute('d','M0,0 L10,5 L0,10 z');
+  path.setAttribute('fill','#65604f');
+  mk.appendChild(path);defs.appendChild(mk);
+  gb.appendChild(defs);
+  for (let i=0;i<6;i++) tree(gb, 60 + i*90, 140, 3, 0.85);
+  for (let i=0;i<6;i++){
+    const x = 60 + i*90;
+    const c = document.createElementNS(NS,'circle');
+    c.setAttribute('cx',x);c.setAttribute('cy',30);c.setAttribute('r',12);
+    c.setAttribute('fill', i===5 ? '#cf3a17' : '#13110c');
+    gb.appendChild(c);
+    const t = document.createElementNS(NS,'text');
+    t.setAttribute('x',x);t.setAttribute('y',34);
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-family','JetBrains Mono, monospace');
+    t.setAttribute('font-size','10');
+    t.setAttribute('fill','#f0e8d4');
+    t.textContent = '+'+(i+1);
+    gb.appendChild(t);
+    if (i<5){
+      const arr = document.createElementNS(NS,'path');
+      arr.setAttribute('d', 'M'+(x+14)+',30 L'+(x+76)+',30');
+      arr.setAttribute('stroke','#65604f');
+      arr.setAttribute('stroke-width','1.2');
+      arr.setAttribute('marker-end','url(#ah)');
+      arr.setAttribute('fill','none');
+      gb.appendChild(arr);
+    }
+  }
+  for (let i=0;i<5;i++){
+    const x = 60 + i*90;
+    const ln = document.createElementNS(NS,'line');
+    ln.setAttribute('x1',x);ln.setAttribute('y1',120);
+    ln.setAttribute('x2',x+90);ln.setAttribute('y2',42);
+    ln.setAttribute('stroke','#cf3a17');
+    ln.setAttribute('stroke-width','1');
+    ln.setAttribute('stroke-dasharray','3 3');
+    ln.setAttribute('opacity','0.5');
+    gb.appendChild(ln);
+  }
+})();
+
+/* §III · Tuning duet */
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const svg = document.getElementById('duetSvg');
+  const lrSlider = document.getElementById('lrSlider');
+  const nSlider = document.getElementById('nSlider');
+  const lrV = document.getElementById('lrV');
+  const nV = document.getElementById('nV');
+  const trF1 = document.getElementById('trF1');
+  const valF1 = document.getElementById('valF1');
+  const gapV = document.getElementById('gapV');
+  const verdict = document.getElementById('duetVerdict');
+
+  function curves(lr, n){
+    const tr = [];
+    const val = [];
+    const N = 60;
+    for (let i=0;i<=N;i++){
+      const k = (i/N)*n;
+      const trF = 1 - Math.exp(-k*lr*0.025);
+      const overfit = Math.max(0, k*lr*0.005 - 1.0);
+      const valF = Math.max(0.4, trF * (1 - Math.pow(overfit,1.6)*0.5));
+      tr.push({x:i/N, y:trF});
+      val.push({x:i/N, y:valF});
+    }
+    return {tr,val};
+  }
+  function render(){
+    const lr = parseInt(lrSlider.value,10) / 100;
+    const n  = parseInt(nSlider.value,10);
+    lrV.textContent = lr.toFixed(2);
+    nV.textContent = n;
+    const {tr,val} = curves(lr,n);
+    svg.innerHTML='';
+    const W=600,H=240,PAD=30;
+    const ax = document.createElementNS(NS,'rect');
+    ax.setAttribute('x',PAD);ax.setAttribute('y',12);
+    ax.setAttribute('width',W-2*PAD);ax.setAttribute('height',H-PAD-12);
+    ax.setAttribute('fill','#f0e8d4');ax.setAttribute('stroke','#1b1812');
+    svg.appendChild(ax);
+    for (let g=0.5;g<=1.001;g+=0.1){
+      const y = (H-PAD) - (g-0.4)*(H-PAD-12)/0.6;
+      const ln = document.createElementNS(NS,'line');
+      ln.setAttribute('x1',PAD);ln.setAttribute('x2',W-PAD);
+      ln.setAttribute('y1',y);ln.setAttribute('y2',y);
+      ln.setAttribute('stroke','#d9cca8');
+      svg.appendChild(ln);
+      const t = document.createElementNS(NS,'text');
+      t.setAttribute('x',PAD-6);t.setAttribute('y',y+3);
+      t.setAttribute('text-anchor','end');
+      t.setAttribute('font-family','JetBrains Mono, monospace');
+      t.setAttribute('font-size','9');t.setAttribute('fill','#65604f');
+      t.textContent = g.toFixed(1);
+      svg.appendChild(t);
+    }
+    const xl = document.createElementNS(NS,'text');
+    xl.setAttribute('x',W/2);xl.setAttribute('y',H-6);
+    xl.setAttribute('text-anchor','middle');
+    xl.setAttribute('font-family','JetBrains Mono, monospace');
+    xl.setAttribute('font-size','9');xl.setAttribute('fill','#65604f');
+    xl.setAttribute('letter-spacing','1.4');
+    xl.textContent = 'BOOSTING ROUNDS  →';
+    svg.appendChild(xl);
+    function plot(data, color){
+      let d='';
+      for (let i=0;i<data.length;i++){
+        const p = data[i];
+        const px = PAD + p.x*(W-2*PAD);
+        const py = (H-PAD) - (p.y-0.4)*(H-PAD-12)/0.6;
+        d += (i===0?'M':'L') + px.toFixed(1) + ',' + py.toFixed(1) + ' ';
+      }
+      const path = document.createElementNS(NS,'path');
+      path.setAttribute('d', d);
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', 2.2);
+      path.setAttribute('fill','none');
+      svg.appendChild(path);
+    }
+    plot(tr, '#0e4540');
+    plot(val, '#cf3a17');
+    const lg = document.createElementNS(NS,'g');
+    lg.innerHTML = '<text x="'+(PAD+8)+'" y="28" font-family="JetBrains Mono, monospace" font-size="10" fill="#0e4540" letter-spacing="1.2">— TRAIN F1</text><text x="'+(PAD+8)+'" y="42" font-family="JetBrains Mono, monospace" font-size="10" fill="#cf3a17" letter-spacing="1.2">— VAL F1</text>';
+    svg.appendChild(lg);
+    const last = tr[tr.length-1].y;
+    const lastV = val[val.length-1].y;
+    trF1.textContent = last.toFixed(3);
+    valF1.textContent = lastV.toFixed(3);
+    const gap = (last-lastV);
+    gapV.textContent = gap.toFixed(3);
+    valF1.className = 'v ' + (lastV >= 0.78 ? 'is-good' : (lastV<0.6?'is-bad':''));
+    gapV.className = 'v ' + (gap > 0.15 ? 'is-bad' : (gap<0.06?'is-good':''));
+    let h='';
+    const product = lr * n;
+    if (product < 5){
+      h = "<em>Underfit.</em> The model has not learned enough yet.";
+    } else if (product > 60){
+      h = "<em>Overfit.</em> Validation has peaked; later rounds memorise.";
+    } else if (gap > 0.15){
+      h = "Train soars, val stalls. <em>Lower the learning rate.</em>";
+    } else {
+      h = "<em>Healthy fit.</em> Train and val rise together &mdash; let early stopping pick the round.";
+    }
+    verdict.innerHTML = h;
+  }
+  lrSlider.addEventListener('input', render);
+  nSlider.addEventListener('input', render);
+  render();
+})();
+
+/* Q&A flip */
+(function(){
+  document.querySelectorAll('.qa').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('on'));
+    c.tabIndex = 0;
+    c.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.classList.toggle('on'); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
