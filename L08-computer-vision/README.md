@@ -22,7 +22,7 @@ By the end of L08 you will be able to:
 4. **Use transfer learning** — start from a pretrained model, freeze the backbone, fine-tune the head. Compare against training from scratch on small data.
 5. **Recommend the right tool** for a real product imaging problem: when is a tiny custom CNN enough, when do you reach for a pretrained backbone, and when do you just call an API?
 
-## Phase 1 — Pre-class (≈ 75 min)
+## Phase 1 — Pre-class (≈ 25 min)
 
 - Read [pre-class.md](pre-class.md)
 - Watch the linked 3Blue1Brown convolution video
