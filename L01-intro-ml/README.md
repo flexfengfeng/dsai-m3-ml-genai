@@ -51,7 +51,7 @@ Reading 10,000 reviews by hand would take a full work-week. Hiring a team is not
 
 *This lesson uses experiential learning: you try, reflect, understand, then apply.* The three parts below each use the same rhythm, so ideas arrive with increasing depth and in different business contexts. If you miss one part, you still get the core idea twice.
 
-### Part 1 — Before class: self-study (~75 min)
+### Part 1 — Before class: self-study (~25 min)
 
 **Goal:** experience the magic first. Arrive at class with a felt sense of what ML can do — and a question you want answered.
 
