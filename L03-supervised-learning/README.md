@@ -56,7 +56,7 @@ This lesson follows a three-phase flow. Work through the phases in order.
 
 ---
 
-### Phase 1 — Before class: self-study (~75 min)
+### Phase 1 — Before class: self-study (~25 min)
 
 **Goal:** *Open the dataset*. See the mess. Form a question.
 
