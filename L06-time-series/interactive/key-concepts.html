@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>L06 — Forecast the Next Quarter · Interactive Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f0e8d4;--paper-2:#e7dcc1;--paper-3:#d9cca8;--ink:#13110c;--ink-2:#3a3528;--ink-soft:#65604f;--rule:#1b1812;--accent:#cf3a17;--accent-2:#7a1d0a;--teal:#0e4540;--teal-2:#1c6e66;--mustard:#b8881f;--grain-op:.55}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:"Newsreader",Georgia,serif;font-weight:380;font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background-image:radial-gradient(1200px 600px at 80% -10%,rgba(207,58,23,.08),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(14,69,64,.07),transparent 60%),repeating-linear-gradient(0deg,rgba(20,17,12,.025) 0 1px,transparent 1px 3px);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:multiply;opacity:var(--grain-op);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+::selection{background:var(--accent);color:var(--paper)}
+.italic{font-style:italic;font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.rule-dot{border:0;border-top:1.5px dotted var(--rule);margin:0}
+.masthead{padding:28px 6vw 18px;border-bottom:1px solid var(--rule)}
+.masthead-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.masthead-title{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-style:italic;font-size:clamp(34px,5vw,56px);letter-spacing:-.03em;line-height:.85}
+.masthead-title sup{font-size:.4em;vertical-align:super;letter-spacing:0;font-style:normal;color:var(--accent)}
+.tag{display:inline-block;padding:3px 8px;background:var(--ink);color:var(--paper);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.dateline{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.masthead-meta{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end}
+.cover{padding:5vh 6vw 6vh;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+@media (max-width:900px){.cover-grid{grid-template-columns:1fr;gap:24px}}
+.cover h1{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:300;font-size:clamp(56px,11vw,168px);line-height:.84;letter-spacing:-.04em;margin:.1em 0}
+.cover h1 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.cover-lede{font-family:"Newsreader",serif;font-size:clamp(18px,1.6vw,22px);font-style:italic;color:var(--ink-2);max-width:46ch;line-height:1.45}
+.cover-lede .dropcap{float:left;font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:5.2em;line-height:.78;padding:.08em .1em 0 0;color:var(--accent);font-weight:330}
+.cover-side{display:flex;flex-direction:column;gap:18px}
+.fact-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule)}
+.fact{padding:14px;border-right:1px solid var(--rule)}
+.fact:last-child{border-right:0}
+.fact .num{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:42px;line-height:1;letter-spacing:-.04em}
+.fact .lab{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+.byline{display:flex;gap:18px;align-items:center;margin-top:8px}
+.byline .badge{width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:500;font-style:italic;font-size:22px}
+.byline b{display:block;font-family:"Newsreader",serif;font-weight:600}
+section{padding:7vh 6vw;border-bottom:1px solid var(--rule);position:relative}
+.section-head{display:grid;grid-template-columns:120px 1fr;gap:32px;margin-bottom:48px;align-items:start}
+@media (max-width:760px){.section-head{grid-template-columns:1fr;gap:8px}}
+.section-num{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:84px;line-height:.8;color:var(--accent);font-weight:340}
+.section-title h2{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:340;font-size:clamp(34px,4.4vw,56px);line-height:.95;letter-spacing:-.03em;margin:0 0 .25em}
+.section-title h2 em{font-style:italic;color:var(--accent)}
+.section-title .deck{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:20px;max-width:62ch}
+.decomp{border:1px solid var(--rule);background:var(--paper-2);padding:18px;display:flex;flex-direction:column;gap:6px}
+.decomp .row{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center}
+.decomp .row .lbl{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);text-align:right}
+.decomp svg{width:100%;height:70px;display:block;border:1px solid var(--rule);background:var(--paper)}
+.decomp-note{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15.5px;line-height:1.5}
+.bake{border:1px solid var(--rule);overflow-x:auto;background:var(--paper)}
+.bake table{width:100%;border-collapse:collapse;font-family:"JetBrains Mono",monospace;font-size:13px}
+.bake th,.bake td{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:14px 16px;text-align:left;vertical-align:middle}
+.bake th:last-child,.bake td:last-child{border-right:0}
+.bake th{background:var(--ink);color:var(--paper);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.bake td.name{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;letter-spacing:-.01em;color:var(--ink)}
+.bake td.m{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;letter-spacing:-.02em}
+.bake tr.winner{background:var(--paper-3)}
+.bake tr.winner td.m{color:var(--teal)}
+.bake .pill{font-size:10px;letter-spacing:.14em;padding:2px 8px;border:1px solid var(--rule);text-transform:uppercase;background:var(--paper)}
+.bake .pill.ship{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.bake-note{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15.5px;line-height:1.5;max-width:74ch}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid var(--rule)}
+@media (max-width:760px){.split{grid-template-columns:1fr}}
+.split-col{padding:24px;background:var(--paper)}
+.split-col + .split-col{border-left:1px solid var(--rule);background:var(--paper-2)}
+@media (max-width:760px){.split-col + .split-col{border-left:0;border-top:1px solid var(--rule)}}
+.split-col h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:28px;letter-spacing:-.02em;margin:.1em 0 .25em}
+.split-col h3 em{color:var(--accent)}
+.split-tag{display:inline-block;padding:2px 8px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--rule)}
+.split-tag.bad{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.split-tag.good{background:var(--teal);color:var(--paper);border-color:var(--teal)}
+.fold{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;margin-bottom:6px}
+.fold .ix{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft)}
+.fold-bar{display:flex;height:22px;border:1px solid var(--rule);overflow:hidden}
+.fold-bar div{display:grid;place-items:center;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.1em;color:var(--ink-2)}
+.fold-bar .tr{background:var(--paper-3);flex:1}
+.fold-bar .va{background:var(--accent);color:var(--paper);flex:1}
+.fold-bar .fu{background:repeating-linear-gradient(45deg,#3a3528,#3a3528 6px,#65604f 6px,#65604f 12px);color:var(--paper);flex:1}
+.split-foot{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15px;line-height:1.5}
+.honest{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.honest{grid-template-columns:1fr}}
+.h-card{border:1px solid var(--rule);background:var(--paper-2);padding:22px;display:flex;flex-direction:column;gap:10px;position:relative}
+.h-card .n{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:62px;line-height:.8;color:var(--accent);font-weight:340}
+.h-card h4{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.015em;margin:.2em 0 .1em}
+.h-card p{font-family:"Newsreader",serif;color:var(--ink-2);font-size:15.5px;line-height:1.5;margin:0}
+.h-card .ex{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);letter-spacing:.04em;background:var(--paper);border:1px dashed var(--rule);padding:8px 10px;margin-top:6px}
+.h-card .ex.good{border-color:var(--teal);color:var(--teal)}
+.h-card .ex.bad{border-color:var(--accent);color:var(--accent-2)}
+.pull{padding:8vh 6vw;background:var(--ink);color:var(--paper);position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.pull::before{content:"";position:absolute;inset:0;background:radial-gradient(800px 400px at 80% 30%,rgba(207,58,23,.22),transparent 60%);pointer-events:none}
+.pull blockquote{margin:0;max-width:24ch;font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 1;font-style:italic;font-weight:300;font-size:clamp(34px,5vw,72px);letter-spacing:-.025em;line-height:1}
+.pull blockquote em{color:var(--accent);font-style:italic}
+.pull cite{display:block;margin-top:18px;font-family:"JetBrains Mono",monospace;font-style:normal;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cfc6ad}
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:760px){.qa-grid{grid-template-columns:1fr}}
+.qa{background:var(--paper-2);border:1px solid var(--rule);padding:18px 20px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:background .2s;position:relative}
+.qa::before{content:attr(data-qn);position:absolute;top:10px;right:14px;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-soft);letter-spacing:.14em}
+.qa:hover{background:var(--paper-3)}
+.qa b{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;line-height:1.15;letter-spacing:-.015em;padding-right:48px}
+.qa .a{display:none;font-family:"Newsreader",serif;font-size:15.5px;color:var(--ink-2);line-height:1.5;border-top:1px dotted var(--rule);padding-top:10px;margin-top:2px}
+.qa.on{background:var(--ink);color:var(--paper)}
+.qa.on b{color:var(--paper)}
+.qa.on::before{color:var(--accent)}
+.qa.on .a{display:block;color:#e3d8be;border-color:#5e5641}
+.hint{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-top:2px}
+.qa.on .hint{color:#f5c2ad}
+.map{display:grid;grid-template-columns:repeat(10,1fr);gap:0;border:1px solid var(--rule);overflow:hidden}
+@media (max-width:1100px){.map{grid-template-columns:repeat(5,1fr)}}
+@media (max-width:600px){.map{grid-template-columns:repeat(2,1fr)}}
+.node{padding:16px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--paper);position:relative;cursor:default}
+.node:last-child{border-right:0}
+.node .ix{position:absolute;top:10px;left:12px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-soft)}
+.node .ttl{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:20px;letter-spacing:-.01em;line-height:1.05}
+.node .sub{font-family:"Newsreader",serif;font-size:13px;color:var(--ink-2);margin-top:4px;display:none}
+.node:hover .sub{display:block}
+.node.is-now{background:var(--accent);color:var(--paper)}
+.node.is-now .ix,.node.is-now .sub{color:#ffe1d3}
+.node .lens{position:absolute;top:10px;right:10px;font-family:"JetBrains Mono",monospace;font-size:10px;background:var(--teal);color:var(--paper);padding:1px 5px;letter-spacing:.1em}
+footer{padding:5vh 6vw;display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap}
+footer .colophon{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);max-width:60ch}
+footer .stamp{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:38px;letter-spacing:-.02em;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-row">
+    <div>
+      <div class="dateline">M3 &middot; Module Three &middot; Machine Learning &amp; GenAI</div>
+      <div class="masthead-title">Forecast the <span class="italic">Next Quarter</span><sup>L06</sup></div>
+    </div>
+    <div class="masthead-meta">
+      <span class="tag">Interactive &middot; Field Notes</span>
+      <span class="dateline">Vol. 1 &middot; Issue 06 &middot; Time Series Forecasting</span>
+    </div>
+  </div>
+</header>
+
+<section class="cover">
+  <div class="cover-grid">
+    <div>
+      <div class="label" style="color:var(--accent)">Chapter Six &middot; northstar_daily_revenue.csv</div>
+      <h1>Today depends<br>on <em>yesterday.</em></h1>
+      <p class="cover-lede"><span class="dropcap">M</span>arcus's new brief: <em>sales are seasonal &mdash; can you forecast next quarter's revenue?</em> Sarah opens 731 rows: two years of daily revenue. The L01&ndash;L05 toolkit assumed rows were independent and shufflable. This week that assumption breaks. By Friday she will hold STL decomposition, a seasonal-naive baseline, an ETS model, an ML lag-feature model &mdash; and the only honest way to evaluate any of them: time-respecting cross-validation.</p>
+    </div>
+    <div class="cover-side">
+      <div class="fact-strip">
+        <div class="fact"><div class="num">731</div><div class="lab">Daily rows</div></div>
+        <div class="fact"><div class="num">90</div><div class="lab">Day forecast horizon</div></div>
+        <div class="fact"><div class="num">0</div><div class="lab">Shuffles allowed</div></div>
+      </div>
+      <div class="byline">
+        <div class="badge">SC</div>
+        <div><b>Sarah Chen</b><span class="label">Cust. Experience Analyst &middot; Jun 2023</span></div>
+      </div>
+      <hr class="rule-dot"/>
+      <div class="label" style="letter-spacing:.18em;font-style:italic;color:var(--ink-2)">Every figure is generated in-browser from a synthetic series.</div>
+    </div>
+  </div>
+</section>
+
+<section id="s1">
+  <div class="section-head">
+    <div class="section-num">I.</div>
+    <div class="section-title">
+      <div class="label">A first lens</div>
+      <h2>Every series is <em>trend + seasonality + noise.</em></h2>
+      <p class="deck">STL pulls them apart. If the residual still oscillates, you missed a seasonality and every forecast you build inherits the miss. Look at the panels before you fit anything.</p>
+    </div>
+  </div>
+
+  <div class="decomp">
+    <div class="row"><div class="lbl">Observed</div><svg id="dObs" viewBox="0 0 700 70" preserveAspectRatio="none"></svg></div>
+    <div class="row"><div class="lbl">Trend</div><svg id="dTrend" viewBox="0 0 700 70" preserveAspectRatio="none"></svg></div>
+    <div class="row"><div class="lbl">Seasonal (7-day)</div><svg id="dSeas" viewBox="0 0 700 70" preserveAspectRatio="none"></svg></div>
+    <div class="row"><div class="lbl">Residual</div><svg id="dRes" viewBox="0 0 700 70" preserveAspectRatio="none"></svg></div>
+    <p class="decomp-note">Observed &asymp; Trend &plus; Seasonal &plus; Residual. The residual here looks like noise &mdash; no visible pattern. If you saw a wave in it, the period was wrong (try 30, or use MSTL for multiple seasonalities).</p>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="section-head">
+    <div class="section-num">II.</div>
+    <div class="section-title">
+      <div class="label">A bake-off</div>
+      <h2>Always run the <em>trivial baseline</em> first.</h2>
+      <p class="deck">Naive (repeat the last value) and Seasonal Naive (repeat the same day last cycle) are the bar every fancier model must clear. If they win, ship them &mdash; cheaper, simpler, equally honest.</p>
+    </div>
+  </div>
+
+  <div class="bake">
+    <table>
+      <thead>
+        <tr><th>Model</th><th>MAE (&pound;)</th><th>RMSE (&pound;)</th><th>MAPE</th><th>Train</th><th>Decision</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="name">Naive &middot; <em>yesterday</em></td><td class="m">820</td><td class="m">1,180</td><td class="m">7.4%</td><td>0.01s</td><td><span class="pill">floor</span></td></tr>
+        <tr><td class="name">Seasonal Naive &middot; <em>last week</em></td><td class="m">540</td><td class="m">780</td><td class="m">4.9%</td><td>0.01s</td><td><span class="pill">baseline</span></td></tr>
+        <tr><td class="name">ETS &middot; <em>Holt-Winters</em></td><td class="m">490</td><td class="m">720</td><td class="m">4.4%</td><td>2s</td><td><span class="pill">classical</span></td></tr>
+        <tr class="winner"><td class="name">GB + lag features</td><td class="m">410</td><td class="m">640</td><td class="m">3.7%</td><td>18s</td><td><span class="pill ship">SHIP</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="bake-note">The booster wins on every metric, but seasonal-naive is right behind &mdash; 4.9% MAPE from a one-line model. Always show this row. The day a regulator or executive asks "is the fancy model worth it?", you want the answer in your back pocket.</p>
+</section>
+
+<section id="s3">
+  <div class="section-head">
+    <div class="section-num">III.</div>
+    <div class="section-title">
+      <div class="label">A discipline</div>
+      <h2>Never <em>shuffle</em> a forecast.</h2>
+      <p class="deck">k-fold cross-validation puts future data in earlier test folds. The model looks better in your notebook than it ever will in production. <span class="mono">TimeSeriesSplit</span> walks forward; the test window always follows training.</p>
+    </div>
+  </div>
+
+  <div class="split">
+    <div class="split-col">
+      <span class="split-tag bad">&#10005; KFold &middot; leakage</span>
+      <h3>The <em>future</em> bleeds backward.</h3>
+      <div class="fold"><div class="ix">Fold 1</div><div class="fold-bar"><div class="va">val</div><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div></div></div>
+      <div class="fold"><div class="ix">Fold 2</div><div class="fold-bar"><div class="tr">tr</div><div class="va">val</div><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div></div></div>
+      <div class="fold"><div class="ix">Fold 3</div><div class="fold-bar"><div class="tr">tr</div><div class="tr">tr</div><div class="va">val</div><div class="tr">tr</div><div class="tr">tr</div></div></div>
+      <div class="fold"><div class="ix">Fold 4</div><div class="fold-bar"><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div><div class="va">val</div><div class="tr">tr</div></div></div>
+      <div class="fold"><div class="ix">Fold 5</div><div class="fold-bar"><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div><div class="va">val</div></div></div>
+      <p class="split-foot">Fold 1's training set includes data from after its validation set. In deployment, that future data does not exist. The notebook RMSE is fiction.</p>
+    </div>
+    <div class="split-col">
+      <span class="split-tag good">&#10003; TimeSeriesSplit &middot; clean</span>
+      <h3>Walk <em>forward.</em></h3>
+      <div class="fold"><div class="ix">Fold 1</div><div class="fold-bar"><div class="tr">tr</div><div class="va">val</div><div class="fu">future</div><div class="fu">future</div><div class="fu">future</div></div></div>
+      <div class="fold"><div class="ix">Fold 2</div><div class="fold-bar"><div class="tr">tr</div><div class="tr">tr</div><div class="va">val</div><div class="fu">future</div><div class="fu">future</div></div></div>
+      <div class="fold"><div class="ix">Fold 3</div><div class="fold-bar"><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div><div class="va">val</div><div class="fu">future</div></div></div>
+      <div class="fold"><div class="ix">Fold 4</div><div class="fold-bar"><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div><div class="tr">tr</div><div class="va">val</div></div></div>
+      <p class="split-foot">Each fold's validation window comes <em>after</em> its training window. The last fold &mdash; most data, most recent test &mdash; is the best estimate of deployment performance.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="section-head">
+    <div class="section-num">IV.</div>
+    <div class="section-title">
+      <div class="label">A checklist</div>
+      <h2>Three checks before you ship a <em>forecast.</em></h2>
+      <p class="deck">Skip any and your forecast is a confident-sounding guess &mdash; the most expensive kind of mistake in planning.</p>
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="h-card"><div class="n">1</div><h4>Did you <em>decompose</em>?</h4><p>Look at trend, seasonal, residual before fitting anything. A pattern in the residual is a missed seasonality &mdash; every model downstream will inherit it.</p><span class="ex bad">&#10005; "Straight to gradient boosting."</span><span class="ex good">&#10003; "STL first; residual is white noise."</span></div>
+    <div class="h-card"><div class="n">2</div><h4>Did the <em>baseline</em> lose?</h4><p>Naive and seasonal naive must be on the table. If your ML can't beat them, ship the baseline &mdash; cheaper, simpler, equally honest.</p><span class="ex bad">&#10005; "GB hits MAPE 4.4%."</span><span class="ex good">&#10003; "GB 3.7% vs SNaive 4.9% &mdash; worth it."</span></div>
+    <div class="h-card"><div class="n">3</div><h4>Time-<em>respecting</em>?</h4><p>Use <span class="mono">TimeSeriesSplit</span>, report the last fold's metric, and quote a range &mdash; forecast uncertainty grows with the horizon.</p><span class="ex bad">&#10005; "5-fold CV gives RMSE 640."</span><span class="ex good">&#10003; "TSCV last fold &middot; RMSE 720 [CI 580&ndash;860]."</span></div>
+  </div>
+</section>
+
+<aside class="pull">
+  <blockquote>"What if we want to predict checkout completion from sequential customer behaviour &mdash; in <em>real time</em>?"</blockquote>
+  <cite>&mdash; Marcus &middot; after Sarah's Friday forecast &middot; the engine of L07</cite>
+</aside>
+
+<section id="s5">
+  <div class="section-head">
+    <div class="section-num">V.</div>
+    <div class="section-title">
+      <div class="label">Check yourself</div>
+      <h2>Nine questions from the <em>field notebook.</em></h2>
+      <p class="deck">Click to flip. Numbering matches <span class="mono">lesson.md</span>.</p>
+    </div>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa" data-qn="Q1"><span class="hint">&#9656; Click to reveal</span><b>STL residual has a clear monthly oscillation. What does that mean?</b><div class="a">STL only modelled the seasonality you specified in <span class="mono">period</span>. A leftover monthly wave means there's monthly seasonality you didn't capture. Re-run STL with a longer period (e.g. 30) or use MSTL for multiple seasonalities.</div></div>
+    <div class="qa" data-qn="Q2"><span class="hint">&#9656; Click to reveal</span><b>Why does STL plot four panels, not three?</b><div class="a">The fourth panel is the <em>original</em> series. STL plots: observed, trend, seasonal, residual &mdash; so you can verify trend + seasonal + residual &asymp; observed.</div></div>
+    <div class="qa" data-qn="Q3"><span class="hint">&#9656; Click to reveal</span><b>Should you use STL on log-transformed data?</b><div class="a">If the seasonality grows with the level (multiplicative), yes &mdash; log-transform first, decompose, then exponentiate. STL itself assumes additive components.</div></div>
+    <div class="qa" data-qn="Q4"><span class="hint">&#9656; Click to reveal</span><b>Seasonal Naive beats ETS on MAPE. What's happening?</b><div class="a">The series is dominated by stable seasonality with weak trend. SNaive captures the seasonality perfectly by just looking back one cycle. ETS adds parameters that didn't help here. Sometimes the simple baseline wins &mdash; that is a feature.</div></div>
+    <div class="qa" data-qn="Q5"><span class="hint">&#9656; Click to reveal</span><b>Why not just k-fold cross-validate a forecast model?</b><div class="a">k-fold puts some <em>future</em> training data in earlier test folds &mdash; leaking information that wouldn't be available in deployment. Use <span class="mono">TimeSeriesSplit</span>.</div></div>
+    <div class="qa" data-qn="Q6"><span class="hint">&#9656; Click to reveal</span><b>ETS converged poorly and gave a warning. Trust the forecast?</b><div class="a">Sometimes. Warnings often mean the data is too short, too noisy, or has structural breaks. Either get more data, switch to LightGBM with lags, or accept it if the held-out forecast is still good.</div></div>
+    <div class="qa" data-qn="Q7"><span class="hint">&#9656; Click to reveal</span><b>Train RMSE &pound;500, held-out RMSE &pound;2000. Diagnosis?</b><div class="a">Overfitting OR the test period is a different regime (e.g. holiday season). Inspect residuals: if systematically biased, the model isn't generalising. Try more regularisation, more lag features, or check the test period is genuinely different.</div></div>
+    <div class="qa" data-qn="Q8"><span class="hint">&#9656; Click to reveal</span><b>Scale lag features before HistGradientBoosting?</b><div class="a"><b>No.</b> Trees don't care about scale. (Neural networks do.) Skip scaling explicitly &mdash; don't forget it.</div></div>
+    <div class="qa" data-qn="Q9"><span class="hint">&#9656; Click to reveal</span><b>You have lag_1, lag_7, lag_30. Add lag_2, lag_3?</b><div class="a">Probably not. lag_1 already captures recent state; lag_2/3 are highly correlated with it. Stick with biologically meaningful lags: 1 (yesterday), 7 (last week), 30 (last month), 365 (last year).</div></div>
+  </div>
+</section>
+
+<section id="s6">
+  <div class="section-head">
+    <div class="section-num">VI.</div>
+    <div class="section-title">
+      <div class="label">A roadmap</div>
+      <h2>L06's discipline carries into <em>every sequence.</em></h2>
+      <p class="deck">No-shuffling, no-future-leakage, time-respecting evaluation &mdash; whenever data has order, the L06 ideas apply.</p>
+    </div>
+  </div>
+
+  <div class="map">
+    <div class="node"><span class="ix">L01</span><span class="ttl">Intro to ML</span><span class="sub">Three categories, 7-step workflow.</span></div>
+    <div class="node"><span class="ix">L02</span><span class="ttl">Prob &amp; Stats</span><span class="sub">CIs around every forecast.</span></div>
+    <div class="node"><span class="ix">L03</span><span class="ttl">Supervised</span><span class="sub">Pipeline + metric scaffold.</span></div>
+    <div class="node"><span class="ix">L04</span><span class="ttl">Sup. Advanced</span><span class="sub">GB is the standard ML forecaster.</span></div>
+    <div class="node"><span class="ix">L05</span><span class="ttl">Unsupervised</span><span class="sub">PCA, K-Means, IsoForest.</span></div>
+    <div class="node is-now"><span class="ix">L06</span><span class="ttl">Time Series</span><span class="sub">STL, ETS, lag features, TSCV. You are here.</span></div>
+    <div class="node"><span class="lens">L06</span><span class="ix">L07</span><span class="ttl">Neural Nets</span><span class="sub">RNNs/LSTMs for sequences &mdash; same no-shuffle discipline.</span></div>
+    <div class="node"><span class="lens">L06</span><span class="ix">L08</span><span class="ttl">Vision</span><span class="sub">Video = time series of images; temporal smoothing.</span></div>
+    <div class="node"><span class="lens">L06</span><span class="ix">L09</span><span class="ttl">NLP</span><span class="sub">Token sequences &mdash; causal masks = TSCV.</span></div>
+    <div class="node"><span class="lens">L06</span><span class="ix">L10</span><span class="ttl">GenAI</span><span class="sub">Forecast uncertainty &rarr; generation uncertainty.</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="colophon">L06 &middot; Time Series Forecasting &middot; Learner Edition<br>Interactive Field Notes &mdash; companion to the NorthStar Retail story.<br>Set in Fraunces, Newsreader, and JetBrains Mono.</div>
+  <div class="stamp">&mdash; end of file 06.</div>
+</footer>
+
+<script>
+function rng(s){return function(){s=(s*9301+49297)%233280;return s/233280;}}
+function randn(r){let u=0,v=0;while(u===0)u=r();while(v===0)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const N = 240;
+  const r = rng(7);
+  const trend=[], seas=[], res=[], obs=[];
+  for (let i=0;i<N;i++){
+    const t = 100 + i*0.5;
+    const s = 35*Math.sin(2*Math.PI*i/7);
+    const e = randn(r)*7;
+    trend.push(t); seas.push(s); res.push(e); obs.push(t+s+e);
+  }
+  function plot(id, arr, color, fill){
+    const svg = document.getElementById(id);
+    svg.innerHTML='';
+    const W=700,H=70,PAD=4;
+    const min = Math.min(...arr), max = Math.max(...arr);
+    let d='';
+    for (let i=0;i<arr.length;i++){
+      const x = PAD + (i/(arr.length-1))*(W-2*PAD);
+      const y = (H-PAD) - ((arr[i]-min)/(max-min || 1))*(H-2*PAD);
+      d += (i===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    }
+    if (fill){
+      const fillD = d + 'L'+(W-PAD)+','+(H-PAD)+' L'+PAD+','+(H-PAD)+' Z';
+      const fp = document.createElementNS(NS,'path');
+      fp.setAttribute('d',fillD); fp.setAttribute('fill',color); fp.setAttribute('opacity',0.18);
+      svg.appendChild(fp);
+    }
+    const p = document.createElementNS(NS,'path');
+    p.setAttribute('d',d); p.setAttribute('stroke',color); p.setAttribute('stroke-width',1.5); p.setAttribute('fill','none');
+    svg.appendChild(p);
+  }
+  plot('dObs', obs, '#13110c', true);
+  plot('dTrend', trend, '#cf3a17', false);
+  plot('dSeas', seas, '#0e4540', false);
+  plot('dRes', res, '#65604f', false);
+})();
+
+(function(){
+  document.querySelectorAll('.qa').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('on'));
+    c.tabIndex = 0;
+    c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.classList.toggle('on'); }});
+  });
+})();
+</script>
+</body>
+</html>

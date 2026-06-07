@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>L07 — Five Lines of PyTorch · Interactive Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f0e8d4;--paper-2:#e7dcc1;--paper-3:#d9cca8;--ink:#13110c;--ink-2:#3a3528;--ink-soft:#65604f;--rule:#1b1812;--accent:#cf3a17;--accent-2:#7a1d0a;--teal:#0e4540;--teal-2:#1c6e66;--mustard:#b8881f;--grain-op:.55}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:"Newsreader",Georgia,serif;font-weight:380;font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background-image:radial-gradient(1200px 600px at 80% -10%,rgba(207,58,23,.08),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(14,69,64,.07),transparent 60%),repeating-linear-gradient(0deg,rgba(20,17,12,.025) 0 1px,transparent 1px 3px);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:multiply;opacity:var(--grain-op);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+::selection{background:var(--accent);color:var(--paper)}
+.italic{font-style:italic;font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.rule-dot{border:0;border-top:1.5px dotted var(--rule);margin:0}
+.masthead{padding:28px 6vw 18px;border-bottom:1px solid var(--rule)}
+.masthead-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.masthead-title{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-style:italic;font-size:clamp(34px,5vw,56px);letter-spacing:-.03em;line-height:.85}
+.masthead-title sup{font-size:.4em;vertical-align:super;letter-spacing:0;font-style:normal;color:var(--accent)}
+.tag{display:inline-block;padding:3px 8px;background:var(--ink);color:var(--paper);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.dateline{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.masthead-meta{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end}
+.cover{padding:5vh 6vw 6vh;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+@media (max-width:900px){.cover-grid{grid-template-columns:1fr;gap:24px}}
+.cover h1{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:300;font-size:clamp(56px,11vw,168px);line-height:.84;letter-spacing:-.04em;margin:.1em 0}
+.cover h1 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.cover-lede{font-family:"Newsreader",serif;font-size:clamp(18px,1.6vw,22px);font-style:italic;color:var(--ink-2);max-width:46ch;line-height:1.45}
+.cover-lede .dropcap{float:left;font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:5.2em;line-height:.78;padding:.08em .1em 0 0;color:var(--accent);font-weight:330}
+.cover-side{display:flex;flex-direction:column;gap:18px}
+.fact-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule)}
+.fact{padding:14px;border-right:1px solid var(--rule)}
+.fact:last-child{border-right:0}
+.fact .num{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:42px;line-height:1;letter-spacing:-.04em}
+.fact .lab{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+.byline{display:flex;gap:18px;align-items:center;margin-top:8px}
+.byline .badge{width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:500;font-style:italic;font-size:22px}
+.byline b{display:block;font-family:"Newsreader",serif;font-weight:600}
+section{padding:7vh 6vw;border-bottom:1px solid var(--rule);position:relative}
+.section-head{display:grid;grid-template-columns:120px 1fr;gap:32px;margin-bottom:48px;align-items:start}
+@media (max-width:760px){.section-head{grid-template-columns:1fr;gap:8px}}
+.section-num{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:84px;line-height:.8;color:var(--accent);font-weight:340}
+.section-title h2{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:340;font-size:clamp(34px,4.4vw,56px);line-height:.95;letter-spacing:-.03em;margin:0 0 .25em}
+.section-title h2 em{font-style:italic;color:var(--accent)}
+.section-title .deck{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:20px;max-width:62ch}
+.xor{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid var(--rule)}
+@media (max-width:760px){.xor{grid-template-columns:1fr}}
+.xor-col{padding:22px;background:var(--paper)}
+.xor-col + .xor-col{border-left:1px solid var(--rule);background:var(--paper-2)}
+@media (max-width:760px){.xor-col + .xor-col{border-left:0;border-top:1px solid var(--rule)}}
+.xor-col h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:28px;letter-spacing:-.02em;margin:.1em 0 .35em}
+.xor-col h3 em{color:var(--accent)}
+.xor-tag{display:inline-block;padding:2px 8px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--rule)}
+.xor-tag.bad{background:transparent;color:var(--ink-2)}
+.xor-tag.good{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.xor-svg{width:100%;height:280px;display:block;border:1px solid var(--rule);background:var(--paper-3)}
+.xor-foot{margin-top:12px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15.5px;line-height:1.5}
+.gd{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+@media (max-width:900px){.gd{grid-template-columns:1fr}}
+.gd-ctrl{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.gd-ctrl h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.02em;margin:0 0 .4em}
+.gd-ctrl label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);display:block;margin-top:14px}
+.gd-ctrl input[type=range]{width:100%;accent-color:var(--accent);margin-top:6px}
+.gd-vals{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-2)}
+.gd-vis{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.gd-svg{width:100%;height:280px;display:block}
+.gd-readout{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.gd-readout .cell{border:1px solid var(--rule);background:var(--paper);padding:10px 12px}
+.gd-readout .k{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.gd-readout .v{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:26px;line-height:1;letter-spacing:-.02em;margin-top:4px}
+.gd-verdict{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:22px;line-height:1.15;letter-spacing:-.015em;margin-top:14px;min-height:2.4em}
+.gd-verdict em{color:var(--accent)}
+.code{font-family:"JetBrains Mono",monospace;font-size:14px;line-height:1.7;background:var(--ink);color:var(--paper);padding:24px;white-space:pre;overflow-x:auto;border:1px solid var(--rule)}
+.code .m{color:#cf3a17;font-weight:700}
+.code .v{color:#a8d8d4}
+.code-five{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
+@media (max-width:900px){.code-five{grid-template-columns:1fr}}
+.five-list{display:flex;flex-direction:column;gap:10px}
+.five-list .item{display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:start}
+.five-list .ix{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:32px;line-height:.9;color:var(--accent);font-weight:340}
+.five-list .desc{font-family:"Newsreader",serif;font-size:15.5px;line-height:1.45;color:var(--ink-2)}
+.five-list .desc b{color:var(--ink);font-family:"JetBrains Mono",monospace;font-size:13px}
+.honest{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.honest{grid-template-columns:1fr}}
+.h-card{border:1px solid var(--rule);background:var(--paper-2);padding:22px;display:flex;flex-direction:column;gap:10px;position:relative}
+.h-card .n{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:62px;line-height:.8;color:var(--accent);font-weight:340}
+.h-card h4{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.015em;margin:.2em 0 .1em}
+.h-card p{font-family:"Newsreader",serif;color:var(--ink-2);font-size:15.5px;line-height:1.5;margin:0}
+.h-card .ex{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);letter-spacing:.04em;background:var(--paper);border:1px dashed var(--rule);padding:8px 10px;margin-top:6px}
+.h-card .ex.good{border-color:var(--teal);color:var(--teal)}
+.h-card .ex.bad{border-color:var(--accent);color:var(--accent-2)}
+.pull{padding:8vh 6vw;background:var(--ink);color:var(--paper);position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.pull::before{content:"";position:absolute;inset:0;background:radial-gradient(800px 400px at 80% 30%,rgba(207,58,23,.22),transparent 60%);pointer-events:none}
+.pull blockquote{margin:0;max-width:24ch;font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 1;font-style:italic;font-weight:300;font-size:clamp(34px,5vw,72px);letter-spacing:-.025em;line-height:1}
+.pull blockquote em{color:var(--accent);font-style:italic}
+.pull cite{display:block;margin-top:18px;font-family:"JetBrains Mono",monospace;font-style:normal;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cfc6ad}
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:760px){.qa-grid{grid-template-columns:1fr}}
+.qa{background:var(--paper-2);border:1px solid var(--rule);padding:18px 20px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:background .2s;position:relative}
+.qa::before{content:attr(data-qn);position:absolute;top:10px;right:14px;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-soft);letter-spacing:.14em}
+.qa:hover{background:var(--paper-3)}
+.qa b{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;line-height:1.15;letter-spacing:-.015em;padding-right:48px}
+.qa .a{display:none;font-family:"Newsreader",serif;font-size:15.5px;color:var(--ink-2);line-height:1.5;border-top:1px dotted var(--rule);padding-top:10px;margin-top:2px}
+.qa.on{background:var(--ink);color:var(--paper)}
+.qa.on b{color:var(--paper)}
+.qa.on::before{color:var(--accent)}
+.qa.on .a{display:block;color:#e3d8be;border-color:#5e5641}
+.hint{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-top:2px}
+.qa.on .hint{color:#f5c2ad}
+.map{display:grid;grid-template-columns:repeat(10,1fr);gap:0;border:1px solid var(--rule);overflow:hidden}
+@media (max-width:1100px){.map{grid-template-columns:repeat(5,1fr)}}
+@media (max-width:600px){.map{grid-template-columns:repeat(2,1fr)}}
+.node{padding:16px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--paper);position:relative;cursor:default}
+.node:last-child{border-right:0}
+.node .ix{position:absolute;top:10px;left:12px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-soft)}
+.node .ttl{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:20px;letter-spacing:-.01em;line-height:1.05}
+.node .sub{font-family:"Newsreader",serif;font-size:13px;color:var(--ink-2);margin-top:4px;display:none}
+.node:hover .sub{display:block}
+.node.is-now{background:var(--accent);color:var(--paper)}
+.node.is-now .ix,.node.is-now .sub{color:#ffe1d3}
+.node .lens{position:absolute;top:10px;right:10px;font-family:"JetBrains Mono",monospace;font-size:10px;background:var(--teal);color:var(--paper);padding:1px 5px;letter-spacing:.1em}
+footer{padding:5vh 6vw;display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap}
+footer .colophon{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);max-width:60ch}
+footer .stamp{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:38px;letter-spacing:-.02em;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-row">
+    <div>
+      <div class="dateline">M3 &middot; Module Three &middot; Machine Learning &amp; GenAI</div>
+      <div class="masthead-title">Five Lines of <span class="italic">PyTorch</span><sup>L07</sup></div>
+    </div>
+    <div class="masthead-meta">
+      <span class="tag">Interactive &middot; Field Notes</span>
+      <span class="dateline">Vol. 1 &middot; Issue 07 &middot; Neural Networks</span>
+    </div>
+  </div>
+</header>
+
+<section class="cover">
+  <div class="cover-grid">
+    <div>
+      <div class="label" style="color:var(--accent)">Chapter Seven &middot; northstar_sessions.csv</div>
+      <h1>A model, a loss,<br>a <em>gradient.</em></h1>
+      <p class="cover-lede"><span class="dropcap">A</span> neural network is not magic &mdash; it is a flexible non-linear function whose parameters are learned by gradient descent on a loss. This week Sarah builds her first MLP for checkout completion, watches her teammate's loss curve diverge, and writes the five-line PyTorch training step she will reuse for L08, L09, and L10. The headline isn't the AUC. It's the template.</p>
+    </div>
+    <div class="cover-side">
+      <div class="fact-strip">
+        <div class="fact"><div class="num">5</div><div class="lab">Lines per train step</div></div>
+        <div class="fact"><div class="num">1e-3</div><div class="lab">Adam default lr</div></div>
+        <div class="fact"><div class="num">XOR</div><div class="lab">The counterexample</div></div>
+      </div>
+      <div class="byline">
+        <div class="badge">SC</div>
+        <div><b>Sarah Chen</b><span class="label">Cust. Experience Analyst &middot; Mid-year</span></div>
+      </div>
+      <hr class="rule-dot"/>
+      <div class="label" style="letter-spacing:.18em;font-style:italic;color:var(--ink-2)">Move the slider. Watch gradient descent succeed, crawl, or diverge.</div>
+    </div>
+  </div>
+</section>
+
+<section id="s1">
+  <div class="section-head">
+    <div class="section-num">I.</div>
+    <div class="section-title">
+      <div class="label">The counterexample</div>
+      <h2>XOR breaks a <em>single perceptron.</em></h2>
+      <p class="deck">A single neuron computes <span class="mono">activation(w&middot;x + b)</span> &mdash; its boundary is one straight line. XOR's two diagonally opposite corners cannot be separated by any line. Stack layers with a non-linearity between them and the problem dissolves.</p>
+    </div>
+  </div>
+
+  <div class="xor">
+    <div class="xor-col">
+      <span class="xor-tag bad">Single perceptron</span>
+      <h3>One <em>line</em>, can't win.</h3>
+      <svg class="xor-svg" id="xorLin" viewBox="0 0 360 280" preserveAspectRatio="xMidYMid meet"></svg>
+      <p class="xor-foot">Any straight line you pick will misclassify two of the four corners. Adding more <em>inputs</em> doesn't help &mdash; the boundary is still linear in those inputs. Width without depth is still flat.</p>
+    </div>
+    <div class="xor-col">
+      <span class="xor-tag good">MLP with ReLU</span>
+      <h3>Two layers, <em>solved.</em></h3>
+      <svg class="xor-svg" id="xorMlp" viewBox="0 0 360 280" preserveAspectRatio="xMidYMid meet"></svg>
+      <p class="xor-foot">A 2-hidden-unit MLP with ReLU bends the input space along two lines &mdash; their intersection carves XOR's checkerboard. Five layers of <em>linear</em> still collapse to one linear function; the non-linearity unlocks depth.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="section-head">
+    <div class="section-num">II.</div>
+    <div class="section-title">
+      <div class="label">The engine</div>
+      <h2>Gradient descent. <em>One knob</em> matters most.</h2>
+      <p class="deck">On a 1D parabola <span class="mono">L(w) = (w-3)&sup2;</span>, gradient descent walks downhill. Too low a learning rate and training crawls; too high and it overshoots and diverges; Goldilocks and the loss bends smoothly to zero.</p>
+    </div>
+  </div>
+
+  <div class="gd">
+    <div class="gd-ctrl">
+      <h3>Two knobs</h3>
+      <label>learning_rate &middot; <span class="mono" id="gdLrV">0.10</span></label>
+      <input type="range" id="gdLr" min="1" max="180" value="10">
+      <div class="gd-vals"><span>0.01 (crawl)</span><span>1.80 (diverge)</span></div>
+
+      <label style="margin-top:18px">starting w &middot; <span class="mono" id="gdW0V">10.0</span></label>
+      <input type="range" id="gdW0" min="-20" max="200" step="1" value="100">
+      <div class="gd-vals"><span>-2.0</span><span>20.0</span></div>
+
+      <p style="font-family:'Newsreader',serif;font-style:italic;color:var(--ink-2);font-size:15px;margin-top:18px;line-height:1.5">Minimum is at <span class="mono">w = 3</span>. Adam adapts this learning rate per parameter automatically &mdash; which is why <span class="mono">lr=1e-3</span> with Adam is the safe default for tabular nets.</p>
+    </div>
+
+    <div class="gd-vis">
+      <svg class="gd-svg" id="gdSvg" viewBox="0 0 600 280" preserveAspectRatio="none"></svg>
+      <div class="gd-readout">
+        <div class="cell"><div class="k">Steps</div><div class="v" id="gdSteps">&mdash;</div></div>
+        <div class="cell"><div class="k">Final w</div><div class="v" id="gdW">&mdash;</div></div>
+        <div class="cell"><div class="k">Final loss</div><div class="v" id="gdL">&mdash;</div></div>
+      </div>
+      <div class="gd-verdict" id="gdVerdict">&mdash;</div>
+    </div>
+  </div>
+</section>
+
+<section id="s3">
+  <div class="section-head">
+    <div class="section-num">III.</div>
+    <div class="section-title">
+      <div class="label">The template</div>
+      <h2>Memorise these <em>five lines.</em></h2>
+      <p class="deck">Identical for an MLP, a CNN, or a transformer &mdash; only the model class and loss change. Every line in the rest of M3 lives inside this loop.</p>
+    </div>
+  </div>
+
+  <div class="code-five">
+<pre class="code">  <span class="m">optimizer.zero_grad()</span>
+  logits = <span class="v">model</span>(X_batch)
+  loss   = <span class="v">criterion</span>(logits, y_batch)
+  loss.<span class="m">backward</span>()
+  <span class="m">optimizer.step()</span></pre>
+    <div class="five-list">
+      <div class="item"><div class="ix">1</div><div class="desc"><b>zero_grad()</b> &middot; clear stale gradients from the previous batch. Forget this and gradients <em>accumulate</em>; by step 10 you're taking a 10&times;-sized step in a stale direction.</div></div>
+      <div class="item"><div class="ix">2</div><div class="desc"><b>model(X)</b> &middot; forward pass. PyTorch records every operation on the computation graph for autograd.</div></div>
+      <div class="item"><div class="ix">3</div><div class="desc"><b>criterion(...)</b> &middot; compute the scalar loss. <span class="mono">BCEWithLogitsLoss</span> for binary; <span class="mono">CrossEntropyLoss</span> for multi-class.</div></div>
+      <div class="item"><div class="ix">4</div><div class="desc"><b>loss.backward()</b> &middot; autograd walks the graph backwards, filling <span class="mono">.grad</span> on every parameter. The chain rule, done for you.</div></div>
+      <div class="item"><div class="ix">5</div><div class="desc"><b>optimizer.step()</b> &middot; update each parameter using its <span class="mono">.grad</span> and the optimiser's rule (Adam by default).</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="section-head">
+    <div class="section-num">IV.</div>
+    <div class="section-title">
+      <div class="label">A checklist</div>
+      <h2>Three checks before you blame the <em>architecture.</em></h2>
+      <p class="deck">Skip these and you'll burn an afternoon tuning hidden-layer width when the real bug was the learning rate.</p>
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="h-card"><div class="n">1</div><h4>Did it <em>converge</em>?</h4><p>Train loss should fall, then plateau. Still falling sharply? You stopped too early. Bouncing wildly? lr too high. Flat from epoch 1? lr too low or data not reaching the model.</p><span class="ex bad">&#10005; "Trained 10 epochs, accuracy 0.50."</span><span class="ex good">&#10003; "Train loss bends, plateaus by epoch 30."</span></div>
+    <div class="h-card"><div class="n">2</div><h4>Is it <em>overfitting</em>?</h4><p>Train falls while val bottoms out and rises &mdash; the widening gap is overfitting. Early-stop on best val, regularise, add data, or shrink the model.</p><span class="ex bad">&#10005; "Train 0.18, val 0.38 &mdash; train more!"</span><span class="ex good">&#10003; "Restore epoch 12; val bottomed there."</span></div>
+    <div class="h-card"><div class="n">3</div><h4>Is the <em>lr</em> right?</h4><p>Sweep <span class="mono">1e-2</span>, <span class="mono">1e-3</span>, <span class="mono">1e-4</span> before tuning anything else. Healthy = fast drop, smooth bend. Jagged = too high. Flat = too low.</p><span class="ex bad">&#10005; "Default lr, three widths."</span><span class="ex good">&#10003; "lr sweep first; then width."</span></div>
+  </div>
+</section>
+
+<aside class="pull">
+  <blockquote>"Can a network do better than the L03/L04 baselines &mdash; on <em>pixels</em>? Auto-tag thousands of product photos?"</blockquote>
+  <cite>&mdash; Marcus &middot; after Sarah ships the MLP &middot; the engine of L08</cite>
+</aside>
+
+<section id="s5">
+  <div class="section-head">
+    <div class="section-num">V.</div>
+    <div class="section-title">
+      <div class="label">Check yourself</div>
+      <h2>Nine questions from the <em>field notebook.</em></h2>
+      <p class="deck">Click to flip. Numbering matches <span class="mono">lesson.md</span>.</p>
+    </div>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa" data-qn="Q1"><span class="hint">&#9656; Click to reveal</span><b>Why doesn't a "bigger perceptron with more inputs" solve XOR?</b><div class="a">A perceptron computes <span class="mono">activation(w&middot;x + b)</span> &mdash; its boundary is one hyperplane. XOR (1s in opposite corners) cannot be separated by any line. Adding inputs keeps the boundary linear in those inputs. The fix is depth + a non-linearity, not width.</div></div>
+    <div class="qa" data-qn="Q2"><span class="hint">&#9656; Click to reveal</span><b>5-layer MLP with identity activations &mdash; what happens?</b><div class="a">The whole network collapses to a single linear function. Composing linear maps gives another linear map; 5 layers = 1 linear layer in expressive power. The non-linearity is what makes "deep" different from "wide-but-flat".</div></div>
+    <div class="qa" data-qn="Q3"><span class="hint">&#9656; Click to reveal</span><b>LR, MLP, GB all within 0.015 AUC. When does the MLP pull ahead?</b><div class="a">When data is large (millions of rows), features have non-linear interactions feature engineering can't capture, or you need to ensemble with other neural models. The MLP's real edge appears in L08&ndash;L10, where inputs are pixels or tokens.</div></div>
+    <div class="qa" data-qn="Q4"><span class="hint">&#9656; Click to reveal</span><b>What does <span class="mono">optimizer.zero_grad()</span> do, and what breaks if you forget?</b><div class="a">PyTorch <em>accumulates</em> gradients in <span class="mono">.grad</span> on each backward call. <span class="mono">zero_grad()</span> clears them. Forget it and each batch's gradient is added to all previous; by step 10 you're taking a 10&times;-sized step in a stale direction. Training diverges.</div></div>
+    <div class="qa" data-qn="Q5"><span class="hint">&#9656; Click to reveal</span><b>L(w) = (w-3)&sup2;, start w=10. lr=1.5 vs lr=0.001?</b><div class="a"><b>lr=1.5:</b> each step overshoots; iterates oscillate with growing amplitude; loss diverges. <b>lr=0.001:</b> every step is tiny; the path crawls toward 3 and may not arrive in your epoch budget. Sweet spot ~0.01&ndash;0.1; Adam removes most of this tuning.</div></div>
+    <div class="qa" data-qn="Q6"><span class="hint">&#9656; Click to reveal</span><b>Raw logits + <span class="mono">BCELoss</span>. Garbage outputs. Why?</b><div class="a"><span class="mono">BCELoss</span> expects probabilities in [0, 1]. Raw logits are any real number; feeding them gives nonsensical, numerically unstable gradients. Fix: use <span class="mono">BCEWithLogitsLoss</span>, which fuses sigmoid + BCE for stability.</div></div>
+    <div class="qa" data-qn="Q7"><span class="hint">&#9656; Click to reveal</span><b>Write the five lines of a PyTorch training step.</b><div class="a">(1) <span class="mono">optimizer.zero_grad()</span><br>(2) <span class="mono">logits = model(X)</span><br>(3) <span class="mono">loss = criterion(logits, y)</span><br>(4) <span class="mono">loss.backward()</span><br>(5) <span class="mono">optimizer.step()</span></div></div>
+    <div class="qa" data-qn="Q8"><span class="hint">&#9656; Click to reveal</span><b>Train 0.18 still falling; val bottomed at 0.31 (ep 12), now 0.38. Healthy?</b><div class="a"><b>No</b> &mdash; textbook overfitting. The widening gap means memorisation. Early-stop: restore epoch 12 weights. For better val loss try smaller model, more data, dropout/weight decay &mdash; not more epochs.</div></div>
+    <div class="qa" data-qn="Q9"><span class="hint">&#9656; Click to reveal</span><b>Why call <span class="mono">model.eval()</span> before validation?</b><div class="a">For a tiny MLP it doesn't change numbers &mdash; but it's a habit that prevents silent bugs the moment you add dropout or batch-norm. Dropout zeros activations in train mode; batch-norm uses batch stats in train, running stats in eval. Always wrap evaluation in <span class="mono">model.eval()</span> + <span class="mono">with torch.no_grad():</span>.</div></div>
+  </div>
+</section>
+
+<section id="s6">
+  <div class="section-head">
+    <div class="section-num">VI.</div>
+    <div class="section-title">
+      <div class="label">A roadmap</div>
+      <h2>The five lines stay the <em>same.</em></h2>
+      <p class="deck">L08, L09, L10 swap the model class and the loss. The outer loop is unchanged.</p>
+    </div>
+  </div>
+
+  <div class="map">
+    <div class="node"><span class="ix">L01</span><span class="ttl">Intro to ML</span><span class="sub">Three categories, 7-step workflow.</span></div>
+    <div class="node"><span class="ix">L02</span><span class="ttl">Prob &amp; Stats</span><span class="sub">CIs around every AUC.</span></div>
+    <div class="node"><span class="ix">L03</span><span class="ttl">Supervised</span><span class="sub">Pipeline + metric scaffold.</span></div>
+    <div class="node"><span class="ix">L04</span><span class="ttl">Sup. Advanced</span><span class="sub">Trees / forests / boosting.</span></div>
+    <div class="node"><span class="ix">L05</span><span class="ttl">Unsupervised</span><span class="sub">PCA, K-Means, IsoForest.</span></div>
+    <div class="node"><span class="ix">L06</span><span class="ttl">Time Series</span><span class="sub">STL, ETS, TSCV.</span></div>
+    <div class="node is-now"><span class="ix">L07</span><span class="ttl">Neural Nets</span><span class="sub">Five-line PyTorch step. You are here.</span></div>
+    <div class="node"><span class="lens">L07</span><span class="ix">L08</span><span class="ttl">Vision</span><span class="sub">Conv2d replaces Linear; loop unchanged.</span></div>
+    <div class="node"><span class="lens">L07</span><span class="ix">L09</span><span class="ttl">NLP</span><span class="sub">Embedding + encoder; loop unchanged.</span></div>
+    <div class="node"><span class="lens">L07</span><span class="ix">L10</span><span class="ttl">GenAI</span><span class="sub">Transformer + AdamW; loop unchanged.</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="colophon">L07 &middot; Neural Networks &amp; Deep Learning &middot; Learner Edition<br>Interactive Field Notes &mdash; companion to the NorthStar Retail story.<br>Set in Fraunces, Newsreader, and JetBrains Mono.</div>
+  <div class="stamp">&mdash; end of file 07.</div>
+</footer>
+
+<script>
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const lin = document.getElementById('xorLin');
+  const mlp = document.getElementById('xorMlp');
+  const W=360,H=280;
+  const corners = [{x:0.25,y:0.25,c:0},{x:0.75,y:0.25,c:1},{x:0.25,y:0.75,c:1},{x:0.75,y:0.75,c:0}];
+  function jitter(svg){
+    for (let i=0;i<160;i++){
+      const c = corners[i%4];
+      const x = c.x + (Math.random()*0.16-0.08);
+      const y = c.y + (Math.random()*0.16-0.08);
+      const cx = 12 + x*(W-24);
+      const cy = (H-12) - y*(H-24);
+      const dot = document.createElementNS(NS,'circle');
+      dot.setAttribute('cx',cx);dot.setAttribute('cy',cy);
+      dot.setAttribute('r',3);
+      dot.setAttribute('fill', c.c ? '#cf3a17' : '#0e4540');
+      dot.setAttribute('opacity',0.78);
+      svg.appendChild(dot);
+    }
+  }
+  function axes(svg){
+    const ax = document.createElementNS(NS,'rect');
+    ax.setAttribute('x',8);ax.setAttribute('y',8);
+    ax.setAttribute('width',W-16);ax.setAttribute('height',H-16);
+    ax.setAttribute('fill','none');ax.setAttribute('stroke','#1b1812');
+    svg.appendChild(ax);
+  }
+  axes(lin);
+  const halfTop = document.createElementNS(NS,'rect');
+  halfTop.setAttribute('x',9);halfTop.setAttribute('y',9);
+  halfTop.setAttribute('width',W-18);halfTop.setAttribute('height',(H-18)/2);
+  halfTop.setAttribute('fill','#cf3a17');halfTop.setAttribute('opacity',0.08);
+  lin.appendChild(halfTop);
+  const halfBot = document.createElementNS(NS,'rect');
+  halfBot.setAttribute('x',9);halfBot.setAttribute('y',9+(H-18)/2);
+  halfBot.setAttribute('width',W-18);halfBot.setAttribute('height',(H-18)/2);
+  halfBot.setAttribute('fill','#0e4540');halfBot.setAttribute('opacity',0.07);
+  lin.appendChild(halfBot);
+  const dline = document.createElementNS(NS,'line');
+  dline.setAttribute('x1',12);dline.setAttribute('x2',W-12);
+  dline.setAttribute('y1',H/2);dline.setAttribute('y2',H/2);
+  dline.setAttribute('stroke','#13110c');dline.setAttribute('stroke-width',2);
+  dline.setAttribute('stroke-dasharray','6 4');
+  lin.appendChild(dline);
+  jitter(lin);
+
+  axes(mlp);
+  function fill(x0,y0,x1,y1,color){
+    const px0 = 12+x0*(W-24), px1 = 12+x1*(W-24);
+    const py0 = (H-12)-y1*(H-24), py1 = (H-12)-y0*(H-24);
+    const rc = document.createElementNS(NS,'rect');
+    rc.setAttribute('x',px0);rc.setAttribute('y',py0);
+    rc.setAttribute('width',px1-px0);rc.setAttribute('height',py1-py0);
+    rc.setAttribute('fill',color);rc.setAttribute('opacity',0.14);
+    mlp.appendChild(rc);
+  }
+  fill(0,0,0.5,0.5,'#0e4540');
+  fill(0.5,0,1,0.5,'#cf3a17');
+  fill(0,0.5,0.5,1,'#cf3a17');
+  fill(0.5,0.5,1,1,'#0e4540');
+  function lnx(x){
+    const px = 12+x*(W-24);
+    const ln = document.createElementNS(NS,'line');
+    ln.setAttribute('x1',px);ln.setAttribute('x2',px);
+    ln.setAttribute('y1',9);ln.setAttribute('y2',H-9);
+    ln.setAttribute('stroke','#13110c');ln.setAttribute('stroke-width',1.4);
+    ln.setAttribute('stroke-dasharray','3 3');
+    mlp.appendChild(ln);
+  }
+  function lny(y){
+    const py = (H-12)-y*(H-24);
+    const ln = document.createElementNS(NS,'line');
+    ln.setAttribute('x1',12);ln.setAttribute('x2',W-12);
+    ln.setAttribute('y1',py);ln.setAttribute('y2',py);
+    ln.setAttribute('stroke','#13110c');ln.setAttribute('stroke-width',1.4);
+    ln.setAttribute('stroke-dasharray','3 3');
+    mlp.appendChild(ln);
+  }
+  lnx(0.5); lny(0.5);
+  jitter(mlp);
+})();
+
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const svg = document.getElementById('gdSvg');
+  const lrEl = document.getElementById('gdLr');
+  const w0El = document.getElementById('gdW0');
+  const lrV = document.getElementById('gdLrV');
+  const w0V = document.getElementById('gdW0V');
+  const stepsV = document.getElementById('gdSteps');
+  const wV = document.getElementById('gdW');
+  const lV = document.getElementById('gdL');
+  const verd = document.getElementById('gdVerdict');
+
+  function render(){
+    const lr = parseFloat(lrEl.value)/100;
+    const w0 = parseFloat(w0El.value)/10;
+    lrV.textContent = lr.toFixed(2);
+    w0V.textContent = w0.toFixed(1);
+    const path = [];
+    let w = w0;
+    let diverged = false;
+    for (let i=0;i<60;i++){
+      const L = (w-3)*(w-3);
+      path.push({w, L});
+      if (!isFinite(w) || Math.abs(w) > 1e3) { diverged = true; break; }
+      const g = 2*(w-3);
+      w = w - lr*g;
+    }
+
+    svg.innerHTML='';
+    const W=600,H=280,PAD=30;
+    const ax = document.createElementNS(NS,'rect');
+    ax.setAttribute('x',PAD);ax.setAttribute('y',12);
+    ax.setAttribute('width',W-2*PAD);ax.setAttribute('height',H-PAD-12);
+    ax.setAttribute('fill','#f0e8d4');ax.setAttribute('stroke','#1b1812');
+    svg.appendChild(ax);
+    const xMin=-2, xMax=12, yMax=170;
+    function px(w){return PAD + ((w-xMin)/(xMax-xMin))*(W-2*PAD);}
+    function py(L){return (H-PAD) - (Math.min(L,yMax)/yMax)*(H-PAD-12);}
+    let d='';
+    for (let i=0;i<=200;i++){
+      const wp = xMin + (i/200)*(xMax-xMin);
+      const Lp = (wp-3)*(wp-3);
+      d += (i===0?'M':'L') + px(wp).toFixed(1) + ',' + py(Lp).toFixed(1) + ' ';
+    }
+    const curve = document.createElementNS(NS,'path');
+    curve.setAttribute('d',d); curve.setAttribute('stroke','#13110c'); curve.setAttribute('stroke-width',1.5); curve.setAttribute('fill','none');
+    svg.appendChild(curve);
+    const minMark = document.createElementNS(NS,'line');
+    minMark.setAttribute('x1',px(3));minMark.setAttribute('x2',px(3));
+    minMark.setAttribute('y1',H-PAD);minMark.setAttribute('y2',py(0));
+    minMark.setAttribute('stroke','#0e4540');minMark.setAttribute('stroke-width',1);
+    minMark.setAttribute('stroke-dasharray','3 3');
+    svg.appendChild(minMark);
+    for (let i=0;i<path.length;i++){
+      const p = path[i];
+      if (!isFinite(p.w) || Math.abs(p.w)>15) continue;
+      const cx = px(p.w), cy = py(p.L);
+      const c = document.createElementNS(NS,'circle');
+      c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',3);
+      c.setAttribute('fill', i===path.length-1 ? '#cf3a17' : '#13110c');
+      c.setAttribute('opacity', i===0 ? 1 : 0.6);
+      svg.appendChild(c);
+      if (i>0){
+        const prev = path[i-1];
+        if (isFinite(prev.w) && Math.abs(prev.w)<=15){
+          const ln = document.createElementNS(NS,'line');
+          ln.setAttribute('x1',px(prev.w));ln.setAttribute('y1',py(prev.L));
+          ln.setAttribute('x2',cx);ln.setAttribute('y2',cy);
+          ln.setAttribute('stroke','#cf3a17');ln.setAttribute('stroke-width',1);
+          ln.setAttribute('opacity',0.55);
+          svg.appendChild(ln);
+        }
+      }
+    }
+    const lab = document.createElementNS(NS,'text');
+    lab.setAttribute('x',W-PAD-4);lab.setAttribute('y',24);
+    lab.setAttribute('text-anchor','end');
+    lab.setAttribute('font-family','Fraunces, serif');
+    lab.setAttribute('font-style','italic');lab.setAttribute('font-size','14');
+    lab.setAttribute('fill','#65604f');
+    lab.textContent = 'L(w) = (w − 3)²';
+    svg.appendChild(lab);
+
+    const final = path[path.length-1];
+    stepsV.textContent = path.length;
+    wV.textContent = isFinite(final.w) ? final.w.toFixed(2) : '∞';
+    lV.textContent = isFinite(final.L) ? final.L.toFixed(2) : '∞';
+    let h='';
+    if (diverged){
+      h = "<em>Diverged.</em> Learning rate too high &mdash; the loss exploded.";
+    } else if (Math.abs(final.w - 3) > 0.5){
+      h = "<em>Crawling.</em> Learning rate too low &mdash; needs more steps.";
+    } else if (Math.abs(final.w - 3) < 0.05){
+      h = "<em>Converged.</em> Loss is essentially zero. Goldilocks.";
+    } else {
+      h = "<em>Approaching</em> the minimum &mdash; healthy descent.";
+    }
+    verd.innerHTML = h;
+  }
+  lrEl.addEventListener('input', render);
+  w0El.addEventListener('input', render);
+  render();
+})();
+
+(function(){
+  document.querySelectorAll('.qa').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('on'));
+    c.tabIndex = 0;
+    c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.classList.toggle('on'); }});
+  });
+})();
+</script>
+</body>
+</html>

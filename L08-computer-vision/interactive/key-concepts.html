@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>L08 — A Grid of Pixels · Interactive Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f0e8d4;--paper-2:#e7dcc1;--paper-3:#d9cca8;--ink:#13110c;--ink-2:#3a3528;--ink-soft:#65604f;--rule:#1b1812;--accent:#cf3a17;--accent-2:#7a1d0a;--teal:#0e4540;--teal-2:#1c6e66;--mustard:#b8881f;--grain-op:.55}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:"Newsreader",Georgia,serif;font-weight:380;font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background-image:radial-gradient(1200px 600px at 80% -10%,rgba(207,58,23,.08),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(14,69,64,.07),transparent 60%),repeating-linear-gradient(0deg,rgba(20,17,12,.025) 0 1px,transparent 1px 3px);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:multiply;opacity:var(--grain-op);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+::selection{background:var(--accent);color:var(--paper)}
+.italic{font-style:italic;font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.rule-dot{border:0;border-top:1.5px dotted var(--rule);margin:0}
+.masthead{padding:28px 6vw 18px;border-bottom:1px solid var(--rule)}
+.masthead-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.masthead-title{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-style:italic;font-size:clamp(34px,5vw,56px);letter-spacing:-.03em;line-height:.85}
+.masthead-title sup{font-size:.4em;vertical-align:super;letter-spacing:0;font-style:normal;color:var(--accent)}
+.tag{display:inline-block;padding:3px 8px;background:var(--ink);color:var(--paper);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.dateline{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.masthead-meta{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end}
+.cover{padding:5vh 6vw 6vh;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+@media (max-width:900px){.cover-grid{grid-template-columns:1fr;gap:24px}}
+.cover h1{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:300;font-size:clamp(56px,11vw,168px);line-height:.84;letter-spacing:-.04em;margin:.1em 0}
+.cover h1 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.cover-lede{font-family:"Newsreader",serif;font-size:clamp(18px,1.6vw,22px);font-style:italic;color:var(--ink-2);max-width:46ch;line-height:1.45}
+.cover-lede .dropcap{float:left;font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:5.2em;line-height:.78;padding:.08em .1em 0 0;color:var(--accent);font-weight:330}
+.cover-side{display:flex;flex-direction:column;gap:18px}
+.fact-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule)}
+.fact{padding:14px;border-right:1px solid var(--rule)}
+.fact:last-child{border-right:0}
+.fact .num{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:42px;line-height:1;letter-spacing:-.04em}
+.fact .lab{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+.byline{display:flex;gap:18px;align-items:center;margin-top:8px}
+.byline .badge{width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:500;font-style:italic;font-size:22px}
+.byline b{display:block;font-family:"Newsreader",serif;font-weight:600}
+section{padding:7vh 6vw;border-bottom:1px solid var(--rule);position:relative}
+.section-head{display:grid;grid-template-columns:120px 1fr;gap:32px;margin-bottom:48px;align-items:start}
+@media (max-width:760px){.section-head{grid-template-columns:1fr;gap:8px}}
+.section-num{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:84px;line-height:.8;color:var(--accent);font-weight:340}
+.section-title h2{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:340;font-size:clamp(34px,4.4vw,56px);line-height:.95;letter-spacing:-.03em;margin:0 0 .25em}
+.section-title h2 em{font-style:italic;color:var(--accent)}
+.section-title .deck{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:20px;max-width:62ch}
+.params{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid var(--rule)}
+@media (max-width:760px){.params{grid-template-columns:1fr}}
+.params-col{padding:24px;background:var(--paper)}
+.params-col + .params-col{border-left:1px solid var(--rule);background:var(--paper-2)}
+@media (max-width:760px){.params-col + .params-col{border-left:0;border-top:1px solid var(--rule)}}
+.params-col h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:28px;letter-spacing:-.02em;margin:.1em 0 .35em}
+.params-tag{display:inline-block;padding:2px 8px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--rule)}
+.params-tag.bad{background:transparent;color:var(--ink-2)}
+.params-tag.good{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.params-big{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:84px;line-height:.9;letter-spacing:-.04em;color:var(--ink);margin:8px 0}
+.params-big.good{color:var(--teal)}
+.params-big.bad{color:var(--accent)}
+.params-eq{font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.5;color:var(--ink-soft);background:var(--paper-3);border:1px dashed var(--rule);padding:10px 12px;margin:10px 0}
+.params-foot{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15.5px;line-height:1.5}
+.kernel-wrap{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+@media (max-width:900px){.kernel-wrap{grid-template-columns:1fr}}
+.k-ctrl{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.k-ctrl h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.02em;margin:0 0 .4em}
+.k-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.k-btn{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:8px 12px;background:transparent;border:1px solid var(--rule);cursor:pointer;color:var(--ink-2)}
+.k-btn.on{background:var(--ink);color:var(--paper)}
+.k-btn:hover:not(.on){background:var(--paper-3)}
+.k-matrix{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:14px;max-width:200px}
+.k-cell{background:var(--paper);border:1px solid var(--rule);text-align:center;padding:14px 0;font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:700;color:var(--ink)}
+.k-cell.pos{background:rgba(207,58,23,.18);color:var(--accent-2)}
+.k-cell.neg{background:rgba(14,69,64,.18);color:var(--teal)}
+.k-cell.zero{color:var(--ink-soft)}
+.k-vis{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.k-svg{width:100%;height:300px;display:block;background:var(--paper-3);border:1px solid var(--rule)}
+.k-note{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15.5px;line-height:1.5}
+.tl{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.tl{grid-template-columns:1fr}}
+.tl-card{border:1px solid var(--rule);background:var(--paper-2);padding:22px;display:flex;flex-direction:column;gap:8px;position:relative}
+.tl-card .pic{height:90px;display:grid;place-items:center;border:1px solid var(--rule);background:var(--paper-3)}
+.tl-card .pic svg{width:90%;height:80%}
+.tl-card h4{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.015em;margin:.2em 0 .1em}
+.tl-card h4 em{color:var(--accent)}
+.tl-card p{font-family:"Newsreader",serif;color:var(--ink-2);font-size:15.5px;line-height:1.5;margin:0}
+.tl-card .when{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);border-top:1px dotted var(--rule);padding-top:8px;margin-top:auto}
+.honest{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.honest{grid-template-columns:1fr}}
+.h-card{border:1px solid var(--rule);background:var(--paper-2);padding:22px;display:flex;flex-direction:column;gap:10px;position:relative}
+.h-card .n{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:62px;line-height:.8;color:var(--accent);font-weight:340}
+.h-card h4{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.015em;margin:.2em 0 .1em}
+.h-card p{font-family:"Newsreader",serif;color:var(--ink-2);font-size:15.5px;line-height:1.5;margin:0}
+.h-card .ex{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);letter-spacing:.04em;background:var(--paper);border:1px dashed var(--rule);padding:8px 10px;margin-top:6px}
+.h-card .ex.good{border-color:var(--teal);color:var(--teal)}
+.h-card .ex.bad{border-color:var(--accent);color:var(--accent-2)}
+.pull{padding:8vh 6vw;background:var(--ink);color:var(--paper);position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.pull::before{content:"";position:absolute;inset:0;background:radial-gradient(800px 400px at 80% 30%,rgba(207,58,23,.22),transparent 60%);pointer-events:none}
+.pull blockquote{margin:0;max-width:24ch;font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 1;font-style:italic;font-weight:300;font-size:clamp(34px,5vw,72px);letter-spacing:-.025em;line-height:1}
+.pull blockquote em{color:var(--accent);font-style:italic}
+.pull cite{display:block;margin-top:18px;font-family:"JetBrains Mono",monospace;font-style:normal;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cfc6ad}
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:760px){.qa-grid{grid-template-columns:1fr}}
+.qa{background:var(--paper-2);border:1px solid var(--rule);padding:18px 20px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:background .2s;position:relative}
+.qa::before{content:attr(data-qn);position:absolute;top:10px;right:14px;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-soft);letter-spacing:.14em}
+.qa:hover{background:var(--paper-3)}
+.qa b{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;line-height:1.15;letter-spacing:-.015em;padding-right:48px}
+.qa .a{display:none;font-family:"Newsreader",serif;font-size:15.5px;color:var(--ink-2);line-height:1.5;border-top:1px dotted var(--rule);padding-top:10px;margin-top:2px}
+.qa.on{background:var(--ink);color:var(--paper)}
+.qa.on b{color:var(--paper)}
+.qa.on::before{color:var(--accent)}
+.qa.on .a{display:block;color:#e3d8be;border-color:#5e5641}
+.hint{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-top:2px}
+.qa.on .hint{color:#f5c2ad}
+.map{display:grid;grid-template-columns:repeat(10,1fr);gap:0;border:1px solid var(--rule);overflow:hidden}
+@media (max-width:1100px){.map{grid-template-columns:repeat(5,1fr)}}
+@media (max-width:600px){.map{grid-template-columns:repeat(2,1fr)}}
+.node{padding:16px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--paper);position:relative;cursor:default}
+.node:last-child{border-right:0}
+.node .ix{position:absolute;top:10px;left:12px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-soft)}
+.node .ttl{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:20px;letter-spacing:-.01em;line-height:1.05}
+.node .sub{font-family:"Newsreader",serif;font-size:13px;color:var(--ink-2);margin-top:4px;display:none}
+.node:hover .sub{display:block}
+.node.is-now{background:var(--accent);color:var(--paper)}
+.node.is-now .ix,.node.is-now .sub{color:#ffe1d3}
+.node .lens{position:absolute;top:10px;right:10px;font-family:"JetBrains Mono",monospace;font-size:10px;background:var(--teal);color:var(--paper);padding:1px 5px;letter-spacing:.1em}
+footer{padding:5vh 6vw;display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap}
+footer .colophon{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);max-width:60ch}
+footer .stamp{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:38px;letter-spacing:-.02em;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-row">
+    <div>
+      <div class="dateline">M3 &middot; Module Three &middot; Machine Learning &amp; GenAI</div>
+      <div class="masthead-title">A Grid of <span class="italic">Pixels</span><sup>L08</sup></div>
+    </div>
+    <div class="masthead-meta">
+      <span class="tag">Interactive &middot; Field Notes</span>
+      <span class="dateline">Vol. 1 &middot; Issue 08 &middot; Computer Vision</span>
+    </div>
+  </div>
+</header>
+
+<section class="cover">
+  <div class="cover-grid">
+    <div>
+      <div class="label" style="color:var(--accent)">Chapter Eight &middot; Auto-tag the catalogue</div>
+      <h1>The MLP <em>flattens.</em><br>The CNN sees.</h1>
+      <p class="cover-lede"><span class="dropcap">M</span>arcus's next ask: auto-tag the merchandising team's thousands of seasonal product photos &mdash; <em>dress, shirt, sneaker</em> &mdash; so search works on day one. Pixels are not tabular features. A flattened MLP on one 224&times;224 colour photo needs 38&nbsp;million weights in its first layer and has to learn spatial structure from scratch. CNNs bake locality and translation invariance into the architecture; transfer learning rents a ResNet that has already done the heavy looking.</p>
+    </div>
+    <div class="cover-side">
+      <div class="fact-strip">
+        <div class="fact"><div class="num">38M</div><div class="lab">MLP params (1st)</div></div>
+        <div class="fact"><div class="num">896</div><div class="lab">Conv params (1st)</div></div>
+        <div class="fact"><div class="num">5000&times;</div><div class="lab">Convs win</div></div>
+      </div>
+      <div class="byline">
+        <div class="badge">SC</div>
+        <div><b>Sarah Chen</b><span class="label">Cust. Experience Analyst &middot; Mid-year</span></div>
+      </div>
+      <hr class="rule-dot"/>
+      <div class="label" style="letter-spacing:.18em;font-style:italic;color:var(--ink-2)">Pick a kernel. Watch edges or blur appear.</div>
+    </div>
+  </div>
+</section>
+
+<section id="s1">
+  <div class="section-head">
+    <div class="section-num">I.</div>
+    <div class="section-title">
+      <div class="label">The parameter argument</div>
+      <h2>Don't <em>flatten</em> a photo.</h2>
+      <p class="deck">Same output (32 channels of 224&times;224), two architectures. The MLP weights every pixel-position independently and pays for it. The convolution reuses one small kernel at every location.</p>
+    </div>
+  </div>
+
+  <div class="params">
+    <div class="params-col">
+      <span class="params-tag bad">&#10005; MLP &middot; Linear(150528, 32)</span>
+      <h3>Flat-MLP, 1st layer.</h3>
+      <div class="params-big bad">4.82M</div>
+      <div class="params-eq">params = (3 &times; 224 &times; 224) &times; 32 + 32 = 4,816,928</div>
+      <p class="params-foot">Every pixel position has its own weights. No notion that pixel (10,10) sits next to (10,11). A sleeve in the top-left and a sleeve in the bottom-right are different features.</p>
+    </div>
+    <div class="params-col">
+      <span class="params-tag good">&#10003; CNN &middot; Conv2d(3, 32, 3)</span>
+      <h3>Conv layer, same channels.</h3>
+      <div class="params-big good">896</div>
+      <div class="params-eq">params = 32 &times; (3 &times; 3 &times; 3) + 32 = 896</div>
+      <p class="params-foot">One 3&times;3 kernel slides over the whole image. ~5,000&times; smaller &mdash; and the same edge-detector finds an edge in the top-left and the bottom-right. Translation invariance for free.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="section-head">
+    <div class="section-num">II.</div>
+    <div class="section-title">
+      <div class="label">The mechanism</div>
+      <h2>A 3&times;3 kernel <em>sees.</em></h2>
+      <p class="deck">Pick a kernel. Nine weights slide across the image, multiplying and summing pixels under the window. Edges, blurs, ridges &mdash; all from one tiny grid. A trained CNN learns these kernels rather than guessing them.</p>
+    </div>
+  </div>
+
+  <div class="kernel-wrap">
+    <div class="k-ctrl">
+      <h3>Choose a kernel</h3>
+      <div class="k-buttons" id="kBtns">
+        <button class="k-btn on" data-k="identity">Identity</button>
+        <button class="k-btn" data-k="edge">Edge</button>
+        <button class="k-btn" data-k="sobelx">Sobel-X</button>
+        <button class="k-btn" data-k="sobely">Sobel-Y</button>
+        <button class="k-btn" data-k="blur">Blur</button>
+        <button class="k-btn" data-k="sharpen">Sharpen</button>
+      </div>
+      <div class="k-matrix" id="kMatrix"></div>
+      <p style="font-family:'Newsreader',serif;font-style:italic;color:var(--ink-2);font-size:15px;margin-top:18px;line-height:1.5">Each output pixel = sum of (kernel weight &times; input pixel) over the 3&times;3 window. The CNN learns whatever values fit the task; you are previewing what trained kernels look like.</p>
+    </div>
+
+    <div class="k-vis">
+      <svg class="k-svg" id="kSvg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet"></svg>
+      <p class="k-note">Left: synthetic 24&times;12 input "image" (vertical bands + diagonal). Right: same image after the kernel slides across it. Try Sobel-X and watch vertical edges light up.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s3">
+  <div class="section-head">
+    <div class="section-num">III.</div>
+    <div class="section-title">
+      <div class="label">A strategy</div>
+      <h2>Three paths through <em>transfer learning.</em></h2>
+      <p class="deck">How much data do you have? How close is your domain to ImageNet? Those two questions pick the path.</p>
+    </div>
+  </div>
+
+  <div class="tl">
+    <div class="tl-card">
+      <div class="pic"><svg viewBox="0 0 200 80"><g><rect x="20" y="20" width="40" height="40" fill="#13110c"/><rect x="70" y="20" width="40" height="40" fill="#13110c"/><rect x="120" y="20" width="40" height="40" fill="#cf3a17"/></g></svg></div>
+      <h4>Feature <em>extraction</em></h4>
+      <p>Freeze the entire pretrained backbone. Train only a fresh classifier head on top. Cheap, fast, robust &mdash; the default starting move.</p>
+      <span class="when">When &middot; close domain &middot; small data</span>
+    </div>
+    <div class="tl-card">
+      <div class="pic"><svg viewBox="0 0 200 80"><g><rect x="20" y="20" width="40" height="40" fill="#13110c"/><rect x="70" y="20" width="40" height="40" fill="#cf3a17"/><rect x="120" y="20" width="40" height="40" fill="#cf3a17"/></g></svg></div>
+      <h4>Fine-tune <em>last block</em></h4>
+      <p>Unfreeze the last conv block (e.g. <span class="mono">layer4</span>) and the head; keep early generic edge/texture filters frozen. Tiny lr (<span class="mono">1e-4</span>).</p>
+      <span class="when">When &middot; medium domain gap</span>
+    </div>
+    <div class="tl-card">
+      <div class="pic"><svg viewBox="0 0 200 80"><g><rect x="20" y="20" width="40" height="40" fill="#cf3a17"/><rect x="70" y="20" width="40" height="40" fill="#cf3a17"/><rect x="120" y="20" width="40" height="40" fill="#cf3a17"/></g></svg></div>
+      <h4>Train from <em>scratch</em></h4>
+      <p>Build a CNN and learn every weight. Only viable with lots of data; otherwise overfits hard. Even then, pretrained is usually a strong baseline.</p>
+      <span class="when">When &middot; 10K+ per class</span>
+    </div>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="section-head">
+    <div class="section-num">IV.</div>
+    <div class="section-title">
+      <div class="label">A checklist</div>
+      <h2>Three checks before <em>"transfer learning didn't work."</em></h2>
+      <p class="deck">Most "transfer learning lost to a from-scratch CNN" stories are preprocessing bugs.</p>
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="h-card"><div class="n">1</div><h4>How much <em>data</em>?</h4><p>Under ~1K per class? Start pretrained. 10K+ per class? From-scratch becomes viable; pretrained is still a strong baseline.</p><span class="ex bad">&#10005; "500 photos / class &middot; from-scratch."</span><span class="ex good">&#10003; "500 / class &middot; ResNet18 head-only."</span></div>
+    <div class="h-card"><div class="n">2</div><h4>Domain <em>gap</em>?</h4><p>Colour natural photos? Head-only will lift you. Grayscale, X-rays, satellite? Budget for fine-tuning the last conv block.</p><span class="ex bad">&#10005; "Head-only on X-rays."</span><span class="ex good">&#10003; "Unfreeze layer4 &middot; lr 1e-4."</span></div>
+    <div class="h-card"><div class="n">3</div><h4>Preprocessing <em>contract</em>?</h4><p>ImageNet normalisation, 3-channel RGB, 224&times;224 input. Skip any and you're measuring preprocessing bugs, not the model.</p><span class="ex bad">&#10005; "Grayscale &middot; raw 0&ndash;255 &middot; 64&times;64."</span><span class="ex good">&#10003; "RGB &middot; ImageNet stats &middot; 224&times;224."</span></div>
+  </div>
+</section>
+
+<aside class="pull">
+  <blockquote>"Can a customer type <em>'blue summer dress'</em> and we surface the right products &mdash; from the <em>words</em>, not tags?"</blockquote>
+  <cite>&mdash; Marcus &middot; after the catalogue tagger ships &middot; the engine of L09</cite>
+</aside>
+
+<section id="s5">
+  <div class="section-head">
+    <div class="section-num">V.</div>
+    <div class="section-title">
+      <div class="label">Check yourself</div>
+      <h2>Eight questions from the <em>field notebook.</em></h2>
+      <p class="deck">Click to flip. Numbering matches <span class="mono">lesson.md</span>.</p>
+    </div>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa" data-qn="Q1"><span class="hint">&#9656; Click to reveal</span><b>Two reasons not to flatten a 224&times;224 colour photo into an MLP.</b><div class="a"><b>Parameter count:</b> 150,528 inputs &times; 256 hidden &asymp; 38M weights in one layer.<br><b>No spatial prior:</b> the MLP treats every pixel as independent. It has no notion that adjacent pixels are related; a sleeve in the top-left and one in the bottom-right are unrelated features.</div></div>
+    <div class="qa" data-qn="Q2"><span class="hint">&#9656; Click to reveal</span><b>Kernel arithmetic: <span class="mono">Conv2d(3, 32, 3)</span> params vs MLP equivalent.</b><div class="a">Conv: 32 &times; (3 &times; 3 &times; 3) + 32 = <b>896</b>. MLP: 150,528 &times; 32 + 32 &asymp; <b>4.82M</b>. ~5,000&times; smaller &mdash; the same kernel is reused at every spatial location.</div></div>
+    <div class="qa" data-qn="Q3"><span class="hint">&#9656; Click to reveal</span><b>Stride 2, padding 1 (kernel 3), 2&times;2 max-pool &mdash; output size effect?</b><div class="a"><b>Stride 2</b> halves H/W. <b>Padding 1</b> with kernel 3 keeps output the same size. <b>2&times;2 max-pool</b> halves H/W and keeps the strongest activation in each 2&times;2 block.</div></div>
+    <div class="qa" data-qn="Q4"><span class="hint">&#9656; Click to reveal</span><b>TinyCNN on 1&times;28&times;28: shape into the first Linear?</b><div class="a">Conv 1: 16&times;28&times;28 &rarr; Pool: 16&times;14&times;14 &rarr; Conv 2: 32&times;14&times;14 &rarr; Pool: 32&times;7&times;7 &rarr; Flatten: <b>32&times;7&times;7 = 1,568</b>.</div></div>
+    <div class="qa" data-qn="Q5"><span class="hint">&#9656; Click to reveal</span><b>"CNN 88% vs MLP 87% &mdash; tiny gain, new framework." Correct them.</b><div class="a">Framework is unchanged &mdash; same five-line training step from L07. <span class="mono">Conv2d</span>/<span class="mono">MaxPool2d</span> drop in for <span class="mono">Linear</span>. Fashion-MNIST is easy; on CIFAR-10 the CNN beats the MLP by 10+ pp. Improvement scales with image complexity.</div></div>
+    <div class="qa" data-qn="Q6"><span class="hint">&#9656; Click to reveal</span><b>500 colour studio photos per class, 12 categories. (a) scratch, (b) head-only, (c) fine-tune?</b><div class="a"><b>(b)</b> head-only is the right first move; (c) is a good second. 500/class is too few to train from scratch. Studio clothing photos are close to ImageNet, so the pretrained backbone transfers directly. If you need more, unfreeze <span class="mono">layer4</span> with <span class="mono">lr=1e-4</span>.</div></div>
+    <div class="qa" data-qn="Q7"><span class="hint">&#9656; Click to reveal</span><b>Head-only loses on Fashion-MNIST but wins on CIFAR-10. Why?</b><div class="a">Fashion-MNIST is grayscale 28&times;28 silhouettes; CIFAR-10 is colour 32&times;32 natural photos &mdash; close to ImageNet. When the pretrained domain is far from yours, unfreeze the last conv block with a tiny lr (<span class="mono">1e-4</span>); deepest features adapt while early generic filters stay intact.</div></div>
+    <div class="qa" data-qn="Q8"><span class="hint">&#9656; Click to reveal</span><b>ResNet18 + 64&times;64 grayscale + new head &rarr; dismal accuracy. Three preprocessing checks?</b><div class="a">(1) <b>Channels:</b> ResNet expects 3-channel RGB; repeat grayscale to 3 channels. (2) <b>Normalisation:</b> apply ImageNet stats (<span class="mono">mean=[.485,.456,.406]</span>). (3) <b>Input size:</b> ResNet expects ~224&times;224; resize up before normalising.</div></div>
+  </div>
+</section>
+
+<section id="s6">
+  <div class="section-head">
+    <div class="section-num">VI.</div>
+    <div class="section-title">
+      <div class="label">A roadmap</div>
+      <h2>The vision playbook <em>generalises.</em></h2>
+      <p class="deck">Pretrain on giant data, fine-tune for your task. Same pattern for text (L09) and multimodal (L10).</p>
+    </div>
+  </div>
+
+  <div class="map">
+    <div class="node"><span class="ix">L01</span><span class="ttl">Intro to ML</span><span class="sub">Three categories, 7-step workflow.</span></div>
+    <div class="node"><span class="ix">L02</span><span class="ttl">Prob &amp; Stats</span><span class="sub">CIs around every accuracy.</span></div>
+    <div class="node"><span class="ix">L03</span><span class="ttl">Supervised</span><span class="sub">Pipeline + metric scaffold.</span></div>
+    <div class="node"><span class="ix">L04</span><span class="ttl">Sup. Advanced</span><span class="sub">Bake-off + ship discipline.</span></div>
+    <div class="node"><span class="ix">L05</span><span class="ttl">Unsupervised</span><span class="sub">PCA reappears for image embeddings.</span></div>
+    <div class="node"><span class="ix">L06</span><span class="ttl">Time Series</span><span class="sub">Video = time series of images.</span></div>
+    <div class="node"><span class="ix">L07</span><span class="ttl">Neural Nets</span><span class="sub">Five-line training loop.</span></div>
+    <div class="node is-now"><span class="ix">L08</span><span class="ttl">Vision</span><span class="sub">CNNs + transfer learning. You are here.</span></div>
+    <div class="node"><span class="lens">L08</span><span class="ix">L09</span><span class="ttl">NLP</span><span class="sub">Freeze-backbone, swap-head carries to text.</span></div>
+    <div class="node"><span class="lens">L08</span><span class="ix">L10</span><span class="ttl">GenAI</span><span class="sub">ViT, CLIP &mdash; same pretrain/fine-tune playbook.</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="colophon">L08 &middot; Computer Vision &middot; Learner Edition<br>Interactive Field Notes &mdash; companion to the NorthStar Retail story.<br>Set in Fraunces, Newsreader, and JetBrains Mono.</div>
+  <div class="stamp">&mdash; end of file 08.</div>
+</footer>
+
+<script>
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const kernels = {
+    identity: [[0,0,0],[0,1,0],[0,0,0]],
+    edge:     [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]],
+    sobelx:   [[-1,0,1],[-2,0,2],[-1,0,1]],
+    sobely:   [[-1,-2,-1],[0,0,0],[1,2,1]],
+    blur:     [[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]],
+    sharpen:  [[0,-1,0],[-1,5,-1],[0,-1,0]]
+  };
+  const mtxEl = document.getElementById('kMatrix');
+  const svg = document.getElementById('kSvg');
+  const W = 24, H = 12;
+  function buildImg(){
+    const img = [];
+    for (let y=0;y<H;y++){
+      const row = [];
+      for (let x=0;x<W;x++){
+        let v = 0;
+        if (Math.floor(x/4) % 2 === 0) v += 0.55;
+        if (Math.abs(x - y*2) < 2) v += 0.4;
+        v = Math.min(1, v);
+        row.push(v);
+      }
+      img.push(row);
+    }
+    return img;
+  }
+  const input = buildImg();
+  function convolve(img, k){
+    const H2 = img.length, W2 = img[0].length;
+    const out = [];
+    for (let y=0;y<H2;y++){
+      const row = [];
+      for (let x=0;x<W2;x++){
+        let s = 0;
+        for (let dy=-1;dy<=1;dy++){
+          for (let dx=-1;dx<=1;dx++){
+            const yy = Math.max(0, Math.min(H2-1, y+dy));
+            const xx = Math.max(0, Math.min(W2-1, x+dx));
+            s += img[yy][xx] * k[dy+1][dx+1];
+          }
+        }
+        row.push(s);
+      }
+      out.push(row);
+    }
+    return out;
+  }
+
+  function render(name){
+    const k = kernels[name];
+    mtxEl.innerHTML='';
+    for (let r=0;r<3;r++){
+      for (let c=0;c<3;c++){
+        const v = k[r][c];
+        const cell = document.createElement('div');
+        cell.className = 'k-cell' + (v>0.05 ? ' pos' : v<-0.05 ? ' neg' : ' zero');
+        cell.textContent = (Math.abs(v) < 0.001 ? '0' : (Math.abs(v)<1 ? v.toFixed(2).replace(/^0/,'') : v.toFixed(0)));
+        mtxEl.appendChild(cell);
+      }
+    }
+    const output = convolve(input, k);
+    svg.innerHTML='';
+    const cellW = 11, cellH = 18, gap = 20;
+    function drawGrid(grid, x0, y0){
+      const min = Math.min(...grid.flat()), max = Math.max(...grid.flat());
+      const range = (max-min) || 1;
+      for (let y=0;y<grid.length;y++){
+        for (let x=0;x<grid[0].length;x++){
+          const v = (grid[y][x] - min)/range;
+          const r = document.createElementNS(NS,'rect');
+          r.setAttribute('x', x0 + x*cellW);
+          r.setAttribute('y', y0 + y*cellH);
+          r.setAttribute('width', cellW);
+          r.setAttribute('height', cellH);
+          const g = Math.round(255 - v*200);
+          r.setAttribute('fill','rgb('+g+','+g+','+g+')');
+          svg.appendChild(r);
+        }
+      }
+    }
+    drawGrid(input, 14, 40);
+    drawGrid(output, 14 + W*cellW + gap + 28, 40);
+    function lbl(x,t,sub){
+      const t1 = document.createElementNS(NS,'text');
+      t1.setAttribute('x',x);t1.setAttribute('y',26);
+      t1.setAttribute('font-family','JetBrains Mono, monospace');
+      t1.setAttribute('font-size','10');t1.setAttribute('fill','#65604f');
+      t1.setAttribute('letter-spacing','1.6');t1.textContent=t;
+      svg.appendChild(t1);
+      const t2 = document.createElementNS(NS,'text');
+      t2.setAttribute('x',x);t2.setAttribute('y',H*cellH + 60);
+      t2.setAttribute('font-family','Newsreader, serif');
+      t2.setAttribute('font-style','italic');t2.setAttribute('font-size','12');t2.setAttribute('fill','#3a3528');
+      t2.textContent = sub;
+      svg.appendChild(t2);
+    }
+    lbl(14, 'INPUT', '24 × 12 grayscale');
+    lbl(14 + W*cellW + gap + 28, 'OUTPUT', 'after convolution');
+    const arr = document.createElementNS(NS,'path');
+    const ax = 14 + W*cellW + 6;
+    arr.setAttribute('d','M'+ax+',130 L'+(ax+30)+',130');
+    arr.setAttribute('stroke','#cf3a17');arr.setAttribute('stroke-width','2');
+    arr.setAttribute('marker-end','url(#kAr)');arr.setAttribute('fill','none');
+    svg.appendChild(arr);
+    const defs = document.createElementNS(NS,'defs');
+    defs.innerHTML = '<marker id="kAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#cf3a17"/></marker>';
+    svg.appendChild(defs);
+    const kLbl = document.createElementNS(NS,'text');
+    kLbl.setAttribute('x', ax+15);kLbl.setAttribute('y',124);
+    kLbl.setAttribute('text-anchor','middle');
+    kLbl.setAttribute('font-family','Fraunces, serif');
+    kLbl.setAttribute('font-style','italic');kLbl.setAttribute('font-size','13');
+    kLbl.setAttribute('fill','#cf3a17');
+    kLbl.textContent = '⊛ kernel';
+    svg.appendChild(kLbl);
+  }
+  document.querySelectorAll('.k-btn').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.k-btn').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    render(b.dataset.k);
+  }));
+  render('identity');
+})();
+
+(function(){
+  document.querySelectorAll('.qa').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('on'));
+    c.tabIndex = 0;
+    c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.classList.toggle('on'); }});
+  });
+})();
+</script>
+</body>
+</html>

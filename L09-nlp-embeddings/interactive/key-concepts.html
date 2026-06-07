@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>L09 — Words Become Vectors · Interactive Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f0e8d4;--paper-2:#e7dcc1;--paper-3:#d9cca8;--ink:#13110c;--ink-2:#3a3528;--ink-soft:#65604f;--rule:#1b1812;--accent:#cf3a17;--accent-2:#7a1d0a;--teal:#0e4540;--teal-2:#1c6e66;--mustard:#b8881f;--grain-op:.55}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:"Newsreader",Georgia,serif;font-weight:380;font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background-image:radial-gradient(1200px 600px at 80% -10%,rgba(207,58,23,.08),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(14,69,64,.07),transparent 60%),repeating-linear-gradient(0deg,rgba(20,17,12,.025) 0 1px,transparent 1px 3px);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:multiply;opacity:var(--grain-op);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+::selection{background:var(--accent);color:var(--paper)}
+.italic{font-style:italic;font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.rule-dot{border:0;border-top:1.5px dotted var(--rule);margin:0}
+.masthead{padding:28px 6vw 18px;border-bottom:1px solid var(--rule)}
+.masthead-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.masthead-title{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-style:italic;font-size:clamp(34px,5vw,56px);letter-spacing:-.03em;line-height:.85}
+.masthead-title sup{font-size:.4em;vertical-align:super;letter-spacing:0;font-style:normal;color:var(--accent)}
+.tag{display:inline-block;padding:3px 8px;background:var(--ink);color:var(--paper);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.dateline{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.masthead-meta{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end}
+.cover{padding:5vh 6vw 6vh;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+@media (max-width:900px){.cover-grid{grid-template-columns:1fr;gap:24px}}
+.cover h1{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:300;font-size:clamp(56px,11vw,168px);line-height:.84;letter-spacing:-.04em;margin:.1em 0}
+.cover h1 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.cover-lede{font-family:"Newsreader",serif;font-size:clamp(18px,1.6vw,22px);font-style:italic;color:var(--ink-2);max-width:46ch;line-height:1.45}
+.cover-lede .dropcap{float:left;font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:5.2em;line-height:.78;padding:.08em .1em 0 0;color:var(--accent);font-weight:330}
+.cover-side{display:flex;flex-direction:column;gap:18px}
+.fact-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule)}
+.fact{padding:14px;border-right:1px solid var(--rule)}
+.fact:last-child{border-right:0}
+.fact .num{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:42px;line-height:1;letter-spacing:-.04em}
+.fact .lab{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+.byline{display:flex;gap:18px;align-items:center;margin-top:8px}
+.byline .badge{width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:500;font-style:italic;font-size:22px}
+.byline b{display:block;font-family:"Newsreader",serif;font-weight:600}
+section{padding:7vh 6vw;border-bottom:1px solid var(--rule);position:relative}
+.section-head{display:grid;grid-template-columns:120px 1fr;gap:32px;margin-bottom:48px;align-items:start}
+@media (max-width:760px){.section-head{grid-template-columns:1fr;gap:8px}}
+.section-num{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:84px;line-height:.8;color:var(--accent);font-weight:340}
+.section-title h2{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:340;font-size:clamp(34px,4.4vw,56px);line-height:.95;letter-spacing:-.03em;margin:0 0 .25em}
+.section-title h2 em{font-style:italic;color:var(--accent)}
+.section-title .deck{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:20px;max-width:62ch}
+.dist-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid var(--rule)}
+@media (max-width:760px){.dist-row{grid-template-columns:1fr}}
+.dist-col{padding:24px;background:var(--paper)}
+.dist-col + .dist-col{border-left:1px solid var(--rule);background:var(--paper-2)}
+@media (max-width:760px){.dist-col + .dist-col{border-left:0;border-top:1px solid var(--rule)}}
+.dist-col h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:28px;letter-spacing:-.02em;margin:.1em 0 .35em}
+.dist-col h3 em{color:var(--accent)}
+.dist-tag{display:inline-block;padding:2px 8px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--rule)}
+.dist-tag.bad{background:transparent;color:var(--ink-2)}
+.dist-tag.good{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.pair{display:grid;grid-template-columns:140px 1fr 60px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dotted var(--rule);font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink-2)}
+.pair:last-child{border-bottom:0}
+.pair .w{color:var(--ink)}
+.pair .v{text-align:right;font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-style:italic;font-size:22px;letter-spacing:-.02em;color:var(--accent)}
+.pair .bar{height:8px;background:var(--paper-3);border:1px solid var(--rule);position:relative;overflow:hidden}
+.pair .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);display:block}
+.dist-foot{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15px;line-height:1.5}
+.search{border:1px solid var(--rule);overflow-x:auto;background:var(--paper)}
+.search-head{display:flex;justify-content:space-between;padding:14px 18px;background:var(--ink);color:var(--paper);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;flex-wrap:wrap;gap:14px}
+.search-q{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;letter-spacing:-.01em;color:#f7c9b6}
+.tabs{display:flex;border-bottom:1px solid var(--rule)}
+.tab{flex:1;padding:14px;background:transparent;border:0;border-right:1px solid var(--rule);font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;color:var(--ink-2)}
+.tab:last-child{border-right:0}
+.tab.on{background:var(--ink);color:var(--paper)}
+.tab:hover:not(.on){background:var(--paper-3)}
+.results{padding:18px}
+.result-row{display:grid;grid-template-columns:38px 1fr 90px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dotted var(--rule)}
+.result-row:last-child{border-bottom:0}
+.result-row .rk{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:24px;letter-spacing:-.02em;color:var(--ink-soft);text-align:center}
+.result-row.match .rk{color:var(--teal)}
+.result-row .nm{font-family:"Newsreader",serif;font-size:16px;color:var(--ink)}
+.result-row .nm em{font-style:italic;color:var(--accent-2)}
+.result-row.match .nm b{color:var(--teal)}
+.result-row .sc{font-family:"JetBrains Mono",monospace;font-size:12px;text-align:right;color:var(--ink-soft)}
+.result-row.match .sc{color:var(--teal);font-weight:700}
+.results-note{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15px;line-height:1.5;margin-top:10px;border-top:1px dotted var(--rule);padding-top:12px}
+.honest{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.honest{grid-template-columns:1fr}}
+.h-card{border:1px solid var(--rule);background:var(--paper-2);padding:22px;display:flex;flex-direction:column;gap:10px;position:relative}
+.h-card .n{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:62px;line-height:.8;color:var(--accent);font-weight:340}
+.h-card h4{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.015em;margin:.2em 0 .1em}
+.h-card p{font-family:"Newsreader",serif;color:var(--ink-2);font-size:15.5px;line-height:1.5;margin:0}
+.h-card .ex{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);letter-spacing:.04em;background:var(--paper);border:1px dashed var(--rule);padding:8px 10px;margin-top:6px}
+.h-card .ex.good{border-color:var(--teal);color:var(--teal)}
+.h-card .ex.bad{border-color:var(--accent);color:var(--accent-2)}
+.pull{padding:8vh 6vw;background:var(--ink);color:var(--paper);position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.pull::before{content:"";position:absolute;inset:0;background:radial-gradient(800px 400px at 80% 30%,rgba(207,58,23,.22),transparent 60%);pointer-events:none}
+.pull blockquote{margin:0;max-width:24ch;font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 1;font-style:italic;font-weight:300;font-size:clamp(34px,5vw,72px);letter-spacing:-.025em;line-height:1}
+.pull blockquote em{color:var(--accent);font-style:italic}
+.pull cite{display:block;margin-top:18px;font-family:"JetBrains Mono",monospace;font-style:normal;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cfc6ad}
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:760px){.qa-grid{grid-template-columns:1fr}}
+.qa{background:var(--paper-2);border:1px solid var(--rule);padding:18px 20px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:background .2s;position:relative}
+.qa::before{content:attr(data-qn);position:absolute;top:10px;right:14px;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-soft);letter-spacing:.14em}
+.qa:hover{background:var(--paper-3)}
+.qa b{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;line-height:1.15;letter-spacing:-.015em;padding-right:48px}
+.qa .a{display:none;font-family:"Newsreader",serif;font-size:15.5px;color:var(--ink-2);line-height:1.5;border-top:1px dotted var(--rule);padding-top:10px;margin-top:2px}
+.qa.on{background:var(--ink);color:var(--paper)}
+.qa.on b{color:var(--paper)}
+.qa.on::before{color:var(--accent)}
+.qa.on .a{display:block;color:#e3d8be;border-color:#5e5641}
+.hint{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-top:2px}
+.qa.on .hint{color:#f5c2ad}
+.map{display:grid;grid-template-columns:repeat(10,1fr);gap:0;border:1px solid var(--rule);overflow:hidden}
+@media (max-width:1100px){.map{grid-template-columns:repeat(5,1fr)}}
+@media (max-width:600px){.map{grid-template-columns:repeat(2,1fr)}}
+.node{padding:16px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--paper);position:relative;cursor:default}
+.node:last-child{border-right:0}
+.node .ix{position:absolute;top:10px;left:12px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-soft)}
+.node .ttl{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:20px;letter-spacing:-.01em;line-height:1.05}
+.node .sub{font-family:"Newsreader",serif;font-size:13px;color:var(--ink-2);margin-top:4px;display:none}
+.node:hover .sub{display:block}
+.node.is-now{background:var(--accent);color:var(--paper)}
+.node.is-now .ix,.node.is-now .sub{color:#ffe1d3}
+.node .lens{position:absolute;top:10px;right:10px;font-family:"JetBrains Mono",monospace;font-size:10px;background:var(--teal);color:var(--paper);padding:1px 5px;letter-spacing:.1em}
+footer{padding:5vh 6vw;display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap}
+footer .colophon{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);max-width:60ch}
+footer .stamp{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:38px;letter-spacing:-.02em;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-row">
+    <div>
+      <div class="dateline">M3 &middot; Module Three &middot; Machine Learning &amp; GenAI</div>
+      <div class="masthead-title">Words Become <span class="italic">Vectors</span><sup>L09</sup></div>
+    </div>
+    <div class="masthead-meta">
+      <span class="tag">Interactive &middot; Field Notes</span>
+      <span class="dateline">Vol. 1 &middot; Issue 09 &middot; NLP &amp; Semantic Search</span>
+    </div>
+  </div>
+</header>
+
+<section class="cover">
+  <div class="cover-grid">
+    <div>
+      <div class="label" style="color:var(--accent)">Chapter Nine &middot; "blue summer dress"</div>
+      <h1>The catalogue<br>says <em>frock.</em></h1>
+      <p class="cover-lede"><span class="dropcap">M</span>onday morning, an angry email. A shopper typed <em>blue summer dress</em> into NorthStar's search bar. Ten dresses fit. None came up &mdash; the descriptions said <em>frock</em>, <em>sundress</em>, <em>gown</em>. Keyword search breaks on synonyms, because to a token matcher <em>frock</em> and <em>spaceship</em> are equally unrelated to <em>dress</em>. This week Sarah replaces it with embeddings: dense vectors where geometric distance encodes meaning.</p>
+    </div>
+    <div class="cover-side">
+      <div class="fact-strip">
+        <div class="fact"><div class="num">384</div><div class="lab">Embedding dims</div></div>
+        <div class="fact"><div class="num">22M</div><div class="lab">Model params</div></div>
+        <div class="fact"><div class="num">2</div><div class="lab">Functions to ship</div></div>
+      </div>
+      <div class="byline">
+        <div class="badge">SC</div>
+        <div><b>Sarah Chen</b><span class="label">Cust. Experience Analyst &middot; Jan 2023</span></div>
+      </div>
+      <hr class="rule-dot"/>
+      <div class="label" style="letter-spacing:.18em;font-style:italic;color:var(--ink-2)">Switch tabs. Watch keyword and semantic find different things.</div>
+    </div>
+  </div>
+</section>
+
+<section id="s1">
+  <div class="section-head">
+    <div class="section-num">I.</div>
+    <div class="section-title">
+      <div class="label">A representation problem</div>
+      <h2>One-hot says <em>everything</em> is unrelated.</h2>
+      <p class="deck">A one-hot vector is all zeros except a single 1. The cosine between any two distinct one-hot vectors is zero &mdash; <em>frock</em> and <em>dress</em> are as orthogonal as <em>frock</em> and <em>spaceship</em>. Embeddings learn the geometry from text.</p>
+    </div>
+  </div>
+
+  <div class="dist-row">
+    <div class="dist-col">
+      <span class="dist-tag bad">&#10005; One-hot</span>
+      <h3>Identity, <em>not meaning.</em></h3>
+      <div class="pair"><span class="w">frock vs dress</span><div class="bar"><i style="width:0%"></i></div><span class="v">0.00</span></div>
+      <div class="pair"><span class="w">frock vs spaceship</span><div class="bar"><i style="width:0%"></i></div><span class="v">0.00</span></div>
+      <div class="pair"><span class="w">jumper vs pullover</span><div class="bar"><i style="width:0%"></i></div><span class="v">0.00</span></div>
+      <div class="pair"><span class="w">jumper vs avocado</span><div class="bar"><i style="width:0%"></i></div><span class="v">0.00</span></div>
+      <p class="dist-foot">Every distinct pair gets cosine 0. The representation has no notion of semantic similarity &mdash; bag-of-words inherits the same blindness. Stemming and stop-words barely help.</p>
+    </div>
+    <div class="dist-col">
+      <span class="dist-tag good">&#10003; Sentence-transformer</span>
+      <h3>Geometry <em>encodes</em> meaning.</h3>
+      <div class="pair"><span class="w">frock vs dress</span><div class="bar"><i style="width:42%"></i></div><span class="v">0.42</span></div>
+      <div class="pair"><span class="w">frock vs spaceship</span><div class="bar"><i style="width:4%"></i></div><span class="v">0.04</span></div>
+      <div class="pair"><span class="w">jumper vs pullover</span><div class="bar"><i style="width:58%"></i></div><span class="v">0.58</span></div>
+      <div class="pair"><span class="w">jumper vs avocado</span><div class="bar"><i style="width:6%"></i></div><span class="v">0.06</span></div>
+      <p class="dist-foot">Read these as a <em>ranking</em>, not a percentage. Sentence-transformer cosines mostly live in <span class="mono">[0.2, 0.7]</span>; 0.42 is a meaningful synonym signal, not "42% similar". Trained on &gt;1B sentence pairs.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="section-head">
+    <div class="section-num">II.</div>
+    <div class="section-title">
+      <div class="label">A bake-off</div>
+      <h2>Two queries. <em>Two different</em> winners.</h2>
+      <p class="deck">TF-IDF beats embeddings on exact-token queries (product codes, brand names). Embeddings beat TF-IDF on paraphrase. Production search is a hybrid &mdash; union of candidates, then re-rank.</p>
+    </div>
+  </div>
+
+  <div class="search">
+    <div class="search-head">
+      <span>Query &middot; <span class="search-q" id="qLbl">"blue summer dress"</span></span>
+      <span id="qHint">Synonym-heavy &middot; embeddings should win</span>
+    </div>
+    <div class="tabs">
+      <button class="tab on" data-q="dress">Q1 &middot; "blue summer dress"</button>
+      <button class="tab" data-q="code">Q2 &middot; "P0042"</button>
+    </div>
+    <div class="results">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px">Keyword / TF-IDF top-5</div>
+      <div id="rTfidf"></div>
+      <p class="results-note" id="nTfidf"></p>
+    </div>
+    <div style="border-top:1px solid var(--rule)"></div>
+    <div class="results">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">Semantic embeddings top-5</div>
+      <div id="rEmb"></div>
+      <p class="results-note" id="nEmb"></p>
+    </div>
+  </div>
+</section>
+
+<section id="s3">
+  <div class="section-head">
+    <div class="section-num">III.</div>
+    <div class="section-title">
+      <div class="label">A checklist</div>
+      <h2>Three checks before you <em>replace</em> keyword search.</h2>
+      <p class="deck">Skip these and you ship a system that feels smarter but quietly regresses on the queries that pay the bills.</p>
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="h-card"><div class="n">1</div><h4>Ground-truth <em>queries</em>?</h4><p>A handful of (query, expected-product) pairs is the minimum. Without it you cannot measure top-1 or top-K accuracy; "it feels better" isn't an answer Marcus accepts.</p><span class="ex bad">&#10005; "Demo on my favourite query."</span><span class="ex good">&#10003; "8 hand-curated queries with expected products."</span></div>
+    <div class="h-card"><div class="n">2</div><h4>Precision@k <em>and</em> failures?</h4><p>Headline accuracy hides failure modes. The query that returned a <em>linen shirt</em> at rank 1 instead of a sundress &mdash; that is the bug top-1 alone wouldn't surface.</p><span class="ex bad">&#10005; "Top-1 = 6/8 &mdash; ship it."</span><span class="ex good">&#10003; "6/8 top-1; inspected the two misses."</span></div>
+    <div class="h-card"><div class="n">3</div><h4>Exact-match &amp; <em>stale</em>?</h4><p>Product codes and brand names need TF-IDF, not embeddings. When a merchandiser rewrites a description, the cached embedding goes stale &mdash; re-encode nightly.</p><span class="ex bad">&#10005; "Embeddings everywhere, no fallback."</span><span class="ex good">&#10003; "TF-IDF + semantic union; nightly re-embed."</span></div>
+  </div>
+</section>
+
+<aside class="pull">
+  <blockquote>"How does that model understand <em>frock</em> and <em>dress</em> are similar? Can we build a <em>chat assistant</em>?"</blockquote>
+  <cite>&mdash; Marcus &middot; after the search demo &middot; the engine of L10</cite>
+</aside>
+
+<section id="s4">
+  <div class="section-head">
+    <div class="section-num">IV.</div>
+    <div class="section-title">
+      <div class="label">Check yourself</div>
+      <h2>Seven questions from the <em>field notebook.</em></h2>
+      <p class="deck">Click to flip. Numbering matches <span class="mono">lesson.md</span>.</p>
+    </div>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa" data-qn="Q1"><span class="hint">&#9656; Click to reveal</span><b>Why can't bag-of-words match synonyms?</b><div class="a">Each document is a vector of word counts indexed by a fixed vocabulary. <em>frock</em> and <em>dress</em> occupy different indices, so the query and the product vector share only the <em>summer</em> dimension &mdash; cosine is dominated by that single overlap. No notion that <em>frock</em> and <em>dress</em> refer to the same thing.</div></div>
+    <div class="qa" data-qn="Q2"><span class="hint">&#9656; Click to reveal</span><b>One-hot(<em>frock</em>, <em>dress</em>) = 0 = one-hot(<em>frock</em>, <em>spaceship</em>). Why?</b><div class="a">A one-hot vector is all zeros except a 1 at the word's index. Dot-product of two one-hots for distinct words is zero &mdash; no overlapping non-zero positions &mdash; so cosine is zero regardless of semantics. Identity, not meaning.</div></div>
+    <div class="qa" data-qn="Q3"><span class="hint">&#9656; Click to reveal</span><b>cosine(<em>frock</em>, <em>dress</em>) = 0.249. "Only 25%." Right?</b><div class="a"><b>No.</b> Sentence-transformer cosines for this model mostly live in [0.2, 0.7]. 0.25 is not "25% similar" &mdash; it is a ranking signal well above the ~0.0 baseline for unrelated words. Read cosines as ranking, not percentage.</div></div>
+    <div class="qa" data-qn="Q4"><span class="hint">&#9656; Click to reveal</span><b>Why a sentence-transformer rather than averaging word vectors?</b><div class="a">Averaging throws away word order and weights every token equally; <em>"dog bites man"</em> and <em>"man bites dog"</em> get identical embeddings and high-information words are diluted by stop-words. A sentence-transformer is trained end-to-end to produce one vector capturing the whole sentence.</div></div>
+    <div class="qa" data-qn="Q5"><span class="hint">&#9656; Click to reveal</span><b>Top-1 = 6/8, top-5 = 7/8. Which to report?</b><div class="a">Both. Top-1 is what customers experience when only looking at the top result. Top-5 reflects realistic browsing. The gap is headroom that re-ranking with popularity or filters could recover.</div></div>
+    <div class="qa" data-qn="Q6"><span class="hint">&#9656; Click to reveal</span><b>When does TF-IDF beat embeddings?</b><div class="a"><b>Wins:</b> exact-token queries &mdash; product codes, SKUs, brand names. <b>Loses:</b> synonym-heavy or paraphrased queries. Production search uses both and merges candidate lists.</div></div>
+    <div class="qa" data-qn="Q7"><span class="hint">&#9656; Click to reveal</span><b>Merchandiser rewrites 3 descriptions. What breaks if you do nothing?</b><div class="a">Cached embeddings reflect the old text. Customers can search using new-description language and never find those products. Fix: nightly re-embedding of any product whose <span class="mono">updated_at</span> changed in 24h, plus a small near-real-time job for new products.</div></div>
+  </div>
+</section>
+
+<section id="s5">
+  <div class="section-head">
+    <div class="section-num">V.</div>
+    <div class="section-title">
+      <div class="label">A roadmap</div>
+      <h2>This sets up <em>RAG.</em></h2>
+      <p class="deck">L09's semantic search engine becomes the <em>R</em> in L10's Retrieval-Augmented Generation.</p>
+    </div>
+  </div>
+
+  <div class="map">
+    <div class="node"><span class="ix">L01</span><span class="ttl">Intro to ML</span><span class="sub">Three categories.</span></div>
+    <div class="node"><span class="ix">L02</span><span class="ttl">Prob &amp; Stats</span><span class="sub">precision@k &mdash; same lens.</span></div>
+    <div class="node"><span class="ix">L03</span><span class="ttl">Supervised</span><span class="sub">Same eval discipline.</span></div>
+    <div class="node"><span class="ix">L04</span><span class="ttl">Sup. Advanced</span><span class="sub">GBDT rerankers.</span></div>
+    <div class="node"><span class="ix">L05</span><span class="ttl">Unsupervised</span><span class="sub">K-Means on embeddings = topics.</span></div>
+    <div class="node"><span class="ix">L06</span><span class="ttl">Time Series</span><span class="sub">Token sequences &mdash; causal masks.</span></div>
+    <div class="node"><span class="ix">L07</span><span class="ttl">Neural Nets</span><span class="sub">Five-line training loop.</span></div>
+    <div class="node"><span class="ix">L08</span><span class="ttl">Vision</span><span class="sub">"Freeze backbone, swap head" applies.</span></div>
+    <div class="node is-now"><span class="ix">L09</span><span class="ttl">NLP</span><span class="sub">Embeddings + semantic search. You are here.</span></div>
+    <div class="node"><span class="lens">L09</span><span class="ix">L10</span><span class="ttl">GenAI</span><span class="sub">This engine becomes the R in RAG.</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="colophon">L09 &middot; NLP, Embeddings &amp; Semantic Search &middot; Learner Edition<br>Interactive Field Notes &mdash; companion to the NorthStar Retail story.<br>Set in Fraunces, Newsreader, and JetBrains Mono.</div>
+  <div class="stamp">&mdash; end of file 09.</div>
+</footer>
+
+<script>
+(function(){
+  const data = {
+    dress: {
+      label: '"blue summer dress"',
+      hint: 'Synonym-heavy · embeddings should win',
+      tfidf: [
+        { name:'Marina <em>Blue</em> Cropped Linen Shirt', sc:'0.51', match:false },
+        { name:'Atlas <em>Blue</em> Denim Jeans', sc:'0.44', match:false },
+        { name:'Cobalt Mid-Wash <em>Blue</em> Jacket', sc:'0.39', match:false },
+        { name:'Lila Floral <em>Summer</em> Frock', sc:'0.18', match:true, key:true },
+        { name:'Eden Cotton <em>Summer</em> Wrap', sc:'0.14', match:false },
+      ],
+      tfidfNote: 'TF-IDF locked onto "blue" and surfaced shirts and denim. The actual summer frock dropped to rank 4 because its description uses <em>frock</em>, not <em>dress</em>.',
+      emb: [
+        { name:'Lila Floral Summer <b>Frock</b>', sc:'0.61', match:true, key:true },
+        { name:'Marina Wrap <b>Sundress</b> · Navy', sc:'0.57', match:true },
+        { name:'Coral Tie-Strap <b>Gown</b>', sc:'0.48', match:true },
+        { name:'Atlas Linen Wrap <b>Dress</b>', sc:'0.46', match:true },
+        { name:'Eden Cotton Summer Wrap', sc:'0.39', match:false },
+      ],
+      embNote: 'Semantic search ranks <em>frock</em>, <em>sundress</em>, <em>gown</em> together with <em>dress</em> &mdash; the model has learned they refer to the same thing. Top-1 hit, plus three more relevant products on the first page.'
+    },
+    code: {
+      label: '"P0042"',
+      hint: 'Exact-token query · TF-IDF should win',
+      tfidf: [
+        { name:'Marina Wrap Dress &middot; <b>P0042</b>', sc:'0.94', match:true, key:true },
+        { name:'Marina Wrap Dress &middot; black', sc:'0.21', match:false },
+        { name:'P0041 Atlas Linen Shirt', sc:'0.12', match:false },
+        { name:'P0043 Eden Cotton Wrap', sc:'0.11', match:false },
+        { name:'Coral Tie-Strap Gown', sc:'0.04', match:false },
+      ],
+      tfidfNote: 'TF-IDF locked onto the SKU and returned the exact product at rank 1 with high confidence. This is what literal-token retrieval is built for.',
+      emb: [
+        { name:'P0041 Atlas Linen Shirt', sc:'0.41', match:false },
+        { name:'Coral Tie-Strap Gown', sc:'0.36', match:false },
+        { name:'P0043 Eden Cotton Wrap', sc:'0.34', match:false },
+        { name:'Marina Wrap Dress &middot; <b>P0042</b>', sc:'0.31', match:true, key:true },
+        { name:'Atlas Denim Jeans', sc:'0.29', match:false },
+      ],
+      embNote: 'Semantic embeddings have no notion of SKU semantics &mdash; P-numbers cluster together regardless of which product they identify. The right answer is buried at rank 4. Route exact-token queries to TF-IDF.'
+    }
+  };
+  const qLbl = document.getElementById('qLbl');
+  const qHint = document.getElementById('qHint');
+  const rTfidf = document.getElementById('rTfidf');
+  const rEmb = document.getElementById('rEmb');
+  const nTfidf = document.getElementById('nTfidf');
+  const nEmb = document.getElementById('nEmb');
+  function render(key){
+    const d = data[key];
+    qLbl.textContent = d.label;
+    qHint.textContent = d.hint;
+    function rows(arr){
+      return arr.map((r,i) => '<div class="result-row'+(r.match?' match':'')+'"><div class="rk">'+(i+1)+'</div><div class="nm">'+r.name+(r.key?' <span style="font-family:JetBrains Mono,monospace;font-size:10px;color:var(--teal);letter-spacing:.14em">EXPECTED</span>':'')+'</div><div class="sc">'+r.sc+'</div></div>').join('');
+    }
+    rTfidf.innerHTML = rows(d.tfidf);
+    rEmb.innerHTML = rows(d.emb);
+    nTfidf.innerHTML = d.tfidfNote;
+    nEmb.innerHTML = d.embNote;
+  }
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    render(t.dataset.q);
+  }));
+  render('dress');
+})();
+
+(function(){
+  document.querySelectorAll('.qa').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('on'));
+    c.tabIndex = 0;
+    c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.classList.toggle('on'); }});
+  });
+})();
+</script>
+</body>
+</html>

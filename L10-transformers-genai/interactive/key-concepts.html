@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>L10 — The Closer · Interactive Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f0e8d4;--paper-2:#e7dcc1;--paper-3:#d9cca8;--ink:#13110c;--ink-2:#3a3528;--ink-soft:#65604f;--rule:#1b1812;--accent:#cf3a17;--accent-2:#7a1d0a;--teal:#0e4540;--teal-2:#1c6e66;--mustard:#b8881f;--grain-op:.55}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:"Newsreader",Georgia,serif;font-weight:380;font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background-image:radial-gradient(1200px 600px at 80% -10%,rgba(207,58,23,.08),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(14,69,64,.07),transparent 60%),repeating-linear-gradient(0deg,rgba(20,17,12,.025) 0 1px,transparent 1px 3px);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;mix-blend-mode:multiply;opacity:var(--grain-op);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+::selection{background:var(--accent);color:var(--paper)}
+.italic{font-style:italic;font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2)}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.rule-dot{border:0;border-top:1.5px dotted var(--rule);margin:0}
+.masthead{padding:28px 6vw 18px;border-bottom:1px solid var(--rule)}
+.masthead-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.masthead-title{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-style:italic;font-size:clamp(34px,5vw,56px);letter-spacing:-.03em;line-height:.85}
+.masthead-title sup{font-size:.4em;vertical-align:super;letter-spacing:0;font-style:normal;color:var(--accent)}
+.tag{display:inline-block;padding:3px 8px;background:var(--ink);color:var(--paper);font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.dateline{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.masthead-meta{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end}
+.cover{padding:5vh 6vw 6vh;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.cover-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+@media (max-width:900px){.cover-grid{grid-template-columns:1fr;gap:24px}}
+.cover h1{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:300;font-size:clamp(56px,11vw,168px);line-height:.84;letter-spacing:-.04em;margin:.1em 0}
+.cover h1 em{font-style:italic;color:var(--accent);font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
+.cover-lede{font-family:"Newsreader",serif;font-size:clamp(18px,1.6vw,22px);font-style:italic;color:var(--ink-2);max-width:46ch;line-height:1.45}
+.cover-lede .dropcap{float:left;font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:5.2em;line-height:.78;padding:.08em .1em 0 0;color:var(--accent);font-weight:330}
+.cover-side{display:flex;flex-direction:column;gap:18px}
+.fact-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule)}
+.fact{padding:14px;border-right:1px solid var(--rule)}
+.fact:last-child{border-right:0}
+.fact .num{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"WONK" 1;font-size:36px;line-height:1;letter-spacing:-.04em}
+.fact .lab{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+.byline{display:flex;gap:18px;align-items:center;margin-top:8px}
+.byline .badge{width:48px;height:48px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:500;font-style:italic;font-size:22px}
+.byline b{display:block;font-family:"Newsreader",serif;font-weight:600}
+section{padding:7vh 6vw;border-bottom:1px solid var(--rule);position:relative}
+.section-head{display:grid;grid-template-columns:120px 1fr;gap:32px;margin-bottom:48px;align-items:start}
+@media (max-width:760px){.section-head{grid-template-columns:1fr;gap:8px}}
+.section-num{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:84px;line-height:.8;color:var(--accent);font-weight:340}
+.section-title h2{font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 20,"WONK" 1;font-weight:340;font-size:clamp(34px,4.4vw,56px);line-height:.95;letter-spacing:-.03em;margin:0 0 .25em}
+.section-title h2 em{font-style:italic;color:var(--accent)}
+.section-title .deck{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:20px;max-width:62ch}
+.attn-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
+@media (max-width:900px){.attn-wrap{grid-template-columns:1fr}}
+.attn-vis{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.attn-vis h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.02em;margin:0 0 .4em}
+.attn-sent{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:22px;letter-spacing:-.01em;color:var(--ink-2);line-height:1.5;border-bottom:1px dotted var(--rule);padding-bottom:10px;margin-bottom:12px}
+.attn-sent .tok{padding:2px 6px;background:var(--paper);border:1px solid var(--rule);margin:0 2px;cursor:default;display:inline-block;font-style:normal;font-family:"JetBrains Mono",monospace;font-size:14px}
+.attn-sent .tok.click{cursor:pointer}
+.attn-sent .tok.on{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.attn-sent .tok.click:hover:not(.on){background:var(--paper-3)}
+.attn-row{display:grid;grid-template-columns:90px 1fr 56px;gap:10px;align-items:center;padding:4px 0;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-2)}
+.attn-row .tk{text-align:right;color:var(--ink)}
+.attn-row .br{height:14px;background:var(--paper-3);border:1px solid var(--rule);position:relative;overflow:hidden}
+.attn-row .br i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);display:block}
+.attn-row .sc{text-align:right;color:var(--accent);font-weight:700}
+.attn-note{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15px;line-height:1.5}
+.qkv{background:var(--paper-2);border:1px solid var(--rule);padding:22px}
+.qkv h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.02em;margin:0 0 .4em}
+.qkv h3 em{color:var(--accent)}
+.qkv-item{display:grid;grid-template-columns:60px 1fr;gap:14px;align-items:start;margin-top:14px;padding-top:14px;border-top:1px dotted var(--rule)}
+.qkv-item:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.qkv-item .let{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:46px;line-height:.8;color:var(--accent);font-weight:340}
+.qkv-item .let b{display:block;font-family:"JetBrains Mono",monospace;font-size:10px;font-style:normal;letter-spacing:.18em;color:var(--ink-2);margin-top:4px}
+.qkv-item .desc{font-family:"Newsreader",serif;font-size:15.5px;line-height:1.5;color:var(--ink-2)}
+.qkv-item .desc b{color:var(--ink)}
+.hall{display:grid;grid-template-columns:1fr 1fr;gap:14px;border:1px solid var(--rule)}
+@media (max-width:760px){.hall{grid-template-columns:1fr}}
+.hall-col{padding:24px;background:var(--paper)}
+.hall-col + .hall-col{border-left:1px solid var(--rule);background:var(--paper-2)}
+@media (max-width:760px){.hall-col + .hall-col{border-left:0;border-top:1px solid var(--rule)}}
+.hall-col h3{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.02em;margin:.1em 0 .35em}
+.hall-tag{display:inline-block;padding:2px 8px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--rule)}
+.hall-tag.bad{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.hall-tag.good{background:var(--teal);color:var(--paper);border-color:var(--teal)}
+.prompt{font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.6;background:var(--ink);color:var(--paper);padding:14px;border:1px solid var(--rule);white-space:pre-wrap;margin-top:10px}
+.prompt .role{color:#e4a23a;font-weight:700}
+.prompt .ret{color:#f7c9b6}
+.response{font-family:"Newsreader",serif;font-size:15px;color:var(--ink-2);line-height:1.55;background:var(--paper-3);border:1px solid var(--rule);padding:14px;margin-top:10px}
+.response .real{color:var(--teal);font-weight:600}
+.response .fake{color:var(--accent);font-weight:600;text-decoration:underline wavy var(--accent)}
+.hall-foot{margin-top:14px;font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:15px;line-height:1.5}
+.rag{border:1px solid var(--rule);background:var(--paper);padding:24px}
+.rag-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:stretch}
+@media (max-width:900px){.rag-flow{grid-template-columns:repeat(2,1fr)}}
+.rag-step{border:1px solid var(--rule);background:var(--paper-2);padding:14px;display:flex;flex-direction:column;gap:8px;position:relative}
+.rag-step .ix{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--accent)}
+.rag-step h4{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:22px;letter-spacing:-.01em;margin:0;color:var(--ink)}
+.rag-step p{font-family:"Newsreader",serif;color:var(--ink-2);font-size:14px;line-height:1.45;margin:0}
+.rag-step .icon{font-size:26px;color:var(--accent);font-family:"Fraunces",serif;font-style:italic;line-height:1}
+.rag-step.is-llm{background:var(--ink);color:var(--paper)}
+.rag-step.is-llm h4{color:var(--paper)}
+.rag-step.is-llm p{color:#cfc6ad}
+.rag-step.is-llm .ix{color:#f7c9b6}
+.honest{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.honest{grid-template-columns:1fr}}
+.h-card{border:1px solid var(--rule);background:var(--paper-2);padding:22px;display:flex;flex-direction:column;gap:10px;position:relative}
+.h-card .n{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-size:62px;line-height:.8;color:var(--accent);font-weight:340}
+.h-card h4{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:26px;letter-spacing:-.015em;margin:.2em 0 .1em}
+.h-card p{font-family:"Newsreader",serif;color:var(--ink-2);font-size:15.5px;line-height:1.5;margin:0}
+.h-card .ex{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-soft);letter-spacing:.04em;background:var(--paper);border:1px dashed var(--rule);padding:8px 10px;margin-top:6px}
+.h-card .ex.good{border-color:var(--teal);color:var(--teal)}
+.h-card .ex.bad{border-color:var(--accent);color:var(--accent-2)}
+.pull{padding:8vh 6vw;background:var(--ink);color:var(--paper);position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.pull::before{content:"";position:absolute;inset:0;background:radial-gradient(800px 400px at 80% 30%,rgba(207,58,23,.22),transparent 60%);pointer-events:none}
+.pull blockquote{margin:0;max-width:32ch;font-family:"Fraunces",serif;font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 1;font-style:italic;font-weight:300;font-size:clamp(28px,4.4vw,56px);letter-spacing:-.025em;line-height:1.05}
+.pull blockquote em{color:var(--accent);font-style:italic}
+.pull cite{display:block;margin-top:18px;font-family:"JetBrains Mono",monospace;font-style:normal;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#cfc6ad}
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:760px){.qa-grid{grid-template-columns:1fr}}
+.qa{background:var(--paper-2);border:1px solid var(--rule);padding:18px 20px;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:background .2s;position:relative}
+.qa::before{content:attr(data-qn);position:absolute;top:10px;right:14px;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--ink-soft);letter-spacing:.14em}
+.qa:hover{background:var(--paper-3)}
+.qa b{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:22px;line-height:1.15;letter-spacing:-.015em;padding-right:48px}
+.qa .a{display:none;font-family:"Newsreader",serif;font-size:15.5px;color:var(--ink-2);line-height:1.5;border-top:1px dotted var(--rule);padding-top:10px;margin-top:2px}
+.qa.on{background:var(--ink);color:var(--paper)}
+.qa.on b{color:var(--paper)}
+.qa.on::before{color:var(--accent)}
+.qa.on .a{display:block;color:#e3d8be;border-color:#5e5641}
+.hint{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-top:2px}
+.qa.on .hint{color:#f5c2ad}
+.map{display:grid;grid-template-columns:repeat(10,1fr);gap:0;border:1px solid var(--rule);overflow:hidden}
+@media (max-width:1100px){.map{grid-template-columns:repeat(5,1fr)}}
+@media (max-width:600px){.map{grid-template-columns:repeat(2,1fr)}}
+.node{padding:16px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--paper);position:relative;cursor:default}
+.node:last-child{border-right:0}
+.node .ix{position:absolute;top:10px;left:12px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-soft)}
+.node .ttl{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:20px;letter-spacing:-.01em;line-height:1.05}
+.node .sub{font-family:"Newsreader",serif;font-size:13px;color:var(--ink-2);margin-top:4px;display:none}
+.node:hover .sub{display:block}
+.node.is-now{background:var(--accent);color:var(--paper)}
+.node.is-now .ix,.node.is-now .sub{color:#ffe1d3}
+.closer{padding:10vh 6vw;background:var(--paper-2);border-bottom:1px solid var(--rule);text-align:center}
+.closer h2{font-family:"Fraunces",serif;font-style:italic;font-variation-settings:"opsz" 144,"WONK" 1;font-weight:340;font-size:clamp(40px,6vw,84px);line-height:.95;letter-spacing:-.03em;margin:0 auto .4em;max-width:24ch}
+.closer h2 em{color:var(--accent)}
+.closer p{font-family:"Newsreader",serif;font-style:italic;color:var(--ink-2);font-size:18px;max-width:54ch;margin:0 auto;line-height:1.55}
+.closer .mark{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-top:24px}
+footer{padding:5vh 6vw;display:flex;justify-content:space-between;gap:20px;align-items:flex-end;flex-wrap:wrap}
+footer .colophon{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);max-width:60ch}
+footer .stamp{font-family:"Fraunces",serif;font-style:italic;font-weight:340;font-variation-settings:"opsz" 144,"WONK" 1;font-size:38px;letter-spacing:-.02em;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-row">
+    <div>
+      <div class="dateline">M3 &middot; Module Three &middot; Machine Learning &amp; GenAI</div>
+      <div class="masthead-title">The <span class="italic">Closer</span><sup>L10</sup></div>
+    </div>
+    <div class="masthead-meta">
+      <span class="tag">Interactive &middot; Field Notes</span>
+      <span class="dateline">Vol. 1 &middot; Issue 10 &middot; Transformers, Attention &amp; GenAI</span>
+    </div>
+  </div>
+</header>
+
+<section class="cover">
+  <div class="cover-grid">
+    <div>
+      <div class="label" style="color:var(--accent)">Chapter Ten &middot; A shopping assistant</div>
+      <h1>Attention,<br>and an <em>RAG.</em></h1>
+      <p class="cover-lede"><span class="dropcap">M</span>arcus's last brief: <em>can a customer ask "I need a summer outfit for a beach holiday under &pound;200" and get a real product recommendation, in natural language, from our catalogue?</em> Three ideas stack into the answer. <em>Attention</em> lets every token look at every other token. An <em>LLM</em> is that mechanism stacked deep, pretrained on the internet &mdash; fluent but ungrounded. <em>RAG</em> ties L09's retrieval to the LLM so it stops making things up.</p>
+    </div>
+    <div class="cover-side">
+      <div class="fact-strip">
+        <div class="fact"><div class="num">Q&middot;K</div><div class="lab">Query·Key dot product</div></div>
+        <div class="fact"><div class="num">R+A+G</div><div class="lab">Retrieve·Augment·Generate</div></div>
+        <div class="fact"><div class="num">L09</div><div class="lab">Returns as the R</div></div>
+      </div>
+      <div class="byline">
+        <div class="badge">SC</div>
+        <div><b>Sarah Chen</b><span class="label">Cust. Experience Analyst &middot; End of mid-year</span></div>
+      </div>
+      <hr class="rule-dot"/>
+      <div class="label" style="letter-spacing:.18em;font-style:italic;color:var(--ink-2)">Click a token. Watch attention pick its neighbours.</div>
+    </div>
+  </div>
+</section>
+
+<section id="s1">
+  <div class="section-head">
+    <div class="section-num">I.</div>
+    <div class="section-title">
+      <div class="label">The mechanism</div>
+      <h2>Every token looks at <em>every other token.</em></h2>
+      <p class="deck">Click any underlined token. The bars show which other tokens it pays attention to under self-attention. The word "it" resolves to "trophy" or "suitcase" depending on which context wins.</p>
+    </div>
+  </div>
+
+  <div class="attn-wrap">
+    <div class="attn-vis">
+      <h3>Resolve <em>"it"</em></h3>
+      <div class="attn-sent" id="attnSent"></div>
+      <div id="attnBars"></div>
+      <p class="attn-note">In this classic example, "it" can refer to <em>trophy</em> (too big to fit) or <em>suitcase</em> (too small). The trained attention pattern weighs context tokens; the highest-weight key tells you what "it" is. Try clicking "fit" or "big" too.</p>
+    </div>
+
+    <div class="qkv">
+      <h3>Query, Key, <em>Value.</em></h3>
+      <div class="qkv-item"><div class="let">Q<b>query</b></div><div class="desc"><b>"What am I looking for?"</b> Each token projects to a query vector. For "it", the query encodes a need to resolve a pronoun.</div></div>
+      <div class="qkv-item"><div class="let">K<b>key</b></div><div class="desc"><b>"What do I offer?"</b> Each token also projects to a key vector advertising what it represents. Nouns publish "I am a noun"; verbs, "I am an action".</div></div>
+      <div class="qkv-item"><div class="let">V<b>value</b></div><div class="desc"><b>"What content do I contribute?"</b> Once Q dots K and softmax picks the winners, the weighted sum of V vectors is the attention output.</div></div>
+      <p style="font-family:'Newsreader',serif;font-style:italic;color:var(--ink-2);font-size:15px;margin-top:18px;line-height:1.5">One matmul plus a softmax. A transformer is just this block, stacked &mdash; in <span class="mono">all-MiniLM-L6-v2</span> (6 layers, 22M), BERT-base (12, 110M), GPT-3 (96, 175B). Scale changes capability, not architecture.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="section-head">
+    <div class="section-num">II.</div>
+    <div class="section-title">
+      <div class="label">A failure mode</div>
+      <h2>Asked cold, the LLM <em>makes things up.</em></h2>
+      <p class="deck">A pretrained LLM has never seen NorthStar's catalogue. Ask about it with no context and it produces confident product names that don't exist &mdash; not because it's broken, but because it's doing what it was trained to do: produce plausible text.</p>
+    </div>
+  </div>
+
+  <div class="hall">
+    <div class="hall-col">
+      <span class="hall-tag bad">&#10005; Raw prompt &middot; no grounding</span>
+      <h3>The model <em>invents.</em></h3>
+<div class="prompt"><span class="role">user:</span> What summer dresses does NorthStar
+sell under £80?</div>
+      <div class="response">"NorthStar offers several great summer dresses under £80, including the <span class="fake">Bloom Sundress (£59)</span>, the <span class="fake">Coastline Maxi (£72)</span>, and the <span class="fake">Marigold Wrap (£68)</span>. All come in floral prints and are popular this season."</div>
+      <p class="hall-foot">Confident, fluent, completely false. None of those products exist in the catalogue. The model has no ground truth to reach for &mdash; so it fills the gap with a plausible average of what "a product list" looks like.</p>
+    </div>
+    <div class="hall-col">
+      <span class="hall-tag good">&#10003; RAG &middot; grounded</span>
+      <h3>The model <em>recommends.</em></h3>
+<div class="prompt"><span class="role">user:</span> Catalogue (top-5 by similarity):
+<span class="ret">• Lila Floral Frock         £64
+• Marina Wrap Sundress     £79
+• Coral Tie-Strap Gown     £88
+• Atlas Linen Wrap Dress   £52
+• Eden Cotton Wrap         £45</span>
+
+Recommend a summer dress under £80
+using only these.</div>
+      <div class="response">"Three options under £80 from the catalogue: the <span class="real">Lila Floral Frock</span> (£64) for a daytime look, the <span class="real">Marina Wrap Sundress</span> (£79) for something more polished, or the lighter <span class="real">Atlas Linen Wrap Dress</span> (£52)."</div>
+      <p class="hall-foot">Same model, grounded in retrieved facts. Every product name and price came from the prompt. The LLM brings fluency and reasoning; retrieval brings facts and an audit trail.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s3">
+  <div class="section-head">
+    <div class="section-num">III.</div>
+    <div class="section-title">
+      <div class="label">The pattern</div>
+      <h2>RAG, in <em>five steps.</em></h2>
+      <p class="deck">L09's semantic search is the engine of step 2. The LLM is just one box in a larger pipeline &mdash; that's how you keep it on a leash.</p>
+    </div>
+  </div>
+
+  <div class="rag">
+    <div class="rag-flow">
+      <div class="rag-step">
+        <span class="ix">01</span>
+        <div class="icon">&rarr;</div>
+        <h4>Embed corpus</h4>
+        <p>Once, offline. Encode every catalogue row with a sentence-transformer. Store 384-dim vectors next to row IDs.</p>
+      </div>
+      <div class="rag-step">
+        <span class="ix">02</span>
+        <div class="icon">&otimes;</div>
+        <h4>Embed query</h4>
+        <p>At request time. Same model encodes the customer's question into the same 384-dim space.</p>
+      </div>
+      <div class="rag-step">
+        <span class="ix">03</span>
+        <div class="icon">&asymp;</div>
+        <h4>Retrieve top-K</h4>
+        <p>Cosine similarity, take the 5 closest catalogue rows. This is exactly the L09 engine.</p>
+      </div>
+      <div class="rag-step is-llm">
+        <span class="ix">04</span>
+        <div class="icon">&#9737;</div>
+        <h4>Augment + generate</h4>
+        <p>Paste the K rows into the prompt. Instruct the LLM to recommend only from them. Run inference.</p>
+      </div>
+      <div class="rag-step">
+        <span class="ix">05</span>
+        <div class="icon">&check;</div>
+        <h4>Guard + log</h4>
+        <p>Check the response for product names not in the retrieved set. Log the (query, retrieved, response) triple for evaluation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="section-head">
+    <div class="section-num">IV.</div>
+    <div class="section-title">
+      <div class="label">A checklist</div>
+      <h2>Three checks before you put a RAG system in <em>front of a customer.</em></h2>
+      <p class="deck">Skip these and the assistant will demo beautifully and fail in production &mdash; the most expensive way to launch a GenAI feature.</p>
+    </div>
+  </div>
+
+  <div class="honest">
+    <div class="h-card"><div class="n">1</div><h4>Is <em>retrieval</em> right?</h4><p>The LLM can only recommend what retrieval surfaces. Evaluate retrieval on its own first &mdash; do the top-K rows contain the products a human would pick?</p><span class="ex bad">&#10005; "Generation looks fluent &mdash; ship."</span><span class="ex good">&#10003; "Top-5 contains the right product on 7/8 queries."</span></div>
+    <div class="h-card"><div class="n">2</div><h4>Is the prompt <em>grounded</em>?</h4><p>System prompt must say: "recommend only from the products listed below; if nothing fits, say so." Add a safety check that flags any product name not in the retrieved set.</p><span class="ex bad">&#10005; "Be helpful and creative."</span><span class="ex good">&#10003; "Only from the list. Flag invented names."</span></div>
+    <div class="h-card"><div class="n">3</div><h4>Eval set, not <em>demo</em>?</h4><p>20&ndash;50 (query &rarr; acceptable answer) pairs written before tuning. Measure on that set when you change the retriever, K, prompt, or model.</p><span class="ex bad">&#10005; "Demoed my own query &mdash; works!"</span><span class="ex good">&#10003; "50-pair eval; measured after each change."</span></div>
+  </div>
+</section>
+
+<aside class="pull">
+  <blockquote>"Nine months ago, we asked you to read 10,000 reviews. Now we've got a churn model, a forecast, a photo tagger, a search bar that understands <em>blue summer dress</em>, and an assistant that recommends without making things up. I don't fully understand how it all works &mdash; but <em>you</em> do. That's the difference."</blockquote>
+  <cite>&mdash; Marcus &middot; after the shopping-assistant launch &middot; Sarah's chapter at NorthStar closes here</cite>
+</aside>
+
+<section id="s5">
+  <div class="section-head">
+    <div class="section-num">V.</div>
+    <div class="section-title">
+      <div class="label">Check yourself</div>
+      <h2>Eight questions from the <em>field notebook.</em></h2>
+      <p class="deck">Click to flip. Numbering matches <span class="mono">lesson.md</span>.</p>
+    </div>
+  </div>
+
+  <div class="qa-grid">
+    <div class="qa" data-qn="Q1"><span class="hint">&#9656; Click to reveal</span><b>Two reasons not to build the shopping assistant on a vanilla RNN.</b><div class="a"><b>Long-range forgetting:</b> the RNN's hidden state has limited capacity; by the time it has consumed 30 tokens, the early words may be diluted. Attention lets every output position look directly at every input token &mdash; no bottleneck.<br><b>No parallelism:</b> RNNs process tokens sequentially. Attention computes all token interactions in parallel via matmul &mdash; which is why transformers train on giant data and RNNs effectively don't.</div></div>
+    <div class="qa" data-qn="Q2"><span class="hint">&#9656; Click to reveal</span><b>Q/K/V intuition &mdash; one sentence each.</b><div class="a"><b>Query:</b> what the token is looking for. <b>Key:</b> what the token advertises about itself, matched against queries. <b>Value:</b> the content the token contributes once selected &mdash; the weighted sum of values is the attention output.</div></div>
+    <div class="qa" data-qn="Q3"><span class="hint">&#9656; Click to reveal</span><b>"GenAI is fundamentally different from L03&ndash;L08 classifiers." Correct that.</b><div class="a">An autoregressive LLM is a classifier whose classes are "the next token". Given input, it outputs a probability over ~50,000 tokens; you pick one (greedily or sampling), append, run again. Same framework as L03's classifier &mdash; model produces probabilities, you pick a label &mdash; just looped, with a much larger label space.</div></div>
+    <div class="qa" data-qn="Q4"><span class="hint">&#9656; Click to reveal</span><b>LLM returns confident product names that don't exist. Bug? Fix?</b><div class="a">Not a bug &mdash; the model is doing what it was trained to do: produce plausible text. No ground truth for the catalogue means it fills the gap with a plausible average. Fix: give it the catalogue at inference time. That is RAG.</div></div>
+    <div class="qa" data-qn="Q5"><span class="hint">&#9656; Click to reveal</span><b>"GPT-4 is smart &mdash; just paste the whole catalogue." Why RAG anyway?</b><div class="a"><b>Cost &amp; latency:</b> 10,000 products per prompt is wasteful. RAG sends only top-5. <b>Quality:</b> LLMs degrade on very long contexts ("lose the needle"). A focused 5-product prompt with grounding produces more reliable answers. RAG separates retrieval (cheap) from generation (LLM).</div></div>
+    <div class="qa" data-qn="Q6"><span class="hint">&#9656; Click to reveal</span><b>Why put the catalogue in the <em>user</em> turn, not the system prompt?</b><div class="a">A 360M model can drift on long system prompts containing structured data &mdash; it tends to treat them as text to continue rather than rules to follow. Framing the catalogue as "here is what we have, answer using only these" in the user turn keeps the grounding constraint and the data adjacent, matching the chat-template patterns the model was instruction-tuned on.</div></div>
+    <div class="qa" data-qn="Q7"><span class="hint">&#9656; Click to reveal</span><b>Demo works on Sarah's test query. What does she still need?</b><div class="a">(a) A held-out eval set of 20&ndash;50 realistic (query &rarr; acceptable answer) pairs not seen while building. (b) Measurement at both stages: retrieval precision and generation quality. (c) A safety check that flags responses mentioning names not in the retrieved set.</div></div>
+    <div class="qa" data-qn="Q8"><span class="hint">&#9656; Click to reveal</span><b>Should the L01 sentiment task be "upgraded" to an LLM?</b><div class="a">Probably no. L01's pipeline is fast, cheap, deterministic, good enough. An LLM adds latency, cost, non-determinism, and a hallucination surface for zero accuracy gain. Reach for an LLM when the task needs language generation or open-ended reasoning; stick with the specialised model when classification is all you need.</div></div>
+  </div>
+</section>
+
+<section id="s6">
+  <div class="section-head">
+    <div class="section-num">VI.</div>
+    <div class="section-title">
+      <div class="label">A roadmap</div>
+      <h2>Ten lessons. One <em>toolkit.</em></h2>
+      <p class="deck">Every lesson contributed something L10 leans on. Hover any tile.</p>
+    </div>
+  </div>
+
+  <div class="map">
+    <div class="node"><span class="ix">L01</span><span class="ttl">Intro to ML</span><span class="sub">The framing question.</span></div>
+    <div class="node"><span class="ix">L02</span><span class="ttl">Prob &amp; Stats</span><span class="sub">CIs around every eval-set number.</span></div>
+    <div class="node"><span class="ix">L03</span><span class="ttl">Supervised</span><span class="sub">Pipeline / threshold discipline.</span></div>
+    <div class="node"><span class="ix">L04</span><span class="ttl">Sup. Advanced</span><span class="sub">Bake-off across prompt / model variants.</span></div>
+    <div class="node"><span class="ix">L05</span><span class="ttl">Unsupervised</span><span class="sub">Semantic search = K-Means in embedding space.</span></div>
+    <div class="node"><span class="ix">L06</span><span class="ttl">Time Series</span><span class="sub">Causal masks = TimeSeriesSplit, in attention.</span></div>
+    <div class="node"><span class="ix">L07</span><span class="ttl">Neural Nets</span><span class="sub">The same five-line training loop.</span></div>
+    <div class="node"><span class="ix">L08</span><span class="ttl">Vision</span><span class="sub">Transfer-learning playbook &mdash; ViT, CLIP.</span></div>
+    <div class="node"><span class="ix">L09</span><span class="ttl">NLP</span><span class="sub">The R in RAG.</span></div>
+    <div class="node is-now"><span class="ix">L10</span><span class="ttl">GenAI</span><span class="sub">Attention + RAG. The closer.</span></div>
+  </div>
+</section>
+
+<section class="closer">
+  <h2>The foundations are <em>under you.</em></h2>
+  <p>Nine months ago Sarah opened a USB drive with 10,000 reviews. None of it was magic &mdash; every step had a name, a metric, and a baseline that had to lose for the model to win. The toolkit is now yours.</p>
+  <div class="mark">&mdash; end of M3 &middot;&middot;&middot; go build something.</div>
+</section>
+
+<footer>
+  <div class="colophon">L10 &middot; Transformers, Attention &amp; GenAI &middot; Learner Edition<br>Interactive Field Notes &mdash; the closer of the NorthStar Retail story.<br>Set in Fraunces, Newsreader, and JetBrains Mono.</div>
+  <div class="stamp">&mdash; end of file 10.</div>
+</footer>
+
+<script>
+(function(){
+  const sent = ['The','trophy','did','not','fit','the','suitcase','because','it','was','too','big'];
+  const weights = {
+    'it':       [0.04,0.34,0.02,0.02,0.04,0.04,0.12,0.04,0.00,0.04,0.04,0.26],
+    'fit':      [0.04,0.16,0.04,0.04,0.00,0.04,0.20,0.04,0.06,0.04,0.04,0.30],
+    'too':      [0.02,0.06,0.02,0.04,0.10,0.02,0.04,0.02,0.10,0.04,0.00,0.54],
+    'big':      [0.02,0.30,0.02,0.02,0.06,0.04,0.18,0.02,0.10,0.06,0.18,0.00],
+    'trophy':   [0.16,0.00,0.04,0.02,0.04,0.06,0.10,0.04,0.16,0.04,0.04,0.30],
+    'suitcase': [0.06,0.10,0.02,0.02,0.04,0.16,0.00,0.02,0.18,0.04,0.04,0.32],
+  };
+  const sentEl = document.getElementById('attnSent');
+  const barsEl = document.getElementById('attnBars');
+  sent.forEach(w => {
+    const span = document.createElement('span');
+    const clickable = (w in weights);
+    span.className = 'tok' + (clickable ? ' click' : '');
+    span.textContent = w;
+    span.dataset.w = w;
+    if (clickable){ span.title='Click to see attention'; }
+    sentEl.appendChild(span);
+    sentEl.appendChild(document.createTextNode(' '));
+  });
+  function render(query){
+    document.querySelectorAll('.tok').forEach(t => t.classList.toggle('on', t.dataset.w === query));
+    const w = weights[query];
+    barsEl.innerHTML='';
+    const max = Math.max(...w);
+    sent.forEach((tok, i) => {
+      const row = document.createElement('div');
+      row.className='attn-row';
+      const pct = max > 0 ? (w[i]/max)*100 : 0;
+      row.innerHTML = '<div class="tk">'+tok+'</div><div class="br"><i style="width:'+pct.toFixed(0)+'%"></i></div><div class="sc">'+(w[i]>0?w[i].toFixed(2):'·')+'</div>';
+      barsEl.appendChild(row);
+    });
+  }
+  document.querySelectorAll('.tok').forEach(t => {
+    if (!(t.dataset.w in weights)) return;
+    t.addEventListener('click', () => render(t.dataset.w));
+  });
+  render('it');
+})();
+
+(function(){
+  document.querySelectorAll('.qa').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('on'));
+    c.tabIndex = 0;
+    c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.classList.toggle('on'); }});
+  });
+})();
+</script>
+</body>
+</html>
