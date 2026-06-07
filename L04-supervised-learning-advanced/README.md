@@ -50,7 +50,7 @@
 
 ## Your learning path
 
-### Phase 1 — Before class: self-study (~75 min)
+### Phase 1 — Before class: self-study (~25 min)
 
 **Goal:** Understand bagging vs boosting at the conceptual level. Arrive at class ready to compare algorithms.
 
