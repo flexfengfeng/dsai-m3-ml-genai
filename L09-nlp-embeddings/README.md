@@ -26,7 +26,7 @@ By the end of L09 you will be able to:
 4. **Use a pretrained sentence-transformer** (`all-MiniLM-L6-v2`) to embed an entire catalogue in seconds.
 5. **Build a working semantic search engine** with top-K retrieval, compare it head-to-head against TF-IDF, and ship it as a function.
 
-## Phase 1 — Pre-class (≈ 75 min)
+## Phase 1 — Pre-class (≈ 25 min)
 
 - Read [pre-class.md](pre-class.md)
 - Watch the linked Jay Alammar embeddings primer
