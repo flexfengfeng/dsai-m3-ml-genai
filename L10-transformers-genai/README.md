@@ -30,7 +30,7 @@ This is the **closer** of the module. By the end of L10 you will be able to:
 
 This is the lesson that connects classical ML to GenAI. By Friday you'll understand the basics of the architecture behind ChatGPT, Claude, Gemini, and Llama.
 
-## Phase 1 — Pre-class (≈ 75 min)
+## Phase 1 — Pre-class (≈ 25 min)
 
 - Read [pre-class.md](pre-class.md)
 - Watch the linked 3Blue1Brown attention video
