@@ -55,7 +55,7 @@ This lesson follows a three-phase flow. Work through the phases in order.
 
 ---
 
-### Phase 1 — Before class: self-study (~75 min)
+### Phase 1 — Before class: self-study (~25 min)
 
 **Goal:** Experience the statistical problem first — *feel* why Sarah can't simply report "60% positive" and call it done. Arrive at class with a question.
 
