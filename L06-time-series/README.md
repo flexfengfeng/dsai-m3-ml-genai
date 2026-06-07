@@ -49,7 +49,7 @@
 
 ## Your learning path
 
-### Phase 1 — Before class: self-study (~75 min)
+### Phase 1 — Before class: self-study (~25 min)
 
 **Start here →** [**pre-class.md**](./pre-class.md)
 
